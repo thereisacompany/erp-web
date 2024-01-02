@@ -56,14 +56,7 @@ export default {
                     active: true,
                 },
             ],
-            queryMaterialObj: {
-                q: '',
-                categoryId: '',
-                depotId: '',
-                currentPage: 1,
-                maxPage: 1,
-                pageSize: 10,
-            },
+
             showModal: false,
             submitted: false,
             showImageModal: false,
@@ -114,7 +107,7 @@ export default {
             name: '',
             remark: '',
             IsGetDataing: false,
-            pageSize: 10,
+            pageSize: 30,
             totalRows: 0,
             currentPage: 1,
             maxPage: 10,
@@ -294,20 +287,7 @@ export default {
         },
 
         NewRow1(callback) {
-            // let obj1 = this.GetNewCustomerItemObj1();
-            // obj1.id = new Date().getTime() + Math.random().toString().substr(2, 7);
-            // obj1.orderNum = this.customersItem.length + 1;
-            // //this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows; this.customersItem.push(obj1); })
-            // this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => {
 
-            //     obj1.queryMaterialList = JSON.parse(JSON.stringify(rows));
-            //     this.customersItem.push(obj1);
-            //     if (callback) {
-            //         callback();
-            //     }
-
-            // })
-            // // this.customersItem.push(obj1);
 
             let obj1 = this.GetNewCustomerItemObj1();
             obj1.id = new Date().getTime() + Math.random().toString().substr(2, 7);
@@ -323,15 +303,15 @@ export default {
 
         },
         InitEveryRowsProduct() {
-            // for (let i = 0; i < this.customersItem; i++) {
-            //     let obj1 = this.customersItem[i]
-            //     this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows; })
-            // }
-            for (let i = 0; i < this.customersItem; i++) {
+            for (let i = 0; i < this.customersItem.length; i++) {
                 let obj1 = this.customersItem[i]
+                this.customersItem[i].depotId = ''
+                this.customersItem[i].number = ''
+                this.customersItem[i].name = ''
                 //this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows })
                 let wObj = { organId: this.customers.organId, depotId: obj1.depotId, number: obj1.number }
                 server.GetMaterialListByRow(wObj, (rows) => { obj1.queryMaterialList = rows; })
+                this.MaterialSelectOneByRow(null, i)
             }
         },
         DeleteRow1(SubItem) {
@@ -448,36 +428,9 @@ export default {
             });
 
         },
-        queryMaterial(SubItem, cidx) {
 
-            this.queryMaterialObj.q = SubItem.materialName || '';
-            this.queryMaterialObj.categoryId = SubItem.categoryId || '';
-            this.queryMaterialObj.depotId = SubItem.depotId || '';
-            this.queryMaterialObj.currentPage = 1;
-            this.GetMaterialList();
-            this.customersItem_selectindex = cidx
-            this.showModal = true;
-        },
         queryMaterialByRow(SubItem, cidx) {
-            // let querymaterialName = SubItem.name || '';
-            // let querydepotId = SubItem.depotId || '';
 
-            // this.GetMaterialListByRow(this.customers.organId, querydepotId, SubItem.counterId, querymaterialName, (rows) => {
-
-            //     SubItem.queryMaterialList = rows.filter(x => x.stock > 0);
-            //     let F1List = rows.filter(x => String(x.name) == String(querymaterialName))
-            //     if (F1List.length != 0) {
-            //         if (this.customers.organId != null && this.customers.organId != '' && SubItem.depotId != null && SubItem.depotId != '') {
-            //             this.MaterialSelectOneByRow(F1List[0], cidx)
-            //         } else {
-            //             alert('請先選擇 客戶/倉庫別')
-            //             SubItem.name = '';
-            //             this.MaterialSelectOneByRow(null, cidx)
-            //         }
-            //     } else {
-            //         this.MaterialSelectOneByRow(null, cidx)
-            //     }
-            // });
             let wObj = { organId: this.customers.organId, depotId: SubItem.depotId, number: SubItem.number }
             server.GetMaterialListByRow(wObj, (rows) => {
                 //SubItem.queryMaterialList = rows;
@@ -677,34 +630,7 @@ export default {
                 });
         },
 
-        GetMaterialList() {
-            ////material/findBySelect?q=111&categoryId=26&depotId=19&column=createTime&order=desc&mpList=%E5%88%B6%E9%80%A0%E5%95%86,%E8%87%AA%E5%AE%9A%E4%B9%891,%E8%87%AA%E5%AE%9A%E4%B9%892,%E8%87%AA%E5%AE%9A%E4%B9%893&page=1&rows=10
-            let APIUrl = `/material/findBySelect`;
-            let Params = `?q=${encodeURIComponent(this.queryMaterialObj.q)}`;
-            Params += `&categoryId=${encodeURIComponent(this.queryMaterialObj.categoryId)}`;
-            Params += `&depotId=${encodeURIComponent(this.queryMaterialObj.depotId)}`;
-            Params += `&page=${encodeURIComponent(this.queryMaterialObj.currentPage)}`;
-            Params += `&rows=${encodeURIComponent(this.queryMaterialObj.pageSize)}`;
-            Params += `&mpList=`;
-            // Params += `&mpList=${encodeURIComponent('制造商')},${encodeURIComponent('自定义1')},${encodeURIComponent('自定义2')},${encodeURIComponent('自定义3')}`;
-            // Params += `&t=${new Date().getTime()}&column=createTime&order=desc`;
-            APIUrl += Params;
 
-            server.get(APIUrl)
-                .then((res) => {
-
-                    if (res != null && res.data != null && res.status == 200) {
-                        let jshdata = res.data;
-                        this.materialsList = jshdata.rows;
-                        this.queryMaterialObj.maxPage = Math.ceil(jshdata.total / this.queryMaterialObj.pageSize) == 0 ? 1 : Math.ceil(jshdata.total / this.queryMaterialObj.pageSize);
-
-                        this.showModal = true;
-
-                    }
-                }).catch(function (error) {
-                    console.log("error", error);
-                });
-        },
         GetBuilderNumber() {
             this.customers.defaultNumber = 0;
             ///jshERP-boot/sequence/buildNumber
@@ -1072,7 +998,7 @@ export default {
                                                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                                     <td>
                                                         <select class="form-select" v-model="SubItem.depotId"
-                                                            @change="queryMaterialByRow(SubItem, cidx)">
+                                                            @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
                                                             <option :value="u1.id" selected v-for="u1 in depotList"
                                                                 :key="'customers_depot_id' + cidx + u1.id">
                                                                 {{ u1.depotName }}</option>
@@ -1334,23 +1260,7 @@ export default {
                                 </tbody>
                             </table>
                         </div>
-                        <ul class="pagination pagination-rounded justify-content-center mb-2">
-                            <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                                        class="mdi mdi-chevron-left"></i></a>
-                            </li>
-                            <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                                :class="pg1 == 0 ? 'active' : ''"
-                                v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                                <a class="page-link" href="javascript:;"
-                                    @click="currentPage = currentPage + pg1; this.GetData()">{{
-                                        currentPage + pg1 }}</a>
-                            </li>
-                            <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage = maxPage"><i
-                                        class="mdi mdi-chevron-right"></i></a>
-                            </li>
-                        </ul>
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
                     </div>
                 </div>
             </div>

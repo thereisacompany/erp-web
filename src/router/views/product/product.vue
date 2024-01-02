@@ -4,6 +4,9 @@ import PageHeader from "@/components/page-header";
 import { server } from "@/api";
 import common from "@/api/common";
 import Swal from "sweetalert2";
+import useVuelidate from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
+
 
 export default {
   components: { Layout, PageHeader },
@@ -23,9 +26,10 @@ export default {
       ],
       supplierlist: [],
       categoryId: '',
+      organId: '',
       materialParam: '',
       IsGetDataing: false,
-      pageSize: 10,
+      pageSize: 30,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
@@ -59,6 +63,7 @@ export default {
       categoryTitle: '',
       categoryActiveIsShow1: false,
       categoryActiveIsShow2: false,
+      submitted: false,
     };
   },
   mounted() {
@@ -70,11 +75,28 @@ export default {
     this.$nextTick(() => {
       this.handleGetMaterialCategoryTree();
       this.GetData();
-      console.log(common.PadLeftZero(123, 5));
+      //console.log(common.PadLeftZero(123, 5));
     })
   },
-  methods: {
+  setup() {
 
+    return { v$: useVuelidate() };
+  },
+  validations: {
+    categoryActiveTitle: {
+      required: helpers.withMessage("請選擇類別", required),
+    },
+    formData: {
+      name: {
+        required: helpers.withMessage("請輸入品名", required),
+      }
+    },
+  },
+  methods: {
+    formatOrganName(SubItem) {
+      if (SubItem == null) return "";
+      return common.PadLeftZero(SubItem.organId || '', 3) + ' ' + (SubItem.organName || '');
+    },
     calVolume() {
       this.formData.volume = Math.round((this.formData.length ? this.formData.length : 0) * (this.formData.width ? this.formData.width : 0) * (this.formData.high ? this.formData.high : 0) / 27826 * 10) / 10;
     },
@@ -160,7 +182,7 @@ export default {
       console.log("GetData");
       let APIUrl = `/material/list`;
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
-      let queryStr = `{"categoryId":"${this.categoryId}","materialParam":"${this.materialParam}","color":"","materialOther":"","weight":"","expiryNum":"","enabled":"","enableSerialNumber":"","enableBatchNumber":"","remark":"","mpList":"制造商,自定义1,自定义2,自定义3"}`;
+      let queryStr = `{"categoryId":"${this.categoryId}","materialParam":"${this.materialParam}","organId":"${this.organId}","color":"","materialOther":"","weight":"","expiryNum":"","enabled":"","enableSerialNumber":"","enableBatchNumber":"","remark":"","mpList":"制造商,自定义1,自定义2,自定义3"}`;
       //let queryStr = `{"type":"供應商","supplier":"${this.supplier}","telephone":"${this.telephone}","phonenum":"${this.phoneNum}"}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server
@@ -184,6 +206,16 @@ export default {
         });
     },
     handleSubmit(type) {
+      this.submitted = true;
+      this.v$.$touch();
+      if (this.v$.$invalid) {
+        //console.log("this.v$.$invalid", this.v$.$invalid, this.categoryActiveTitle)
+        this.categoryActiveIsShow1 = false
+        this.categoryActiveIsShow2 = false
+        return;
+      }
+      this.submitted = false;
+
       switch (type) {
         case "add":
           this.handleAdd();
@@ -194,8 +226,11 @@ export default {
       }
     },
     handleAdd() {
+
+
+
       let APIUrl = "/material/add";
-      console.log("handleAdd");
+      //console.log("handleAdd");
       server
         .post(APIUrl, this.formData)
         .then((res) => {
@@ -207,6 +242,7 @@ export default {
         .catch(function (error) {
           console.log("error", error);
         });
+
     },
     handleUpdate() {
       let APIUrl = "/material/update";
@@ -345,6 +381,14 @@ export default {
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
+                  <select class="form-select" v-model="organId">
+                    <option :value="u1.id" selected v-for="u1 in [{ id: '', idname: '全部客戶' }, ...supplierlist]"
+                      :key="'organId' + u1.id">
+                      {{ u1.idname }}
+                    </option>
+                  </select>
+                </div>
+                <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <input type="text" class="form-control" placeholder="關鍵字(名稱/規格/型號)" v-model="materialParam"
                       @keyup.enter="GetData()" />
@@ -373,10 +417,12 @@ export default {
                 <thead>
                   <tr>
                     <th width="50">#</th>
+                    <th width="100">客戶</th>
+                    <th width="120">品號</th>
                     <th width="300">品名</th>
                     <th width="180">規格</th>
                     <th width="180">型號</th>
-                    <th width="120">品號</th>
+
 
                     <th width="120">條碼</th>
                     <th width="60">長</th>
@@ -393,10 +439,11 @@ export default {
                 <tbody>
                   <tr v-for="(item, index) in lists" :key="index">
                     <td>{{ index + 1 }}</td>
+                    <td style="white-space: break-spaces">{{ formatOrganName(item) }}</td>
+                    <td style="white-space: break-spaces">{{ item.number }}</td>
                     <td style="white-space: break-spaces">{{ item.name }}</td>
                     <td style="white-space: break-spaces">{{ item.standard }}</td>
                     <td style="white-space: break-spaces">{{ item.model }}</td>
-                    <td style="white-space: break-spaces">{{ item.number }}</td>
 
                     <td style="white-space: break-spaces">{{ item.barcode }}</td>
                     <td>{{ item.length }}</td>
@@ -425,27 +472,19 @@ export default {
                 </tbody>
               </table>
             </div>
-            <ul class="pagination pagination-rounded justify-content-center mb-2">
-              <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Previous" @click="handlePageChange('prev')"><i
-                    class="mdi mdi-chevron-left"></i></a>
-              </li>
-              <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                :class="pg1 == 0 ? 'active' : ''" v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                <a class="page-link" href="javascript:;" @click="currentPage = currentPage + pg1; this.GetData()">{{
-                  currentPage + pg1 }}</a>
-              </li>
-              <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Next" @click="handlePageChange('next')"><i
-                    class="mdi mdi-chevron-right"></i></a>
-              </li>
-            </ul>
+            <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
             <b-modal size="xl" v-model="showModal" :title="modelInfo.title" title-class="text-black font-18"
               body-class="p-3" hide-footer>
               <div class="row">
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="name">品名</label>
-                  <input id="name" type="text" v-model="formData.name" class="form-control" />
+                  <input id="name" type="text" v-model="formData.name" class="form-control"
+                    :class="{ 'is-invalid': submitted && v$.formData.$error, }" />
+                  <div v-if="submitted && v$.formData.name.$error" class="invalid-feedback">
+                    <span v-if="v$.formData.name.required.$message">{{
+                      v$.formData.name.required.$message
+                    }}</span>
+                  </div>
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="standard">規格</label>
@@ -459,7 +498,8 @@ export default {
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="model">類別</label>
                   <div class="selectDropDownBox">
-                    <div class="mainTitle" @click="categoryActiveIsShow2 = !categoryActiveIsShow2">
+                    <div class="mainTitle" @click="categoryActiveIsShow2 = !categoryActiveIsShow2"
+                      :class="{ 'is-invalid': submitted && v$.categoryActiveTitle.$error, }">
                       {{ categoryActiveTitle }}
                       <i class="icon dripicons-arrow-thin-down" v-show="categoryActiveTitle == ''"></i>
                       <i class="icon mdi mdi-close" v-show="categoryActiveTitle != ''"
@@ -477,6 +517,11 @@ export default {
                           </dd>
                         </template>
                       </dl>
+                    </div>
+                    <div v-if="submitted && v$.categoryActiveTitle.$error" class="invalid-feedback">
+                      <span v-if="v$.categoryActiveTitle.required.$message">{{
+                        v$.categoryActiveTitle.required.$message
+                      }}</span>
                     </div>
                   </div>
                 </div>

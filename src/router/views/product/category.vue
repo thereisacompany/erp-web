@@ -314,7 +314,7 @@ export default {
                     <input id="title" type="text" v-model="formData.sort" class="form-control" placeholder="排序" />
                   </div>
                   <div class="col-12 mb-3">
-                    <label for="title">上層分類{{ formData.id }}</label>
+                    <label for="title">上層分類</label>
                     <select class="form-select" v-model="formData.parentId">
                       <option :value="null" selected>請選擇上層分類</option>
                       <option :value="item.id" v-for="(item, index) in formData.children" :key="index">

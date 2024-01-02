@@ -6,7 +6,7 @@ import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
-
+import common from "@/api/common";
 
 import appConfig from "@/app.config";
 
@@ -27,9 +27,10 @@ export default {
             organId: '',
             depotId: '',
             monthTime: '',
-            queryYear: '',
-            queryMonth: '',
+
             number: '',
+            beginDate: '',
+            endDate: '',
             beginTime: '',
             endTime: '',
             MaxFileSize: 0,
@@ -53,14 +54,7 @@ export default {
                     active: true,
                 },
             ],
-            queryMaterialObj: {
-                q: '',
-                categoryId: '',
-                depotId: '',
-                currentPage: 1,
-                maxPage: 1,
-                pageSize: 10,
-            },
+
             showModal: false,
             submitted: false,
             showImageModal: false,
@@ -94,9 +88,13 @@ export default {
 
             name: '',
             remark: '',
+            totalin: 0,
+            totalOut: 0,
+            totalthis: 0,
+
 
             IsGetDataing: false,
-            pageSize: 10,
+            pageSize: 30,
             totalRows: 0,
             currentPage: 1,
             maxPage: 10,
@@ -129,14 +127,10 @@ export default {
 
     },
     mounted() {
-        this.queryYearList = []
-        for (let i = 0; i < 10; i++) {
-            this.queryYearList.push(dayjs().year() - i)
-        }
+        server.GetSupplierList((rows) => { this.supplierlist = rows })
 
         this.$nextTick(() => {
-            this.queryYear = dayjs().year();
-            this.queryMonth = dayjs().month();
+
             this.GetDepotList();//倉庫別
             this.GetData();
 
@@ -150,13 +144,15 @@ export default {
         // eslint-disable-next-line no-unused-vars
 
 
-
+        formatOrganName(SubItem) {
+            if (SubItem == null) return "";
+            return common.PadLeftZero(SubItem.organId || '', 3) + ' ' + (SubItem.organName || '');
+        },
         GetDepotList() {
             ///jshERP-boot/depot/findDepotByCurrentUser  
             let APIUrl = `/depot/findDepotByCurrentUser`;
             server.get(APIUrl)
                 .then((res) => {
-                    console.log("res", res)
                     if (res != null && res.data != null && res.status == 200) {
                         let jshdata = res.data.data;
                         this.depotList = jshdata;
@@ -174,13 +170,39 @@ export default {
             ///depotItem/findByAll?depotId=&monthTime=2023-07&materialParam=&mpList=&column=createTime&order=desc&depotIds=4&field=id,,rowIndex,barCode,materialName,materialStandard,materialModel,materialOther,unitName,unitPrice,prevSum,inSum,outSum,thisSum,thisAllPrice&currentPage=1&pageSize=10
 
             let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}&mpList=&order=desc`;
-            APIParameter += `&monthTime=${this.queryYear}-${this.queryMonth}&materialParam=${this.materialParam}&depotIds=${this.depotId}`;
+            APIParameter += `&findOrganId=${this.organId}&materialParam=${this.materialParam}&depotIds=${this.depotId}`;
+
+            let beginDateTime = '';
+            let endDateTime = '';
+
+            if (common.IsDate(this.beginDate)) {
+                beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format("YYYY-MM-DD")}`;
+                if (common.IsTime(this.beginTime + ':00')) {
+                    //格式: 2023-12-08 22:07:00
+                    beginDateTime += ` ${this.beginTime + ':00'}`;
+                } else {
+                    beginDateTime += ` 00:00:00`;
+                }
+            }
+            if (common.IsDate(this.endDate)) {
+                endDateTime += `&endDateTime=${dayjs(this.endDate).format("YYYY-MM-DD")}`;
+                if (common.IsTime(this.endTime + ':00')) {
+                    //格式: 2023-12-08 22:07:00
+                    endDateTime += ` ${this.endTime + ':00'}`;
+                } else {
+                    endDateTime += ` 00:00:00`;
+                }
+            }
+            APIParameter += beginDateTime + endDateTime;
             server.get(APIUrl + APIParameter)
                 .then((res) => {
                     if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
                         let jshdata = res.data.data;
                         this.customersData = jshdata.rows;
                         this.totalRows = jshdata.total;
+                        this.totalIn = jshdata.totalIn;
+                        this.totalThis = jshdata.totalThis;
+                        this.totalOut = jshdata.totalOut;
                         this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
                     }
                     this.IsGetDataing = false;
@@ -221,7 +243,7 @@ export default {
                 <div class="card">
                     <div class="card-body">
                         <div class="row mb-2">
-                            <div class="col-sm-8">
+                            <div class="col-sm-12">
 
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <label for="name">倉庫別</label>
@@ -234,19 +256,13 @@ export default {
                                 </div>
 
                                 <div class="search-box me-2 mb-2 d-inline-block">
-                                    <label for="name">年度</label>
-                                    <select class="form-select" v-model="queryYear" @change="GetData()">
-                                        <option :value="u1" selected v-for="u1 in queryYearList"
-                                            :key="'query_year_id' + u1">
-                                            {{ u1 }}</option>
-                                    </select>
-                                </div>
-                                <div class="search-box me-2 mb-2 d-inline-block">
-                                    <label for="name">月份</label>
-                                    <select class="form-select" v-model="queryMonth" @change="GetData()">
-                                        <option :value="u1" selected v-for="u1 in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
-                                            :key="'query_month_id' + u1.id">
-                                            {{ u1 }}</option>
+                                    <label for="name">客戶</label>
+                                    <select class="form-select" v-model="organId">
+                                        <option :value="u1.id" selected
+                                            v-for="u1 in [{ id: '', idname: '全部客戶' }, ...supplierlist]"
+                                            :key="'organId' + u1.id">
+                                            {{ u1.idname }}
+                                        </option>
                                     </select>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
@@ -255,6 +271,22 @@ export default {
                                         <input type="text" class="form-control" placeholder="商品資料" @keyup.enter="GetData()"
                                             v-model="materialParam" />
                                     </div>
+                                </div>
+                                <div class="search-box me-2 mb-2 d-inline-block">
+                                    <label for="name">起始日期</label>
+                                    <input type="date" class="form-control" @change="GetData()" v-model="beginDate" />
+                                </div>
+                                <div class="search-box me-2 mb-2 d-inline-block">
+                                    <label for="name">起始時間</label>
+                                    <input type="time" class="form-control" @change="GetData()" v-model="beginTime" />
+                                </div>
+                                <div class="search-box me-2 mb-2 d-inline-block">
+                                    <label for="name">結束日期</label>
+                                    <input type="date" class="form-control" @change="GetData()" v-model="endDate" />
+                                </div>
+                                <div class="search-box me-2 mb-2 d-inline-block">
+                                    <label for="name">結束時間</label>
+                                    <input type="time" class="form-control" @change="GetData()" v-model="endTime" />
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
@@ -275,10 +307,11 @@ export default {
                                 <thead>
                                     <tr>
                                         <th width="5px">#</th>
+                                        <th>客戶</th>
+                                        <th>品號</th>
                                         <th>名稱</th>
                                         <th>規格</th>
                                         <th>型號</th>
-                                        <th>品號</th>
                                         <th>備註</th>
                                         <th>上月結存數量</th>
                                         <th>入庫數量</th>
@@ -291,6 +324,12 @@ export default {
                                     <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                         <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ formatOrganName(SubItem) }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.materialNumber }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
                                             {{ SubItem.materialName }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
@@ -299,9 +338,7 @@ export default {
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             {{ SubItem.materialModel }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ SubItem.materialNumber }}
-                                        </td>
+
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             {{ SubItem.materialOther }}
                                         </td>
@@ -310,26 +347,40 @@ export default {
                                         <td class="text-center">{{ SubItem.outSum }}</td>
                                         <td class="text-center">{{ SubItem.thisSum }}</td>
                                     </tr>
+
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            &nbsp;
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            &nbsp;
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            &nbsp;
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            &nbsp;
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            &nbsp;
+                                        </td>
+
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            &nbsp;
+                                        </td>
+                                        <td class="text-center">總計:</td>
+                                        <td class="text-center">{{ totalIn }}</td>
+                                        <td class="text-center">{{ totalOut }}</td>
+                                        <td class="text-center">{{ totalThis }}</td>
+                                    </tr>
+
+                                </tfoot>
                             </table>
                         </div>
-                        <ul class="pagination pagination-rounded justify-content-center mb-2">
-                            <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                                        class="mdi mdi-chevron-left"></i></a>
-                            </li>
-                            <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                                :class="pg1 == 0 ? 'active' : ''"
-                                v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                                <a class="page-link" href="javascript:;"
-                                    @click="currentPage = currentPage + pg1; this.GetData()">{{
-                                        currentPage + pg1 }}</a>
-                            </li>
-                            <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage = maxPage"><i
-                                        class="mdi mdi-chevron-right"></i></a>
-                            </li>
-                        </ul>
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
                     </div>
                 </div>
             </div>

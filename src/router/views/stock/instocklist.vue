@@ -4,8 +4,8 @@ import PageHeader from "@/components/page-header";
 import dayjs from 'dayjs'
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-
 import { server } from "@/api";
+import common from "@/api/common";
 
 
 import appConfig from "@/app.config";
@@ -57,14 +57,7 @@ export default {
                     active: true,
                 },
             ],
-            queryMaterialObj: {
-                q: '',
-                categoryId: '',
-                depotId: '',
-                currentPage: 1,
-                maxPage: 1,
-                pageSize: 10,
-            },
+
             showModal: false,
             submitted: false,
             showImageModal: false,
@@ -102,7 +95,7 @@ export default {
             remark: '',
 
             IsGetDataing: false,
-            pageSize: 10,
+            pageSize: 30,
             totalRows: 0,
             currentPage: 1,
             maxPage: 10,
@@ -127,10 +120,7 @@ export default {
             organId: {
                 required: helpers.withMessage("請選擇客戶", required),
             },
-
-
         },
-
     },
     mounted() {
         this.$nextTick(() => {
@@ -170,7 +160,10 @@ export default {
          * Modal form submit
          */
         // eslint-disable-next-line no-unused-vars
-        handleSubmit(e) {
+        formatPadLeftZero(str, len) {
+            return common.PadLeftZero(str, len)
+        },
+        handleSubmit() {
             this.submitted = true;
             // stop here if form is invalid
             //console.log("handleSubmit", e)
@@ -271,13 +264,16 @@ export default {
             server.GetMaterialListByRow(wObj, (rows) => { obj1.queryMaterialList = rows; this.customersItem.push(obj1); })
         },
         InitEveryRowsProduct() {
-            for (let i = 0; i < this.customersItem; i++) {
+            for (let i = 0; i < this.customersItem.length; i++) {
                 let obj1 = this.customersItem[i]
+                this.customersItem[i].depotId = ''
+                this.customersItem[i].number = ''
+                this.customersItem[i].name = ''
                 //this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows })
                 let wObj = { organId: this.customers.organId, depotId: obj1.depotId, number: obj1.number }
                 server.GetMaterialListByRow(wObj, (rows) => { obj1.queryMaterialList = rows; })
+                this.MaterialSelectOneByRow(null, i)
             }
-
         },
         DeleteRow1(SubItem) {
 
@@ -854,12 +850,11 @@ export default {
                                                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                                     <td>
                                                         <select class="form-select" v-model="SubItem.depotId"
-                                                            @change="queryMaterialByRow(SubItem, cidx)">
+                                                            @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
                                                             <option :value="u1.id" selected v-for="u1 in depotList"
                                                                 :key="'customers_depot_id' + cidx + u1.id">
                                                                 {{ u1.depotName }}</option>
                                                         </select>
-
                                                     </td>
                                                     <td>
                                                         <div class="position-relative">
@@ -1023,10 +1018,10 @@ export default {
                                     <div class="position-relative">
                                         <label for="name">客戶</label>
                                         <select class="form-select" v-model="organId" @change="GetData()">
-                                            <option :value="u1.id" selected
-                                                v-for="u1 in [{ id: '', supplier: '全部' }, ...supplierlist]"
+                                            <option value="">全部客戶</option>
+                                            <option :value="u1.id" selected v-for="u1 in supplierlist"
                                                 :key="'organId' + u1.id">
-                                                {{ u1.supplier }}</option>
+                                                {{ formatPadLeftZero(u1.id, 3) }} {{ u1.supplier }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1136,23 +1131,7 @@ export default {
                                 </tbody>
                             </table>
                         </div>
-                        <ul class="pagination pagination-rounded justify-content-center mb-2">
-                            <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                                        class="mdi mdi-chevron-left"></i></a>
-                            </li>
-                            <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                                :class="pg1 == 0 ? 'active' : ''"
-                                v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                                <a class="page-link" href="javascript:;"
-                                    @click="currentPage = currentPage + pg1; this.GetData()">{{
-                                        currentPage + pg1 }}</a>
-                            </li>
-                            <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage = maxPage"><i
-                                        class="mdi mdi-chevron-right"></i></a>
-                            </li>
-                        </ul>
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
                     </div>
                 </div>
             </div>

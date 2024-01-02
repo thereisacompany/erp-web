@@ -15,25 +15,25 @@ import appConfig from "@/app.config";
  */
 export default {
   page: {
-    title: "司機管理",
+    title: "人事管理",
     meta: [{ name: "description", content: appConfig.description }],
   },
   components: { Layout, PageHeader },
   data() {
     return {
       customersData: [],
-      title: "司機管理",
+      title: "人事管理",
       items: [
         {
           text: "人事管理",
           href: "javascript:;",
         },
         {
-          text: "司機管理",
+          text: "人事管理",
           href: "javascript:;",
         },
         {
-          text: "司機列表",
+          text: "人事列表",
           active: true,
         },
       ],
@@ -59,7 +59,7 @@ export default {
       phoneNum: '',
 
       IsGetDataing: false,
-      pageSize: 10,
+      pageSize: 30,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
@@ -71,10 +71,10 @@ export default {
   validations: {
     customers: {
       supplier: {
-        required: helpers.withMessage("請填寫司機名稱", required),
+        required: helpers.withMessage("請填寫名稱", required),
       },
       supplierall: {
-        required: helpers.withMessage("請填寫司機全名", required),
+        required: helpers.withMessage("請填寫全名", required),
       },
 
     },
@@ -254,15 +254,15 @@ export default {
               <div class="col-sm-4">
                 <div class="text-sm-end">
                   <button type="button" class="btn btn-success btn-rounded mb-2 me-2" @click="EditOne({ id: 0 })">
-                    <i class="mdi mdi-plus me-1"></i> 新增司機
+                    <i class="mdi mdi-plus me-1"></i> 新增人事
                   </button>
-                  <b-modal size="xl" v-model="showModal" :title="customers.id == 0 ? '新增司機' : '修改司機'"
+                  <b-modal size="xl" v-model="showModal" :title="customers.id == 0 ? '新增人事' : '修改人事'"
                     title-class="text-black font-18" body-class="p-3" hide-footer>
                     <form @submit.prevent="handleSubmit">
                       <div class="row">
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
-                            <label for="name">司機名稱</label>
+                            <label for="name">名稱</label>
                             <input id="name" v-model="customers.supplier" type="text" class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
                             <div v-if="submitted && v$.customers.supplier.$error" class="invalid-feedback">
@@ -273,7 +273,7 @@ export default {
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
-                            <label for="name">司機姓名</label>
+                            <label for="name">姓名</label>
                             <input id="name" v-model="customers.supplierall" type="text" class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.supplierall.$error, }" />
                             <div v-if="submitted && v$.customers.supplierall.$error" class="invalid-feedback">
@@ -362,8 +362,8 @@ export default {
                 <thead>
                   <tr>
                     <th width="5px">#</th>
-                    <th>司機名稱</th>
-                    <th>司機姓名</th>
+                    <th>名稱</th>
+                    <th>姓名</th>
                     <th>手機號碼</th>
 
                     <th>緊急聯繫人</th>
@@ -399,21 +399,7 @@ export default {
                 </tbody>
               </table>
             </div>
-            <ul class="pagination pagination-rounded justify-content-center mb-2">
-              <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                    class="mdi mdi-chevron-left"></i></a>
-              </li>
-              <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                :class="pg1 == 0 ? 'active' : ''" v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                <a class="page-link" href="javascript:;" @click="currentPage = currentPage + pg1; this.GetData()">{{
-                  currentPage + pg1 }}</a>
-              </li>
-              <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage = maxPage"><i
-                    class="mdi mdi-chevron-right"></i></a>
-              </li>
-            </ul>
+            <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
           </div>
         </div>
       </div>

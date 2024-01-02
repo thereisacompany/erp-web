@@ -58,7 +58,7 @@ export default {
       phoneNum: '',
 
       IsGetDataing: false,
-      pageSize: 10,
+      pageSize: 30,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
@@ -321,7 +321,8 @@ export default {
                             <div>
                               <div class="btn-group btn-group-sm">
                                 <a href="javascript:;" class="btn btn-outline-success"
-                                  :class="customers.enabled == true ? 'active' : ''" @click="customers.enabled = true">啟用</a>
+                                  :class="customers.enabled == true ? 'active' : ''"
+                                  @click="customers.enabled = true">啟用</a>
                                 <a href="javascript:;" class="btn btn-outline-danger"
                                   :class="customers.enabled == false ? 'active' : ''" @click="customers.enabled = false"
                                   v-if="customers.id > 0">停用</a>
@@ -337,7 +338,8 @@ export default {
 
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
-                        <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改' }}</b-button>
+                        <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
+                        }}</b-button>
                       </div>
                     </form>
                   </b-modal>
@@ -387,24 +389,11 @@ export default {
                 </tbody>
               </table>
             </div>
-            <ul class="pagination pagination-rounded justify-content-center mb-2">
-              <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                    class="mdi mdi-chevron-left"></i></a>
-              </li>
-              <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx" :class="pg1 == 0 ? 'active' : ''"
-                v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                <a class="page-link" href="javascript:;"
-                  @click="currentPage = currentPage + pg1; this.GetData()">{{ currentPage + pg1 }}</a>
-              </li>
-              <li class="page-item" :class="currentPage==maxPage?'disabled':''">
-              <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage=maxPage"><i
-                  class="mdi mdi-chevron-right"></i></a>
-            </li>
-          </ul>
+            <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <!-- end row -->
-</Layout></template>
+    <!-- end row -->
+  </Layout>
+</template>

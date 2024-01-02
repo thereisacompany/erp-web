@@ -57,14 +57,7 @@ export default {
                     active: true,
                 },
             ],
-            queryMaterialObj: {
-                q: '',
-                categoryId: '',
-                depotId: '',
-                currentPage: 1,
-                maxPage: 1,
-                pageSize: 10,
-            },
+
             showModal: false,
             submitted: false,
             showImageModal: false,
@@ -116,7 +109,7 @@ export default {
             name: '',
             remark: '',
             IsGetDataing: false,
-            pageSize: 10,
+            pageSize: 30,
             totalRows: 0,
             currentPage: 1,
             maxPage: 10,
@@ -139,10 +132,14 @@ export default {
     validations: {
         customers: {
             organId: { required: helpers.withMessage("請選擇客戶", required), },
-            //mainArrival: { required: helpers.withMessage("請選擇主商品到貨日", required), },
-            //extrasArrival: {required: helpers.withMessage("請選擇贈品到貨日", required),},
-            // agreedDelivery: { required: helpers.withMessage("請選擇約配日", required), },
-            // delivered: { required: helpers.withMessage("請選擇配達日", required), },
+            buyerName: { required: helpers.withMessage("請填寫買家名稱", required), },
+            telephone: { required: helpers.withMessage("請填寫電話", required), },
+            cellphone: { required: helpers.withMessage("請填寫手機", required), },
+            address: { required: helpers.withMessage("請填寫地址", required), },
+            receiveName: { required: helpers.withMessage("請填寫收件人名稱", required), },
+            recycle: { required: helpers.withMessage("請選擇是否舊機回收", required), },
+
+
         },
 
     },
@@ -188,7 +185,9 @@ export default {
         },
     },
     methods: {
-
+        formatPadLeftZero(str, len) {
+            return common.PadLeftZero(str, len)
+        },
         /**
          * Modal form submit
          */
@@ -301,15 +300,15 @@ export default {
             server.GetMaterialListByRow(wObj, (rows) => { obj1.queryMaterialList = rows; this.customersItem.push(obj1); })
         },
         InitEveryRowsProduct() {
-            // for (let i = 0; i < this.customersItem; i++) {
-            //     let obj1 = this.customersItem[i]
-            //     this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows; })
-            // }
-            for (let i = 0; i < this.customersItem; i++) {
+            for (let i = 0; i < this.customersItem.length; i++) {
                 let obj1 = this.customersItem[i]
+                this.customersItem[i].depotId = ''
+                this.customersItem[i].number = ''
+                this.customersItem[i].name = ''
                 //this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows })
                 let wObj = { organId: this.customers.organId, depotId: obj1.depotId, number: obj1.number }
                 server.GetMaterialListByRow(wObj, (rows) => { obj1.queryMaterialList = rows; })
+                this.MaterialSelectOneByRow(null, i)
             }
         },
         DeleteRow1(SubItem) {
@@ -473,7 +472,8 @@ export default {
 
 
             let NumberList = this.customersData.filter(x => x.chk == true).map(y => y.number);
-            console.log(NumberList)
+            let subIdList = this.customersData.filter(x => x.chk == true).map(y => y.subId);
+            //console.log(NumberList)
 
             if (NumberList == null || NumberList.length == 0) {
                 alert('請至少選擇一個單據!')
@@ -481,7 +481,8 @@ export default {
             }
 
 
-            let numberStr = `numbers=` + NumberList.join('&numbers=')
+            let numberStr = `numbers=` + NumberList.join(',')
+            let subIds = `subIds=` + subIdList.join(',')
 
 
 
@@ -489,7 +490,7 @@ export default {
             this.IsGetDataing = true;
             //let data1 = { number, type, isRecycle, brand }
             //let APIUrl = `/depotHead/export?number=${number}&type=${type}&isRecycle=${isRecycle}&brand=${brand}`;
-            let APIUrl = `/depotHead/export/list?${numberStr}`;
+            let APIUrl = `/depotHead/export/list?${numberStr}&${subIds}`;
             //console.log("APIUrl", APIUrl)
             server.get(APIUrl, { responseType: 'blob' })
                 .then((res) => {
@@ -500,7 +501,7 @@ export default {
                         var fileURL = window.URL.createObjectURL(new Blob([res.data]));
                         var fileLink = document.createElement('a');
                         fileLink.href = fileURL;
-                        fileLink.setAttribute('download', '批次匯出.zip');
+                        fileLink.setAttribute('download', `批次匯出_${dayjs().format("YYYYMMDD_HHmmss")}.zip`);
                         document.body.appendChild(fileLink);
                         fileLink.click();
                     }
@@ -546,7 +547,7 @@ export default {
                         var fileURL = window.URL.createObjectURL(new Blob([res.data]));
                         var fileLink = document.createElement('a');
                         fileLink.href = fileURL;
-                        fileLink.setAttribute('download', '匯出.xlsx');
+                        fileLink.setAttribute('download', `匯出${number}.zip`);
                         document.body.appendChild(fileLink);
                         fileLink.click();
                     }
@@ -769,21 +770,14 @@ export default {
             //let queryStr = `{"type":"出庫","number":"${this.number}","materialParam":"${this.materialParam}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","organId":"${this.organId}"}`;
             let queryStr = `{"type":"出庫","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
 
-            // if (this.queryKeyword != '') {
-            //     let allkeyStr = '';
-            //     let keyList = ['organName', 'number', 'materialParam'];
-            //     for (let i = 0; i < keyList.length; i++) {
-            //         allkeyStr += `,"${keyList[i]}":"${this.queryKeyword}"`;
-            //     }
-            //     queryStr = `{"type":"出庫","beginTime":"${this.beginTime}","endTime":"${this.endTime}"${allkeyStr}}`;
-            // }
             APIParameter += `&search=${encodeURIComponent(queryStr)}`;
             server.get(APIUrl + APIParameter)
                 .then((res) => {
                     if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
                         let jshdata = res.data.data;
-                        this.customersData = jshdata.rows;
-                        this.totalRows = jshdata.total;
+                        this.customersData = JSON.parse(JSON.stringify(jshdata.rows));
+                        this.totalRows = JSON.parse(JSON.stringify(jshdata.total));
+                        console.log(this.customersData.length, this.totalRows)
                         this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
                     }
                     this.IsGetDataing = false;
@@ -808,13 +802,20 @@ export default {
             let APIUrl = `/depotHead/addDepotHeadAndDetail`;
             server.post(APIUrl, data1)
                 .then((res) => {
-                    if (res != null && res.data != null && res.data.code == 200) {
-                        this.showModal = false;
-                        this.$nextTick(() => {
-                            this.SubView = 0;
-                            this.GetData()
-                        });
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            this.showModal = false;
+                            this.$nextTick(() => {
+                                this.SubView = 0;
+                                this.GetData()
+                            });
+                        } else {
+                            alert(res.data.data.message)
+                            //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
+                        }
+
                     }
+
                     this.IsGetDataing = false;
                 }).catch(function (error) {
                     console.log("error", error);
@@ -832,12 +833,17 @@ export default {
             let APIUrl = `/depotHead/updateDepotHeadAndDetail`;
             server.put(APIUrl, data1)
                 .then((res) => {
-                    if (res != null && res.data != null && res.data.code == 200) {
-                        this.showModal = false;
-                        this.$nextTick(() => {
-                            this.SubView = 0;
-                            this.GetData()
-                        });
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            this.showModal = false;
+                            this.$nextTick(() => {
+                                this.SubView = 0;
+                                this.GetData()
+                            });
+                        } else {
+                            alert(res.data.data.message)
+                            //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
+                        }
                     }
                     this.IsGetDataing = false;
                 }).catch(function (error) {
@@ -972,11 +978,11 @@ export default {
                             <div class="row">
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">客單編號</label>
-                                    <input type="text" class="form-control" v-model="customers.customNumber" />
+                                    <input type="text" class="form-control" v-model.trim="customers.customNumber" />
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">原始編號</label>
-                                    <input type="text" class="form-control" v-model="customers.sourceNumber" />
+                                    <label for="name">原始客編</label>
+                                    <input type="text" class="form-control" v-model.trim="customers.sourceNumber" />
                                 </div>
                             </div>
                             <div class="row">
@@ -1035,12 +1041,11 @@ export default {
                                                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                                     <td>
                                                         <select class="form-select" v-model="SubItem.depotId"
-                                                            @change="queryMaterialByRow(SubItem, cidx)">
+                                                            @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
                                                             <option :value="u1.id" selected v-for="u1 in depotList"
                                                                 :key="'customers_depot_id' + cidx + u1.id">
                                                                 {{ u1.depotName }}</option>
                                                         </select>
-
                                                     </td>
                                                     <td>
                                                         <div class="position-relative">
@@ -1137,27 +1142,56 @@ export default {
                                 </div>
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">買家名稱</label>
-                                    <input type="text" class="form-control" placeholder="買家名稱"
-                                        v-model="customers.buyerName">
+                                    <input type="text" class="form-control" placeholder="買家名稱" v-model="customers.buyerName"
+                                        :class="{ 'is-invalid': submitted && v$.customers.buyerName.$error, }">
+                                    <div v-if="submitted && v$.customers.buyerName.$error" class="invalid-feedback">
+                                        <span v-if="v$.customers.buyerName.required.$message">{{
+                                            v$.customers.buyerName.required.$message
+                                        }}</span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">收件人名稱</label>
                                     <input type="text" class="form-control" placeholder="收件人名稱"
-                                        v-model="customers.receiveName">
+                                        v-model="customers.receiveName"
+                                        :class="{ 'is-invalid': submitted && v$.customers.receiveName.$error, }">
+                                    <div v-if="submitted && v$.customers.receiveName.$error" class="invalid-feedback">
+                                        <span v-if="v$.customers.receiveName.required.$message">{{
+                                            v$.customers.receiveName.required.$message
+                                        }}</span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">電話</label>
                                     <input type="text" class="form-control" v-maska="['##-####-####', '####-####']"
-                                        placeholder="##-####-####" v-model="customers.telephone">
+                                        placeholder="##-####-####" v-model="customers.telephone"
+                                        :class="{ 'is-invalid': submitted && v$.customers.telephone.$error, }">
+                                    <div v-if="submitted && v$.customers.telephone.$error" class="invalid-feedback">
+                                        <span v-if="v$.customers.telephone.required.$message">{{
+                                            v$.customers.telephone.required.$message
+                                        }}</span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">手機</label>
                                     <input type="text" class="form-control" v-maska="'####-###-###'"
-                                        placeholder="####-###-###" v-model="customers.cellphone">
+                                        placeholder="####-###-###" v-model="customers.cellphone"
+                                        :class="{ 'is-invalid': submitted && v$.customers.cellphone.$error, }">
+                                    <div v-if="submitted && v$.customers.cellphone.$error" class="invalid-feedback">
+                                        <span v-if="v$.customers.cellphone.required.$message">{{
+                                            v$.customers.cellphone.required.$message
+                                        }}</span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">地址</label>
-                                    <input type="text" class="form-control" placeholder="地址" v-model="customers.address">
+                                    <input type="text" class="form-control" placeholder="地址" v-model="customers.address"
+                                        :class="{ 'is-invalid': submitted && v$.customers.address.$error, }">
+                                    <div v-if="submitted && v$.customers.address.$error" class="invalid-feedback">
+                                        <span v-if="v$.customers.address.required.$message">{{
+                                            v$.customers.address.required.$message
+                                        }}</span>
+                                    </div>
                                 </div>
 
 
@@ -1169,11 +1203,18 @@ export default {
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">舊機回收(是/否)</label>
-                                    <select class="form-select" v-model="customers.recycle">
+                                    <select class="form-select" v-model="customers.recycle"
+                                        :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
                                         <option value="" selected>&nbsp;</option>
                                         <option value="是">是</option>
                                         <option value="否">否</option>
                                     </select>
+                                    <div v-if="submitted && v$.customers.recycle.$error" class="invalid-feedback"
+                                        :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
+                                        <span v-if="v$.customers.recycle.required.$message">{{
+                                            v$.customers.recycle.required.$message
+                                        }}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -1278,10 +1319,10 @@ export default {
                                     <div class="position-relative">
                                         <label for="name">客戶</label>
                                         <select class="form-select" v-model="organId" @change="GetData()">
-                                            <option :value="u1.id" selected
-                                                v-for="u1 in [{ id: '', supplier: '全部' }, ...supplierlist]"
+                                            <option value="">全部客戶</option>
+                                            <option :value="u1.id" selected v-for="u1 in supplierlist"
                                                 :key="'organId' + u1.id">
-                                                {{ u1.supplier }}</option>
+                                                {{ formatPadLeftZero(u1.id, 3) }} {{ u1.supplier }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1345,13 +1386,12 @@ export default {
                                     <tr>
                                         <th width="5px"><input type="checkbox" v-model="chkAll"> </th>
                                         <th width="5px">#</th>
-
-
-
-                                        <th>客戶</th>
-                                        <th>單號</th>
-                                        <th>品號</th>
-                                        <th>商品資料</th>
+                                        <th width="10%">客戶</th>
+                                        <th width="10%">單號</th>
+                                        <th width="10%">客單編號</th>
+                                        <th width="10%">原始客編</th>
+                                        <th width="10%">品號</th>
+                                        <th width="15%">商品資料</th>
                                         <th>倉庫別</th>
                                         <th>儲位</th>
                                         <th>數量</th>
@@ -1361,7 +1401,7 @@ export default {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
+                                    <tr v-for="(SubItem, cidx) in customersData" :key="'customersData' + cidx">
                                         <td><input type="checkbox" v-model="SubItem.chk">
                                         </td>
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}
@@ -1369,13 +1409,22 @@ export default {
                                         <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.organName }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}</td>
-                                        <td>{{ SubItem.mNumber }}</td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.customNumber
+                                        }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.sourceNumber
+                                        }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.mNumber }}
+                                        </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             <div v-for="name1 in String(SubItem.materialsList).split(',')"
                                                 :key="'SubItem' + cidx + name1">{{ name1 }}</div>
                                         </td>
-                                        <td>{{ SubItem.depotName }}</td>
-                                        <td>{{ SubItem.counterName }}</td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.depotName }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.counterName }}
+                                        </td>
 
                                         <td>{{ SubItem.materialCount }}</td>
 
@@ -1400,23 +1449,7 @@ export default {
                                 </tbody>
                             </table>
                         </div>
-                        <ul class="pagination pagination-rounded justify-content-center mb-2">
-                            <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                                        class="mdi mdi-chevron-left"></i></a>
-                            </li>
-                            <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                                :class="pg1 == 0 ? 'active' : ''"
-                                v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                                <a class="page-link" href="javascript:;"
-                                    @click="currentPage = currentPage + pg1; this.GetData()">{{
-                                        currentPage + pg1 }}</a>
-                            </li>
-                            <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                                <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage = maxPage"><i
-                                        class="mdi mdi-chevron-right"></i></a>
-                            </li>
-                        </ul>
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
                     </div>
                 </div>
             </div>

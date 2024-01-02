@@ -52,7 +52,7 @@ export default {
       description: '',
 
       IsGetDataing: false,
-      pageSize: 10,
+      pageSize: 30,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
@@ -321,21 +321,7 @@ export default {
                 </tbody>
               </table>
             </div>
-            <ul class="pagination pagination-rounded justify-content-center mb-2">
-              <li class="page-item" :class="currentPage == 1 ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Previous" @click="currentPage = 1"><i
-                    class="mdi mdi-chevron-left"></i></a>
-              </li>
-              <li class="page-item" v-for="(pg1, pdx) in [-3, -2, -1, 0, 1, 2, 3]" :key="'page' + pdx"
-                :class="pg1 == 0 ? 'active' : ''" v-show="currentPage + pg1 >= 1 && currentPage + pg1 <= maxPage">
-                <a class="page-link" href="javascript:;" @click="currentPage = currentPage + pg1; this.GetData()">{{
-                  currentPage + pg1 }}</a>
-              </li>
-              <li class="page-item" :class="currentPage == maxPage ? 'disabled' : ''">
-                <a class="page-link" href="javascript:;" aria-label="Next" @click="currentPage = maxPage"><i
-                    class="mdi mdi-chevron-right"></i></a>
-              </li>
-            </ul>
+            <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
           </div>
         </div>
       </div>
