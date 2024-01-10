@@ -89,11 +89,9 @@ export default {
                 agreedDelivery: '',
                 delivered: '',
 
-                notiNumber: '',
-                taxid: '',
-                buyerName: '',
+
+
                 receiveName: '',
-                telephone: '',
                 cellphone: '',
                 address: '',
                 counterId: '',
@@ -132,8 +130,6 @@ export default {
     validations: {
         customers: {
             organId: { required: helpers.withMessage("請選擇客戶", required), },
-            buyerName: { required: helpers.withMessage("請填寫買家名稱", required), },
-            telephone: { required: helpers.withMessage("請填寫電話", required), },
             cellphone: { required: helpers.withMessage("請填寫手機", required), },
             address: { required: helpers.withMessage("請填寫地址", required), },
             receiveName: { required: helpers.withMessage("請填寫收件人名稱", required), },
@@ -1131,25 +1127,8 @@ export default {
 
                             </div>
                             <div class="row">
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">通知單號</label>
-                                    <input type="text" class="form-control" placeholder="通知單號"
-                                        v-model="customers.notiNumber">
-                                </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">買家統編</label>
-                                    <input type="text" class="form-control" placeholder="買家統編" v-model="customers.taxid">
-                                </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">買家名稱</label>
-                                    <input type="text" class="form-control" placeholder="買家名稱" v-model="customers.buyerName"
-                                        :class="{ 'is-invalid': submitted && v$.customers.buyerName.$error, }">
-                                    <div v-if="submitted && v$.customers.buyerName.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.buyerName.required.$message">{{
-                                            v$.customers.buyerName.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
+
+
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">收件人名稱</label>
                                     <input type="text" class="form-control" placeholder="收件人名稱"
@@ -1161,17 +1140,7 @@ export default {
                                         }}</span>
                                     </div>
                                 </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">電話</label>
-                                    <input type="text" class="form-control" v-maska="['##-####-####', '####-####']"
-                                        placeholder="##-####-####" v-model="customers.telephone"
-                                        :class="{ 'is-invalid': submitted && v$.customers.telephone.$error, }">
-                                    <div v-if="submitted && v$.customers.telephone.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.telephone.required.$message">{{
-                                            v$.customers.telephone.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
+
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">手機</label>
                                     <input type="text" class="form-control" v-maska="'####-###-###'"

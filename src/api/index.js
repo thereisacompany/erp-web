@@ -69,6 +69,31 @@ server.GetSupplierList = function(callback) {
 }
 
 
+server.GetSupplier2List = function(typename, callback) {
+    let APIUrl = `/supplier/list`;
+    let APIParameter = `?currentPage=1&pageSize=1000`;
+    let queryStr = `{"type":"${typename}"}`;
+    APIParameter += `&search=${encodeURIComponent(queryStr)}`;
+    server.get(APIUrl + APIParameter)
+        .then((res) => {
+            if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+                //回傳資料成功
+                let jshdata = JSON.parse(JSON.stringify(res.data.data));
+                for (let i = 0; i < jshdata.rows.length; i++) {
+                    jshdata.rows[i].idname = common.PadLeftZero(jshdata.rows[i].id, 3) + ' ' + jshdata.rows[i].supplier;
+                }
+                if (callback) callback(jshdata.rows)
+                return;
+            }
+            if (callback) callback(null)
+        }).catch(function(error) {
+            console.log(error)
+            if (callback) callback(null)
+            return;
+        });
+
+
+}
 server.GetMaterialListByRow = function(wObj, callback) {
     ////material/findBySelect?q=111&categoryId=26&depotId=19&column=createTime&order=desc&mpList=%E5%88%B6%E9%80%A0%E5%95%86,%E8%87%AA%E5%AE%9A%E4%B9%891,%E8%87%AA%E5%AE%9A%E4%B9%892,%E8%87%AA%E5%AE%9A%E4%B9%893&page=1&rows=10
 

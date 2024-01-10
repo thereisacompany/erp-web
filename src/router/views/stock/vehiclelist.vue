@@ -6,7 +6,7 @@ import { required, helpers, numeric } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
-
+import common from "@/api/common";
 
 import appConfig from "@/app.config";
 
@@ -61,6 +61,7 @@ export default {
       brandModel: '',
       driver: '',
 
+      driverlist: [],
       IsGetDataing: false,
       pageSize: 30,
       totalRows: 0,
@@ -77,11 +78,9 @@ export default {
         required: helpers.withMessage("請填寫車牌號碼", required),
       },
       brandModel: {
-        required: helpers.withMessage("請填寫駕駛", required),
+        required: helpers.withMessage("請填寫品牌型號", required),
       },
-      driver: {
-        required: helpers.withMessage("請填寫駕駛", required),
-      },
+
       mileage: {
         numeric: helpers.withMessage("請填寫數字", numeric),
       },
@@ -94,12 +93,17 @@ export default {
     },
   },
   mounted() {
+    server.GetSupplier2List('家電-司機', (rows) => { this.driverlist = rows })
     this.$nextTick(() => {
       this.GetUserList();//負責人列表
       this.GetData();
     })
   },
   methods: {
+    formatPadLeftZero(str, len) {
+      if (str == null || str == '') return ''
+      return common.PadLeftZero(str, len)
+    },
     /**
      * Modal form submit
      */
@@ -225,9 +229,15 @@ export default {
       let APIUrl = `/vehicle/update`;
       server.put(APIUrl, data1)
         .then((res) => {
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
-            this.showModal = false;
-            this.$nextTick(() => this.GetData());
+
+          if (res != null && res.data != null) {
+            if (res.data.code == 200) {
+              this.showModal = false;
+              this.$nextTick(() => { this.GetData() });
+            } else {
+              alert(res.data.data.message)
+
+            }
           }
           this.IsGetDataing = false;
         }).catch(function (error) {
@@ -264,7 +274,11 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="駕駛" v-model="driver" @keyup.enter="GetData()" />
+                    <select class="form-select" v-model="driver" @change="GetData()">
+                      <option :value="u1.id" selected v-for="u1 in [{ id: '', idname: '全部司機' }, ...driverlist]"
+                        :key="'driver' + u1.id">
+                        {{ u1.idname }}</option>
+                    </select>
                   </div>
                 </div>
 
@@ -315,16 +329,16 @@ export default {
                             </div>
                           </div>
                         </div>
+
                         <div class="col-sm-12 col-md-4 col-lg-4">
-                          <div class="mb-3">
-                            <label for="driver">駕駛</label>
-                            <input id="driver" v-model="customers.driver" type="text" class="form-control"
-                              placeholder="駕駛" :class="{ 'is-invalid': submitted && v$.customers.driver.$error, }" />
-                            <div v-if="submitted && v$.customers.driver.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.driver.required.$message">{{ v$.customers.driver.required.$message
-                              }}</span>
-                            </div>
-                          </div>
+
+                          <label for="name">司機</label>
+                          <select class="form-select" v-model="customers.driver">
+                            <option :value="u1.id" selected v-for="u1 in [{ id: '', idname: '' }, ...driverlist]"
+                              :key="'customers_driver' + u1.id">
+                              {{ u1.idname }}</option>
+                          </select>
+
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-4">
@@ -410,7 +424,6 @@ export default {
                         </div>
 
 
-
                       </div>
 
                       <div class="text-end pt-5 mt-3">
@@ -431,7 +444,7 @@ export default {
                     <th width="5px">#</th>
                     <th>車牌號碼</th>
                     <th>品牌型號</th>
-                    <th>駕駛</th>
+                    <th>司機</th>
                     <th>車身顏色</th>
                     <th>里程數(公里)</th>
                     <th>引擎號碼</th>
@@ -450,7 +463,7 @@ export default {
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                     <td>{{ SubItem.licensePlateNumber }}</td>
                     <td>{{ SubItem.brandModel }}</td>
-                    <td>{{ SubItem.driver }}</td>
+                    <td>{{ formatPadLeftZero(SubItem.driver, 3) }} {{ SubItem.driverName }}</td>
                     <td>{{ SubItem.color }}</td>
                     <td>{{ SubItem.mileage }}</td>
                     <td>{{ SubItem.engineNumber }}</td>

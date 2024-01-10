@@ -51,9 +51,11 @@ export default {
         email: '',
         enabled: '',
         address: '',
+        loginName: '',
         type: '司機'
       },
-
+      type: '全部類別',
+      typelist: ['家電-司機', '家電-助手', '冷氣-師傅', '冷氣-助手', '行政'],
       supplier: '',
       telephone: '',
       phoneNum: '',
@@ -76,7 +78,12 @@ export default {
       supplierall: {
         required: helpers.withMessage("請填寫全名", required),
       },
-
+      type: {
+        required: helpers.withMessage("請選擇人事類別", required),
+      },
+      loginName: {
+        required: helpers.withMessage("司機類別請輸入登入帳號", required),
+      },
     },
   },
   mounted() {
@@ -85,6 +92,7 @@ export default {
     })
   },
   methods: {
+
     /**
      * Modal form submit
      */
@@ -93,6 +101,10 @@ export default {
       this.submitted = true;
 
       // stop here if form is invalid
+
+      if (this.customers.type != '家電-司機' && (this.customers.loginName == '' || this.customers.loginName == null)) {
+        this.customers.loginName = 'loginName'
+      }
       this.v$.$touch();
       if (this.v$.$invalid) {
         return;
@@ -124,7 +136,8 @@ export default {
         this.customers.address = "";
         this.customers.emergencyPhone = "";
         this.customers.licensPlate = "";
-        this.customers.type = '司機';
+        this.customers.loginName = '';
+        this.customers.type = '';
       }
       else {
 
@@ -140,8 +153,8 @@ export default {
         this.customers.emergencyPhone = RowItem.emergencyPhone;
         this.customers.licensPlate = RowItem.licensPlate;
 
-
-        this.customers.type = '司機';
+        this.customers.loginName = RowItem.loginName;
+        this.customers.type = RowItem.type;
       }
 
 
@@ -154,11 +167,25 @@ export default {
       let APIUrl = `/supplier/list`;
       //let APIParameter = encodeURIComponent(`search={"supplier":"","type":"司機","telephone":"","phonenum":""}&column=createTime&order=desc&field=id,,,action,supplier,supplierall,taxid,contacts,telephone,phoneNum,email,sort,enabled&currentPage=1&pageSize=10`);
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
-      let queryStr = `{"type":"司機","supplier":"${this.supplier}","telephone":"${this.telephone}","phonenum":"${this.phoneNum}"}`;
+
+      let queryType = '';// 篩選為非客戶類別的人事
+      // 客戶
+      // 家電-司機
+      // 家電-助手
+      // 冷氣-師傅
+      // 冷氣-助手
+      // 行政
+      if (this.typelist.indexOf(this.type) != -1) {
+        queryType = `"type":"${this.type}"`;
+      } else {
+        queryType = `"filter":"1"`;
+      }
+
+      let queryStr = `{${queryType},"supplier":"${this.supplier}","telephone":"${this.telephone}","phonenum":"${this.phoneNum}"}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server.get(APIUrl + APIParameter)
         .then((res) => {
-          console.log("回傳資料成功 res=", res);
+          //console.log("回傳資料成功 res=", res);
           if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
             //回傳資料成功
             let jshdata = res.data.data;
@@ -179,11 +206,19 @@ export default {
       let APIUrl = `/supplier/add`;
       server.post(APIUrl, data1)
         .then((res) => {
-          console.log("回傳資料成功 res=", res);
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
-            //回傳資料成功       
-            this.showModal = false;
-            this.$nextTick(() => this.GetData());
+          //console.log("回傳資料成功 res=", res);
+          // if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+          //   //回傳資料成功       
+          //   this.showModal = false;
+          //   this.$nextTick(() => this.GetData());
+          // }
+          if (res != null && res.data != null) {
+            if (res.data.code == 200) {
+              this.showModal = false;
+              this.$nextTick(() => { this.GetData() });
+            } else {
+              alert(res.data.data.message)
+            }
           }
           this.IsGetDataing = false;
         }).catch(function (error) {
@@ -198,11 +233,19 @@ export default {
       let APIUrl = `/supplier/update`;
       server.put(APIUrl, data1)
         .then((res) => {
-          console.log("回傳資料成功 res=", res);
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
-            //回傳資料成功       
-            this.showModal = false;
-            this.$nextTick(() => this.GetData());
+          //console.log("回傳資料成功 res=", res);
+          // if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+          //   //回傳資料成功       
+          //   this.showModal = false;
+          //   this.$nextTick(() => this.GetData());
+          // }
+          if (res != null && res.data != null) {
+            if (res.data.code == 200) {
+              this.showModal = false;
+              this.$nextTick(() => { this.GetData() });
+            } else {
+              alert(res.data.data.message)
+            }
           }
           this.IsGetDataing = false;
         }).catch(function (error) {
@@ -225,6 +268,12 @@ export default {
           <div class="card-body">
             <div class="row mb-2">
               <div class="col-sm-8">
+                <div class="search-box me-2 mb-2 d-inline-block">
+                  <select class="form-select" v-model="type" @change="GetData()">
+                    <option :value="u1" selected v-for="(u1, uidx) in ['全部類別', ...typelist]" :key="'type' + uidx">
+                      {{ u1 }}</option>
+                  </select>
+                </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <input type="text" class="form-control" placeholder="搜尋名稱" v-model="supplier"
@@ -259,6 +308,35 @@ export default {
                   <b-modal size="xl" v-model="showModal" :title="customers.id == 0 ? '新增人事' : '修改人事'"
                     title-class="text-black font-18" body-class="p-3" hide-footer>
                     <form @submit.prevent="handleSubmit">
+                      <div class="row">
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">人事類別</label>
+                            <select class="form-select" v-model="customers.type"
+                              :class="{ 'is-invalid': submitted && v$.customers.type.$error, }">
+                              <option :value="u1" selected v-for="(u1, uidx) in ['', ...typelist]" :key="'type' + uidx">
+                                {{ u1 }}</option>
+                            </select>
+                            <div v-if="submitted && v$.customers.type.$error" class="invalid-feedback">
+                              <span v-if="v$.customers.type.required.$message">{{
+                                v$.customers.type.required.$message }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
+                          <div class="mb-3">
+                            <label for="name">登入帳號</label>
+                            <input id="name" v-model="customers.loginName" type="text" class="form-control"
+                              :readonly="this.customers.id != 0"
+                              :class="{ 'is-invalid': submitted && v$.customers.loginName.$error, }" />
+                            <div v-if="submitted && v$.customers.loginName.$error" class="invalid-feedback">
+                              <span v-if="v$.customers.loginName.required.$message">{{
+                                v$.customers.loginName.required.$message }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       <div class="row">
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
@@ -362,8 +440,10 @@ export default {
                 <thead>
                   <tr>
                     <th width="5px">#</th>
+                    <th>類別</th>
                     <th>名稱</th>
                     <th>姓名</th>
+                    <th>登入帳號</th>
                     <th>手機號碼</th>
 
                     <th>緊急聯繫人</th>
@@ -376,8 +456,10 @@ export default {
                 <tbody>
                   <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
+                    <td>{{ SubItem.type }}</td>
                     <td>{{ SubItem.supplier }}</td>
                     <td>{{ SubItem.supplierall }}</td>
+                    <td>{{ SubItem.loginName }}</td>
                     <td>{{ SubItem.telephone }}</td>
 
                     <td>{{ SubItem.contacts }}</td>

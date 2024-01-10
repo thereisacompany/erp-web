@@ -257,7 +257,7 @@ export default {
 
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <label for="name">客戶</label>
-                                    <select class="form-select" v-model="organId">
+                                    <select class="form-select" v-model="organId" @change="GetData()">
                                         <option :value="u1.id" selected
                                             v-for="u1 in [{ id: '', idname: '全部客戶' }, ...supplierlist]"
                                             :key="'organId' + u1.id">
