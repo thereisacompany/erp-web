@@ -23,6 +23,7 @@ export default {
         return {
             chkAll: true,
             SubView: 0,
+
             materialParam: '',
             queryKeyword: '',
             depotId: '',
@@ -35,6 +36,8 @@ export default {
             accountlist: [],
             organId: '',
             supplierlist: [],
+            driverlist: [],
+
             depotList: [],
             // counterList: [],
             filelist: [],
@@ -83,6 +86,7 @@ export default {
                 accountMoneyList: '',//""
                 fileName: '',//""
                 status: 0,//"0"
+                dStatus: '',
                 remark: '',
                 mainArrival: '',
                 extrasArrival: '',
@@ -103,7 +107,19 @@ export default {
                 install: '',
                 recycle: '',
             },
+            driver: {
 
+                driverId: '',
+                assignDate: '',
+                carNumber: '',
+                assignUser: '',
+
+                filePath: '',
+                status: 0,
+                deliveryStatusList: [],
+                reportList: [],
+
+            },
             name: '',
             remark: '',
             IsGetDataing: false,
@@ -121,6 +137,17 @@ export default {
             let itemallPrice = this.customersItem.filter(x => x.allPrice != 0).map(y => y.allPrice).reduce((a, b) => a + b);
 
             return itemallPrice;
+        },
+        UserID() {
+            let user = localStorage.getItem('user')
+            //console.log("user", user)
+            if (user) {
+                let UserID = JSON.parse(user).UserID;
+                if (UserID) {
+                    return UserID;
+                }
+            }
+            return ''
         }
     },
     setup() {
@@ -140,11 +167,15 @@ export default {
 
     },
     mounted() {
+
+
         this.$nextTick(() => {
             this.GetUserList();//負責人列表
-            this.GetAccountList();//結算人帳號列表
+            //this.GetAccountList();//結算人帳號列表
             //this.GetSupplierList();
             server.GetSupplierList((rows) => { this.supplierlist = rows })
+            server.GetSupplier2List('家電-司機', (rows) => { this.driverlist = rows })
+
             this.GetDepotList();//倉庫別
             // this.GetCounterList();//儲位別
             this.GetMaxFileSize();
@@ -181,6 +212,46 @@ export default {
         },
     },
     methods: {
+        GetDriverCarNumber() {
+
+            if (this.driver.driverId == null || this.driver.driverId == '') return;
+            let F1List = this.driverlist.filter(x => String(x.id) == String(this.driver.driverId));
+            if (F1List.length != 0) this.driver.carNumber = F1List[0].licensePlate
+            //server.GetSupplierByID(this.driver.driverId, (aaa) => { console.log(aaa) });
+
+        },
+        formatDate(value) {
+
+            if (common.IsDate(value)) return dayjs(value).format("YYYY-MM-DD")
+            return value;
+        },
+        formatTime(value) {
+
+            if (common.IsDate(value)) return dayjs(value).format("HH:mm:ss")
+            return value;
+        },
+        formatdStatus(dStatus) {
+            switch (Number(dStatus)) {
+                case 0: return "未派發";
+                case 1: return "已派發";
+                case 2: return "已接單";
+                case 3: return "聯絡中";
+                case 4: return "配送中";
+                case 5: return "配送完成";
+                default: return dStatus
+            }
+        },
+        formatdStatusCSS(dStatus) {
+            switch (Number(dStatus)) {
+                case 0: return "btn-danger";
+                case 1: return "btn-warning";
+                case 2: return "btn-primary";
+                case 3: return "btn-secondary";
+                case 4: return "btn-info";
+                case 5: return "btn-success";
+                default: return dStatus
+            }
+        },
         formatPadLeftZero(str, len) {
             return common.PadLeftZero(str, len)
         },
@@ -282,7 +353,145 @@ export default {
             }
             this.submitted = false;
         },
+        AssignDriver() {
+            // 新增api -> 司機派發功能 put
+            // /jshERP-boot/depotHead/delivery/assign?headerId=61&driverId=33&assignDate=2024-01-21 14:10:00&assignUser=測試用戶
+            // headerId : 配送單id
+            // driverId: 司機id
+            // assignDate: 派發時間
+            // assignUser: 派發人員
 
+            // 1. 會檢查是否為配送單
+            // 2. 是否已有指派過司機
+            // 3. 檢查司機是否已有綁定車輛
+            if (this.customers == null || this.customers.id == null || this.customers.id == 0) return;
+
+
+            let data2 = {}
+
+            data2.headerId = this.customers.id;// : 配送單id
+            data2.driverId = this.driver.driverId;//: 司機id
+            data2.assignDate = this.driver.assignDate;//: 派發時間
+            data2.assignUser = this.driver.assignUser;//: 派發人員
+
+            let errMsg = '';
+
+            if (data2.driverId == null || data2.driverId == '') errMsg += '請選擇指派司機\n';
+            if (data2.assignDate == null || data2.assignDate == '') errMsg += '請選擇指派日期\n';
+            if (data2.assignUser == null || data2.assignUser == '') errMsg += '請選擇派發人員\n';
+
+
+            if (errMsg != '') {
+                alert(errMsg)
+                return;
+            }
+
+            data2.assignDate = dayjs(data2.assignDate).format("YYYY-MM-DD")
+            this.IsGetDataing = true;
+
+            let APIUrl = `/depotHead/delivery/assign`;
+            server.put(APIUrl, data2)
+                .then((res) => {
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            alert("已指派成功!")
+
+                            this.GetDriverInfo(this.customers.number)
+                            this.showModal = false;
+                        } else {
+                            alert(res.data.data.message)
+                            //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
+                        }
+                    }
+                    this.IsGetDataing = false;
+                }).catch(function (error) {
+                    console.log("error", error);
+                    this.IsGetDataing = false;
+                    return;
+                });
+
+        },
+        ReAssignDriver() {
+            // 新增api -> 重新指派功能 put
+            // jshERP-boot/depotHead/delivery/unAssign?headerId=61
+            // headerId : 配送單id
+            // 1. 會檢查是否為配送單
+            // 2. 是否已有指派過司機
+            if (this.customers == null || this.customers.id == null || this.customers.id == 0 || this.driver.driverId == 0 || this.driver.driverId == '') return;
+
+            if (confirm(`確認重新指派配送單?`) != true) {
+                return;
+            }
+
+
+            let data2 = {}
+
+            //            data2.headerId = this.customers.id;// : 配送單id
+
+            let errMsg = '';
+
+            if (errMsg != '') {
+                alert(errMsg)
+                return;
+            }
+            this.IsGetDataing = true;
+
+            let APIUrl = `/depotHead/delivery/unAssign/${this.customers.id}`;
+            server.put(APIUrl, data2)
+                .then((res) => {
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            alert("已重新指派!")
+                            this.GetDriverInfo(this.customers.number)
+                            this.showModal = false;
+                        } else {
+                            alert(res.data.data.message)
+
+                        }
+                    }
+                    this.IsGetDataing = false;
+                }).catch(function (error) {
+                    console.log("error", error);
+                    this.IsGetDataing = false;
+                    return;
+                });
+
+        },
+        SendFeedback(SubItem) {
+
+            if (SubItem == null || SubItem.id == null || SubItem.id == 0) return;
+
+
+
+
+
+            let errMsg = '';
+
+            if (errMsg != '') {
+                alert(errMsg)
+                return;
+            }
+            this.IsGetDataing = true;
+            let data2 = { feedback: SubItem.feedback }
+            let APIUrl = `/depotHead/feedBackReport/${SubItem.id}`;
+            server.put(APIUrl, data2)
+                .then((res) => {
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            alert("客服己回覆!")
+                            this.showModal = false;
+                        } else {
+                            alert(res.data.data.message)
+                        }
+                    }
+                    this.IsGetDataing = false;
+                }).catch(function (error) {
+                    console.log("error", error);
+                    this.IsGetDataing = false;
+                    return;
+                });
+
+        },
         NewRow1() {
             // let obj1 = this.GetNewCustomerItemObj1();
             // obj1.id = new Date().getTime() + Math.random().toString().substr(2, 7);
@@ -349,6 +558,18 @@ export default {
             NewObj1.queryMaterialList = [];
             return NewObj1;
         },
+        EditDriver(RowItem) {
+
+
+            if (RowItem.id != 0) {
+                this.SubView = 2;
+                this.GetDetailByNumber(RowItem.number)
+                this.GetDetailList(RowItem.id)
+                this.GetDriverInfo(RowItem.number);
+                this.GetDriverReport(RowItem.id);
+                return;
+            }
+        },
         EditOne(RowItem) {
 
             if (RowItem.id == 0) {
@@ -364,6 +585,16 @@ export default {
                 this.customersItem = [];
                 this.customers.date2 = dayjs().format("YYYY-MM-DD");
                 this.customers.time2 = dayjs().format("HH:mm:ss");
+
+                this.driver.driverId = '';
+                this.driver.carNumber = '';
+                this.driver.assignDate = '';
+                this.driver.assignUser = this.UserID;
+
+                this.driver.filePath = '';
+                this.driver.status = 0;
+                this.driver.deliveryStatusList = [];
+                this.driver.reportList = [];
                 this.NewRow1();
                 return;
             }
@@ -371,7 +602,8 @@ export default {
                 this.SubView = 2;
                 this.GetDetailByNumber(RowItem.number)
                 this.GetDetailList(RowItem.id)
-
+                this.GetDriverInfo(RowItem.number);
+                this.GetDriverReport(RowItem.id);
                 return;
             }
         },
@@ -379,6 +611,8 @@ export default {
             this.SubView = 3;
             this.GetDetailByNumber(RowItem.number)
             this.GetDetailList(RowItem.id)
+            this.GetDriverInfo(RowItem.number);
+            this.GetDriverReport(RowItem.id);
         },
 
         queryMaterialByRow(SubItem, cidx) {
@@ -589,7 +823,7 @@ export default {
                         this.customers.agreedDelivery = dayjs(this.customers.agreedDelivery).isValid() ? dayjs(this.customers.agreedDelivery).format("YYYY-MM-DD") : null;
                         this.customers.delivered = dayjs(this.customers.delivered).isValid() ? dayjs(this.customers.delivered).format("YYYY-MM-DD") : null;
 
-                        this.filelist = this.customers.fileName.split(",").filter(x => x != '');
+                        this.filelist = String(this.customers.fileName).split(",").filter(x => x != '');
                     }
                 }).catch(function (error) {
                     console.log("error", error);
@@ -753,7 +987,58 @@ export default {
             this.customers.changeAmount = this.customers.discountLastMoney + this.customers.otherMoney
             this.customers.debt = 0
         },
+        GetDriverReport(headerId) {
+            // 新增api -> 取得司機回報歷程功能 get
+            // /jshERP-boot/depotHead/getDeliveryReport?headerId=62
+            // headerId : 配送單id
+            let APIUrl = `/depotHead/getDeliveryReport`;
+            let APIParameter = `?headerId=${headerId}`;
+            this.driver.reportList = [];
+            server.get(APIUrl + APIParameter)
+                .then((res) => {
+                    if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+                        let jshdata = res.data.data;
+                        for (let i = 0; i < jshdata.length; i++) {
+                            this.driver.reportList.push(jshdata[i])
+                        }
 
+                    }
+
+                }).catch(function (error) {
+                    console.log("error", error);
+
+                    return;
+                });
+        },
+        GetDriverInfo(number) {
+            // 配送單頁面，新增api -> 配送單狀態、配送狀態 get
+            // /jshERP-boot/depotHead/getDeliveryData?number=S20231214235904
+
+            let APIUrl = `/depotHead/getDeliveryData`;
+            let APIParameter = `?number=${number}`;
+
+            server.get(APIUrl + APIParameter)
+                .then((res) => {
+                    if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+                        let jshdata = res.data.data;
+                        //console.log("driverinfo", jshdata)
+                        this.driver.driverId = jshdata.driverId
+                        this.driver.carNumber = jshdata.carNumber
+                        this.driver.assignDate = dayjs(jshdata.takeDate).format("YYYY-MM-DD")
+                        this.driver.assignUser = jshdata.assignUser
+
+                        this.driver.filePath = jshdata.filePath
+                        this.driver.status = Number(jshdata.status)
+                        this.driver.deliveryStatusList = jshdata.deliveryStatusList
+
+                    }
+
+                }).catch(function (error) {
+                    console.log("error", error);
+
+                    return;
+                });
+        },
 
         GetData() {
             if (this.IsGetDataing == true) return;
@@ -773,7 +1058,6 @@ export default {
                         let jshdata = res.data.data;
                         this.customersData = JSON.parse(JSON.stringify(jshdata.rows));
                         this.totalRows = JSON.parse(JSON.stringify(jshdata.total));
-                        console.log(this.customersData.length, this.totalRows)
                         this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
                     }
                     this.IsGetDataing = false;
@@ -900,7 +1184,6 @@ export default {
 
             }
             this.$refs.file2.value = '';
-
         },
         UploadFile1(biz, file1, callback) {
             //http://w66.ddns.net:9955/jshERP-boot/systemConfig/upload
@@ -964,292 +1247,7 @@ export default {
 
 <template>
     <Layout>
-        <PageHeader :title="title" :items="items" />
-        <div class="row" v-if="SubView == 1 || SubView == 2 || SubView == 3">
-            <div class="col-lg-62">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title mb-4">{{ SubView == 1 ? '新增配送單' : (SubView == 2 ? '修改配送單' : '查看配送單') }}</h4>
-                        <b-form>
-                            <div class="row">
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">客單編號</label>
-                                    <input type="text" class="form-control" v-model.trim="customers.customNumber" />
-                                </div>
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">原始客編</label>
-                                    <input type="text" class="form-control" v-model.trim="customers.sourceNumber" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-
-                                    <label for="name">客戶</label>
-                                    <select class="form-select" v-model="customers.organId" @change="InitEveryRowsProduct"
-                                        :class="{ 'is-invalid': submitted && v$.customers.organId.$error, }">
-                                        <option :value="u1.id" selected v-for="u1 in supplierlist"
-                                            :key="'customers_organId' + u1.id">
-                                            {{ u1.idname }}</option>
-                                    </select>
-                                    <div v-if="submitted && v$.customers.organId.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.organId.required.$message">{{
-                                            v$.customers.organId.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">單號</label>
-                                    <input type="text" class="form-control" placeholder="單號" readonly
-                                        v-model="customers.defaultNumber" />
-                                </div>
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">日期</label>
-                                    <input type="date" class="form-control" placeholder="日期" v-model="customers.date2" />
-                                </div>
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">時間</label>
-                                    <input type="time" class="form-control" placeholder="時間" v-model="customers.time2" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="table-responsive">
-
-                                        <table class="table table-centered table-bordered table-nowrap align-middle">
-                                            <thead>
-                                                <tr>
-                                                    <th width="1%">#</th>
-                                                    <th width="10%">倉庫</th>
-                                                    <th width="10%">品號</th>
-                                                    <th width="15%">商品</th>
-                                                    <th width="5%">類別</th>
-                                                    <th width="5%">規格</th>
-                                                    <th width="5%">型號</th>
-                                                    <th width="5%">庫存</th>
-                                                    <th width="10%">儲位</th>
-                                                    <th width="5%">數量</th>
-                                                    <th width="10%">備註</th>
-                                                    <th width="1%">操作</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(SubItem, cidx) in customersItem" :key="SubItem.id">
-                                                    <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                                                    <td>
-                                                        <select class="form-select" v-model="SubItem.depotId"
-                                                            @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
-                                                            <option :value="u1.id" selected v-for="u1 in depotList"
-                                                                :key="'customers_depot_id' + cidx + u1.id">
-                                                                {{ u1.depotName }}</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <div class="position-relative">
-                                                            <input type="text" class="form-control"
-                                                                :list="'datalistOptions' + cidx"
-                                                                @keyup="queryMaterialByRow(SubItem, cidx)"
-                                                                v-model="SubItem.number" />
-
-                                                            <datalist :id="'datalistOptions' + cidx">
-                                                                <option v-for="(q1, qdx) in SubItem.queryMaterialList"
-                                                                    :value="q1.number"
-                                                                    :key="'customer_name_list' + cidx + qdx">
-                                                                    {{ q1.number }}
-                                                                </option>
-                                                            </datalist>
-                                                        </div>
-
-                                                    </td>
-                                                    <td> {{ SubItem.name }}
-                                                    </td>
-
-                                                    <td> {{ SubItem.categoryName }}
-                                                    </td>
-                                                    <td> {{ SubItem.standard }}
-                                                    </td>
-                                                    <td> {{ SubItem.model }}
-                                                    </td>
-                                                    <td> {{ SubItem.stock }}
-                                                    </td>
-                                                    <td> <input type="text" class="form-control"
-                                                            v-model="SubItem.counterName"></td>
-                                                    <td> <input type="text" class="form-control" placeholder="數量"
-                                                            @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
-                                                            v-model="SubItem.operNumber"></td>
-
-                                                    <td> <input type="text" class="form-control" placeholder="備註"
-                                                            v-model="SubItem.remark"></td>
-
-
-
-                                                    <td>
-                                                        <div class="button-items">
-                                                            <a href="javascript:;" class="btn btn-sm btn-danger"
-                                                                v-if="SubView == 1 || SubView == 2"
-                                                                @click="DeleteRow1(SubItem)">刪除</a>
-                                                        </div>
-                                                    </td>
-
-
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <a href="javascript:;" class="btn btn-sm btn-success"
-                                            v-if="SubView == 1 || SubView == 2" @click="NewRow1()">新增一列商品資料</a>
-
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="row">
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">主商品到貨日</label>
-                                    <input type="date" class="form-control" placeholder="主商品到貨日"
-                                        v-model="customers.mainArrival">
-
-                                </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">贈品到貨日</label>
-                                    <input type="date" class="form-control" placeholder="贈品到貨日"
-                                        v-model="customers.extrasArrival">
-
-                                </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">約配日</label>
-                                    <input type="date" class="form-control" placeholder="約配日"
-                                        v-model="customers.agreedDelivery">
-                                </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">配達日</label>
-                                    <input type="date" class="form-control" placeholder="配達日" v-model="customers.delivered">
-                                </div>
-
-                            </div>
-                            <div class="row">
-
-
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">收件人名稱</label>
-                                    <input type="text" class="form-control" placeholder="收件人名稱"
-                                        v-model="customers.receiveName"
-                                        :class="{ 'is-invalid': submitted && v$.customers.receiveName.$error, }">
-                                    <div v-if="submitted && v$.customers.receiveName.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.receiveName.required.$message">{{
-                                            v$.customers.receiveName.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">手機</label>
-                                    <input type="text" class="form-control" v-maska="'####-###-###'"
-                                        placeholder="####-###-###" v-model="customers.cellphone"
-                                        :class="{ 'is-invalid': submitted && v$.customers.cellphone.$error, }">
-                                    <div v-if="submitted && v$.customers.cellphone.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.cellphone.required.$message">{{
-                                            v$.customers.cellphone.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-4 col-lg-3">
-                                    <label for="name">地址</label>
-                                    <input type="text" class="form-control" placeholder="地址" v-model="customers.address"
-                                        :class="{ 'is-invalid': submitted && v$.customers.address.$error, }">
-                                    <div v-if="submitted && v$.customers.address.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.address.required.$message">{{
-                                            v$.customers.address.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
-
-
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">安裝方式</label>
-                                    <input type="text" class="form-control" v-model="customers.install" />
-                                </div>
-                                <div class="col-sm-12 col-md-6 col-lg-3">
-                                    <label for="name">舊機回收(是/否)</label>
-                                    <select class="form-select" v-model="customers.recycle"
-                                        :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
-                                        <option value="" selected>&nbsp;</option>
-                                        <option value="是">是</option>
-                                        <option value="否">否</option>
-                                    </select>
-                                    <div v-if="submitted && v$.customers.recycle.$error" class="invalid-feedback"
-                                        :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
-                                        <span v-if="v$.customers.recycle.required.$message">{{
-                                            v$.customers.recycle.required.$message
-                                        }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <label for="name">備註</label>
-                                    <input type="text" class="form-control" placeholder="備註" v-model="customers.remark">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12" v-if="SubView == 1 || SubView == 2">
-                                    <b-button variant="light" class="w-sm">
-                                        <i class="mdi mdi-upload d-block font-size-16" @click="$refs.file2.click();"></i>
-                                        上傳檔案
-                                    </b-button>
-                                    <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024) }} MB</span>
-                                    <input ref="file2" type="file" class="d-none" multiple v-on:change="handleFileUpload()">
-                                </div>
-                                <div class="col-sm-12 mt-1">
-                                    <label for="name" v-if="SubView == 3">上傳檔案</label>
-                                    <div v-for="(f1, fidx) in filelist" :key="'file-' + fidx" style="display:inline-block">
-                                        <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)" @click="ShowImage(f1)"
-                                            style="max-width:300px;max-height:300px" />
-                                        <a v-else href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop() }}</a>
-                                        <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)">&nbsp;<i
-                                                class="bx bx-x"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </b-form>
-                    </div>
-                </div>
-            </div>
-
-
-            <div>
-                <div class="button-items">
-                    <a href="javascript:;" class="btn btn-primary" @click="handleSubmit" v-if="SubView == 1">新增</a>
-                    <a href="javascript:;" class="btn btn-primary" @click="handleSubmit" v-if="SubView == 2">保存</a>
-                    <a href="javascript:;" class="btn btn-success" @click="customers.status = 1; handleSubmit()"
-                        v-if="SubView == 2">保存並審核</a>
-                    <a href="javascript:;" class="btn btn-warning" @click="customers.status = 0; handleSubmit()"
-                        v-if="SubView == 3 && customers.status == 1">反審核</a>
-                    <a href="javascript:;" class="btn btn-success" @click="ExcelOut" v-if="SubView == 3">匯出</a>
-                    <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0">返回</a>
-                </div>
-
-            </div>
-        </div>
-
-
-        <b-modal size="xl" v-model="showImageModal" title="顯示圖片" title-class="text-black font-18" body-class="p-3"
-            hide-footer>
-            <form>
-                <div class="row text-center">
-                    <div class="col-12">
-                        <img :src="showImageURL" max-width="100%" max-height="100%" style="max-width: 100%;">
-                    </div>
-                </div>
-
-                <div class="text-end pt-5 mt-3">
-                    <b-button variant="light" @click="showImageModal = false">關閉</b-button>
-                </div>
-            </form>
-        </b-modal>
+        <PageHeader :title="title + (SubView == 0 ? '列表' : '明細')" :items="items" />
         <div class="row" v-show="SubView == 0">
             <div class="col-12">
                 <div class="card">
@@ -1365,6 +1363,7 @@ export default {
                                         <th>儲位</th>
                                         <th>數量</th>
                                         <th>狀態</th>
+                                        <th>配送狀態</th>
                                         <th>建立時間</th>
                                         <th>操作</th>
                                     </tr>
@@ -1375,35 +1374,50 @@ export default {
                                         </td>
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.organName }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.organName }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}</td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.customNumber
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number
+                                        }}</td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.customNumber
                                         }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.sourceNumber
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.sourceNumber
                                         }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.mNumber }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.mNumber }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             <div v-for="name1 in String(SubItem.materialsList).split(',')"
                                                 :key="'SubItem' + cidx + name1">{{ name1 }}</div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.depotName }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.depotName }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.counterName }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.counterName }}
                                         </td>
 
                                         <td>{{ SubItem.materialCount }}</td>
 
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <span class="btn btn-success" v-if="SubItem.status == 1">己審核</span>
+                                                <span class="btn btn-success" v-if="SubItem.status == 1">已審核</span>
                                                 <span class="btn btn-danger" v-if="SubItem.status == 0">未審核</span>
                                             </div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operTimeStr }}
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <span class="btn" :class="formatdStatusCSS(SubItem.dStatus)">{{
+                                                    formatdStatus(SubItem.dStatus) }}</span>
+
+                                            </div>
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.operTimeStr }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
@@ -1411,6 +1425,8 @@ export default {
                                                     @click="EditShow(SubItem)">查看</a>
                                                 <a class="btn btn-secondary" href="javascript:;" v-if="SubItem.status == 0"
                                                     @click="EditOne(SubItem)">編輯</a>
+                                                <a class="btn btn-success" href="javascript:;" v-if="SubItem.status == 1"
+                                                    @click="EditDriver(SubItem)">派發司機</a>
                                             </div>
 
                                         </td>
@@ -1423,6 +1439,560 @@ export default {
                 </div>
             </div>
         </div>
+        <b-tabs content-class="p-3 text-muted" v-if="SubView != 0">
+            <b-tab active class="border-0">
+                <template v-slot:title>
+                    <span class="d-inline-block d-sm-none">
+                        <i class="fas fa-home"></i>
+                    </span>
+                    <span class="d-none d-sm-inline-block">配送單基本資料</span>
+                </template>
+
+
+                <div class="row" v-if="SubView == 1 || SubView == 2 || SubView == 3">
+                    <div class="col-lg-62">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title mb-4">{{ SubView == 1 ? '新增配送單' : (SubView == 2 ? '修改配送單' : '查看配送單')
+                                }}</h4>
+                                <b-form>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">客單編號</label>
+                                            <input type="text" class="form-control" v-model.trim="customers.customNumber" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">原始客編</label>
+                                            <input type="text" class="form-control" v-model.trim="customers.sourceNumber" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+
+                                            <label for="name">客戶</label>
+                                            <select class="form-select" v-model="customers.organId"
+                                                @change="InitEveryRowsProduct"
+                                                :class="{ 'is-invalid': submitted && v$.customers.organId.$error, }">
+                                                <option :value="u1.id" selected v-for="u1 in supplierlist"
+                                                    :key="'customers_organId' + u1.id">
+                                                    {{ u1.idname }}</option>
+                                            </select>
+                                            <div v-if="submitted && v$.customers.organId.$error" class="invalid-feedback">
+                                                <span v-if="v$.customers.organId.required.$message">{{
+                                                    v$.customers.organId.required.$message
+                                                }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">單號</label>
+                                            <input type="text" class="form-control" placeholder="單號" readonly
+                                                v-model="customers.defaultNumber" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">日期</label>
+                                            <input type="date" class="form-control" placeholder="日期"
+                                                v-model="customers.date2" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">時間</label>
+                                            <input type="time" class="form-control" placeholder="時間"
+                                                v-model="customers.time2" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="table-responsive">
+
+                                                <table
+                                                    class="table table-centered table-bordered table-nowrap align-middle">
+                                                    <thead>
+                                                        <tr>
+                                                            <th width="1%">#</th>
+                                                            <th width="10%">倉庫</th>
+                                                            <th width="10%">品號</th>
+                                                            <th width="15%">商品</th>
+                                                            <th width="5%">類別</th>
+                                                            <th width="5%">規格</th>
+                                                            <th width="5%">型號</th>
+                                                            <th width="5%">庫存</th>
+                                                            <th width="10%">儲位</th>
+                                                            <th width="5%">數量</th>
+                                                            <th width="10%">備註</th>
+                                                            <th width="1%">操作</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="(SubItem, cidx) in customersItem" :key="SubItem.id">
+                                                            <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
+                                                            <td>
+                                                                <select class="form-select" v-model="SubItem.depotId"
+                                                                    @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
+                                                                    <option :value="u1.id" selected v-for="u1 in depotList"
+                                                                        :key="'customers_depot_id' + cidx + u1.id">
+                                                                        {{ u1.depotName }}</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <div class="position-relative">
+                                                                    <input type="text" class="form-control"
+                                                                        :list="'datalistOptions' + cidx"
+                                                                        @keyup="queryMaterialByRow(SubItem, cidx)"
+                                                                        v-model="SubItem.number" />
+
+                                                                    <datalist :id="'datalistOptions' + cidx">
+                                                                        <option
+                                                                            v-for="(q1, qdx) in SubItem.queryMaterialList"
+                                                                            :value="q1.number"
+                                                                            :key="'customer_name_list' + cidx + qdx">
+                                                                            {{ q1.number }}
+                                                                        </option>
+                                                                    </datalist>
+                                                                </div>
+
+                                                            </td>
+                                                            <td> {{ SubItem.name }}
+                                                            </td>
+
+                                                            <td> {{ SubItem.categoryName }}
+                                                            </td>
+                                                            <td> {{ SubItem.standard }}
+                                                            </td>
+                                                            <td> {{ SubItem.model }}
+                                                            </td>
+                                                            <td> {{ SubItem.stock }}
+                                                            </td>
+                                                            <td> <input type="text" class="form-control"
+                                                                    v-model="SubItem.counterName"></td>
+                                                            <td> <input type="text" class="form-control" placeholder="數量"
+                                                                    @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
+                                                                    v-model="SubItem.operNumber"></td>
+
+                                                            <td> <input type="text" class="form-control" placeholder="備註"
+                                                                    v-model="SubItem.remark"></td>
+
+
+
+                                                            <td>
+                                                                <div class="button-items">
+                                                                    <a href="javascript:;" class="btn btn-sm btn-danger"
+                                                                        v-if="SubView == 1 || SubView == 2"
+                                                                        @click="DeleteRow1(SubItem)">刪除</a>
+                                                                </div>
+                                                            </td>
+
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <a href="javascript:;" class="btn btn-sm btn-success"
+                                                    v-if="SubView == 1 || SubView == 2" @click="NewRow1()">新增一列商品資料</a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">主商品到貨日</label>
+                                            <input type="date" class="form-control" placeholder="主商品到貨日"
+                                                v-model="customers.mainArrival">
+
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">贈品到貨日</label>
+                                            <input type="date" class="form-control" placeholder="贈品到貨日"
+                                                v-model="customers.extrasArrival">
+
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">約配日</label>
+                                            <input type="date" class="form-control" placeholder="約配日"
+                                                v-model="customers.agreedDelivery">
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">配達日</label>
+                                            <input type="date" class="form-control" placeholder="配達日"
+                                                v-model="customers.delivered">
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+
+
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">收件人名稱</label>
+                                            <input type="text" class="form-control" placeholder="收件人名稱"
+                                                v-model="customers.receiveName"
+                                                :class="{ 'is-invalid': submitted && v$.customers.receiveName.$error, }">
+                                            <div v-if="submitted && v$.customers.receiveName.$error"
+                                                class="invalid-feedback">
+                                                <span v-if="v$.customers.receiveName.required.$message">{{
+                                                    v$.customers.receiveName.required.$message
+                                                }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">手機</label>
+                                            <input type="text" class="form-control" v-maska="'####-###-###'"
+                                                placeholder="####-###-###" v-model="customers.cellphone"
+                                                :class="{ 'is-invalid': submitted && v$.customers.cellphone.$error, }">
+                                            <div v-if="submitted && v$.customers.cellphone.$error" class="invalid-feedback">
+                                                <span v-if="v$.customers.cellphone.required.$message">{{
+                                                    v$.customers.cellphone.required.$message
+                                                }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-4 col-lg-3">
+                                            <label for="name">地址</label>
+                                            <input type="text" class="form-control" placeholder="地址"
+                                                v-model="customers.address"
+                                                :class="{ 'is-invalid': submitted && v$.customers.address.$error, }">
+                                            <div v-if="submitted && v$.customers.address.$error" class="invalid-feedback">
+                                                <span v-if="v$.customers.address.required.$message">{{
+                                                    v$.customers.address.required.$message
+                                                }}</span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">安裝方式</label>
+                                            <input type="text" class="form-control" v-model="customers.install" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">舊機回收(是/否)</label>
+                                            <select class="form-select" v-model="customers.recycle"
+                                                :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
+                                                <option value="" selected>&nbsp;</option>
+                                                <option value="是">是</option>
+                                                <option value="否">否</option>
+                                            </select>
+                                            <div v-if="submitted && v$.customers.recycle.$error" class="invalid-feedback"
+                                                :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
+                                                <span v-if="v$.customers.recycle.required.$message">{{
+                                                    v$.customers.recycle.required.$message
+                                                }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label for="name">備註</label>
+                                            <input type="text" class="form-control" placeholder="備註"
+                                                v-model="customers.remark">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12" v-if="SubView == 1 || SubView == 2">
+                                            <b-button variant="light" class="w-sm">
+                                                <i class="mdi mdi-upload d-block font-size-16"
+                                                    @click="$refs.file2.click();"></i>
+                                                上傳檔案
+                                            </b-button>
+                                            <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024) }}
+                                                MB</span>
+                                            <input ref="file2" type="file" class="d-none" multiple
+                                                v-on:change="handleFileUpload()">
+                                        </div>
+                                        <div class="col-sm-12 mt-1">
+                                            <label for="name" v-if="SubView == 3">上傳檔案</label>
+                                            <div v-for="(f1, fidx) in filelist" :key="'file-' + fidx"
+                                                style="display:inline-block">
+                                                <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)"
+                                                    @click="ShowImage(f1)" style="max-width:300px;max-height:300px" />
+                                                <a v-else href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
+                                                }}</a>
+                                                <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)">&nbsp;<i
+                                                        class="bx bx-x"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </b-form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </b-tab>
+            <b-tab v-if="this.customers.id != 0">
+                <template v-slot:title>
+                    <span class="d-inline-block d-sm-none">
+                        <i class="far fa-user"></i>
+                    </span>
+                    <span class="d-none d-sm-inline-block">司機派單及回報</span>
+                </template>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="row">
+
+
+                                    <div class="col-lg-3">
+                                        <div class="mb-3 ">
+                                            <label class="form-label" for="subject">指派司機</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bx bx-user"></i></span>
+                                                <select class="form-select" v-model="driver.driverId"
+                                                    @change="GetDriverCarNumber()">
+                                                    <option :value="u1.id" selected
+                                                        v-for="u1 in [{ id: '', idname: '' }, ...driverlist]"
+                                                        :key="'driver_driverlist' + u1.id">
+                                                        {{ u1.idname }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="mb-3 ">
+                                            <label class="form-label" for="subject">車牌號碼</label>
+                                            <div class="input-group">
+                                                <div class="input-group-text"><i class="bx bxs-truck"></i></div>
+                                                <input type="text" class="form-control" v-model="driver.carNumber">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="productname">指派日期</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                <input type="date" class="form-control" v-model="driver.assignDate"
+                                                    data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
+                                                    data-provide="datepicker">
+
+
+                                            </div><!-- input-group -->
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2">
+
+                                        <div class="mb-3">
+                                            <label class="form-label">指派人員</label>
+                                            <div class="input-group">
+                                                <select class="form-select" v-model="driver.assignUser">
+                                                    <option :value="u1.id" selected
+                                                        v-for="u1 in [{ id: '', userName: '' }, ...userlist]"
+                                                        :key="'driver_userlist' + u1.id">
+                                                        {{ u1.userName }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="message">&nbsp;</label><br>
+                                        <div class="btn-group">
+                                            <a href="javascript:;" class="btn btn-danger btn-block"
+                                                v-if="driver.status == 0" @click="AssignDriver()">快速派發</a>
+                                            <a href="javascript:;" class="btn btn-light btn-block"
+                                                v-if="driver.status != 0">已指派</a>
+                                            <a href="javascript:;" class="btn btn-success btn-block"
+                                                v-if="driver.status != 0" @click="ReAssignDriver()">重新指派</a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <hr>
+                                <div class="row mb-2">
+                                    <div class="col-sm-12">
+                                        <div class="flex-1 overflow-hidden">
+                                            <h5 class="text-bold mb-1" style="font-weight:bold;"><i
+                                                    class="bx bx-info-circle"></i> 配送狀態</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 bg-light pt-3 pb-3">
+                                        <div class="row">
+
+                                            <div class="col-lg-3">
+                                                <div class="mb-3 ">
+                                                    <label class="form-label" for="subject"> <input class="form-check-input"
+                                                            :checked="driver.status >= 2" type="checkbox" id="formCheck1">
+                                                        接單</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i
+                                                                class="mdi mdi-calendar"></i></span>
+                                                        <input type="text" class="form-control" placeholder="2021-05-03"
+                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
+
+
+                                                    </div><!-- input-group -->
+                                                </div>
+
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="mb-3 ">
+                                                    <label class="form-label" for="subject"><input class="form-check-input"
+                                                            :checked="driver.status >= 3" type="checkbox" id="formCheck1">
+                                                        聯絡中</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i
+                                                                class="mdi mdi-calendar"></i></span>
+                                                        <input type="text" class="form-control" placeholder="2021-05-03"
+                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
+
+
+                                                    </div><!-- input-group -->
+                                                </div>
+
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="productname"><input
+                                                            class="form-check-input" :checked="driver.status >= 4"
+                                                            type="checkbox" id="formCheck1">
+                                                        運送中</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i
+                                                                class="mdi mdi-calendar"></i></span>
+                                                        <input type="text" class="form-control" placeholder="2021-05-03"
+                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
+
+
+                                                    </div><!-- input-group -->
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+
+                                                <div class="mb-3">
+                                                    <label class="form-label"><input class="form-check-input"
+                                                            :checked="driver.status >= 5" type="checkbox" id="formCheck1">
+                                                        完成派單</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i
+                                                                class="mdi mdi-calendar"></i></span>
+                                                        <input type="text" class="form-control" placeholder="2021-05-03"
+                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
+
+
+                                                    </div><!-- input-group -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <hr>
+                                <div class="row mb-2">
+                                    <div class="col-sm-12">
+                                        <div class="flex-1 overflow-hidden">
+                                            <h5 class="text-bold mb-1" style="font-weight:bold;"><i
+                                                    class="bx bxs-message-alt-dots"></i> 司機回報區</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 bg-light pt-3 pb-3" v-for="r1 in driver.reportList"
+                                        :key="'reportList_' + r1.id">
+                                        <div class="row mb-3">
+                                            <div class="col-2">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                    <input type="text" class="form-control text-center" readonly
+                                                        :value="formatDate(r1.datetime)" data-date-format="yyyy-mm-dd"
+                                                        data-date-container="#datepicker3" data-provide="datepicker">
+                                                </div><!-- input-group -->
+                                            </div>
+                                            <div class="col-2">
+                                                <div class="input-group">
+                                                    <input class="form-control text-center" type="text" readonly
+                                                        :value="formatTime(r1.datetime)">
+                                                </div>
+                                            </div>
+                                            <div class="col-8">
+
+                                                <textarea id="message" class="form-control mb-2" rows="3"
+                                                    v-model="r1.message" readonly></textarea>
+                                                <textarea id="message" class="form-control " rows="3"
+                                                    v-model="r1.feedback"></textarea>
+                                                <a href="javascript:;" class="btn btn-primary"
+                                                    @click="SendFeedback(r1)">客服回覆保存</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+                                <div class="row mb-2">
+                                    <div class="col-sm-12">
+                                        <div class="flex-1 overflow-hidden">
+                                            <h5 class="text-bold mb-1" style="font-weight:bold;"><i
+                                                    class="bx bx-folder-open"></i> 圖片及附件</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 bg-light pt-3 pb-3">
+                                        <div class="me-2 mb-2 d-inline-block">
+                                            <img src="" style="max-width:300px;max-height:300px" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row mb-2">
+                                    <div class="col-sm-12">
+                                        <div class="flex-1 overflow-hidden">
+                                            <h5 class="text-bold mb-1" style="font-weight:bold;"><i class="bx bx-video"></i>
+                                                影片上傳專區</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 bg-light pt-3 pb-3">
+                                        <div class="me-2 mb-2 d-inline-block">
+                                            <img src="" style="max-width:300px;max-height:300px" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </b-tab>
+
+        </b-tabs>
+
+        <div>
+            <div class="button-items">
+                <a href="javascript:;" class="btn btn-primary" @click="handleSubmit" v-if="SubView == 1">新增</a>
+                <a href="javascript:;" class="btn btn-primary" @click="handleSubmit" v-if="SubView == 2">保存</a>
+                <a href="javascript:;" class="btn btn-success" @click="customers.status = 1; handleSubmit()"
+                    v-if="SubView == 2">保存並審核</a>
+                <a href="javascript:;" class="btn btn-warning" @click="customers.status = 0; handleSubmit()"
+                    v-if="SubView == 3 && customers.status == 1">反審核</a>
+                <a href="javascript:;" class="btn btn-success" @click="ExcelOut" v-if="SubView == 3">匯出</a>
+                <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0; GetData()" v-if="SubView != 0">返回</a>
+            </div>
+        </div>
+        <b-modal size="xl" v-model="showImageModal" title="顯示圖片" title-class="text-black font-18" body-class="p-3"
+            hide-footer>
+            <form>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <img :src="showImageURL" max-width="100%" max-height="100%" style="max-width: 100%;">
+                    </div>
+                </div>
+
+                <div class="text-end pt-5 mt-3">
+                    <b-button variant="light" @click="showImageModal = false">關閉</b-button>
+                </div>
+            </form>
+        </b-modal>
+
         <!-- end row -->
     </Layout>
 </template>

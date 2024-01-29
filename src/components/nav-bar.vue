@@ -46,7 +46,7 @@ export default {
 
   mounted() {
     let user = localStorage.getItem('user')
-    console.log("user", user)
+    //console.log("user", user)
     if (user) {
       let loginName = JSON.parse(user).loginName;
       if (loginName) {
