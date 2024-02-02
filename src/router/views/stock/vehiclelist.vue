@@ -409,9 +409,8 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="status">車輛狀態</label>
                           <select class="form-select" v-model="customers.status">
-                            <option value="1">正常</option>
-                            <option value="2">出租中</option>
-                            <option value="3">出售中</option>
+                            <option value="1">白牌車</option>
+                            <option value="2">綠牌車</option>
                           </select>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
@@ -476,9 +475,8 @@ export default {
 
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <span class="btn btn-success" v-if="SubItem.status == 1">正常</span>
-                        <span class="btn btn-warning" v-else-if="SubItem.status == 2">出租中</span>
-                        <span class="btn btn-danger" v-else-if="SubItem.status == 3">出售中</span>
+                        <span class="btn btn-secondary" v-if="SubItem.status == 1">白牌車</span>
+                        <span class="btn btn-success" v-else-if="SubItem.status == 2">綠牌車</span>
                       </div>
                     </td>
                     <td>

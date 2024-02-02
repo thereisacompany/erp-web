@@ -2,7 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 
-import { required, helpers } from "@vuelidate/validators";
+import { required, helpers, minLength, maxLength } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
@@ -51,7 +51,9 @@ export default {
         email: '',
         enabled: '',
         address: '',
+        licensePlate: '',
         loginName: '',
+        loginPassword: '',
         type: '司機'
       },
       type: '全部類別',
@@ -84,6 +86,11 @@ export default {
       loginName: {
         required: helpers.withMessage("司機類別請輸入登入帳號", required),
       },
+      loginPassword: {
+        // 使用 `minLength` 规则，但添加 `optional` 选项，以便在 loginPassword 为空时不执行 minLength 验证规则
+        minLength: helpers.withMessage("請輸入6-12位密碼", minLength(6), { unless: (value) => value !== '' }),
+        maxLength: helpers.withMessage("請輸入6-12位密碼", maxLength(12), { unless: (value) => value !== '' }),
+      },
     },
   },
   mounted() {
@@ -115,7 +122,6 @@ export default {
           this.UpdData(this.customers);
         }
       }
-      console.log("OK")
 
       this.submitted = false;
     },
@@ -134,9 +140,11 @@ export default {
         this.customers.email = "";
         this.customers.enabled = true;
         this.customers.address = "";
+        this.customers.licensePlate = "";
         this.customers.emergencyPhone = "";
         this.customers.licensPlate = "";
         this.customers.loginName = '';
+        this.customers.loginPassword = '';
         this.customers.type = '';
       }
       else {
@@ -150,10 +158,12 @@ export default {
         this.customers.email = RowItem.email;
         this.customers.enabled = RowItem.enabled;
         this.customers.address = RowItem.address;
+        this.customers.licensePlate = RowItem.licensePlate;
         this.customers.emergencyPhone = RowItem.emergencyPhone;
         this.customers.licensPlate = RowItem.licensPlate;
 
         this.customers.loginName = RowItem.loginName;
+        this.customers.loginPassword = '';
         this.customers.type = RowItem.type;
       }
 
@@ -333,6 +343,18 @@ export default {
                             <div v-if="submitted && v$.customers.loginName.$error" class="invalid-feedback">
                               <span v-if="v$.customers.loginName.required.$message">{{
                                 v$.customers.loginName.required.$message }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
+                          <div class="mb-3">
+                            <label for="loginPassword">登入密碼</label>
+                            <input id="loginPassword" v-model="customers.loginPassword" type="password"
+                              :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : '預設密碼:12345'" class="form-control"
+                              :class="{ 'is-invalid': submitted && v$.customers.loginPassword.$error, }" />
+                            <div v-if="submitted && v$.customers.loginPassword.$error" class="invalid-feedback">
+                              <span v-if="v$.customers.loginPassword.maxLength.$message">{{
+                                v$.customers.loginPassword.maxLength.$message }}</span>
                             </div>
                           </div>
                         </div>
