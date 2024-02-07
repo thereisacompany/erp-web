@@ -29,6 +29,7 @@ export default {
             depotId: '',
             number: '',
             mNumber: '',
+            subType: '',
             beginTime: '',
             endTime: '',
             MaxFileSize: 0,
@@ -104,6 +105,7 @@ export default {
                 time2: '',
                 customNumber: '',
                 sourceNumber: '',
+                isPickup: 1,
                 install: '',
                 recycle: '',
             },
@@ -130,6 +132,15 @@ export default {
         };
     },
     computed: {
+        IsPickup1() {
+            if (this.customers.subType == "配送單") return true
+            return false
+        },
+        EditOneTitle() {
+            let SubTitle = (this.SubView == 1 ? '新增' : (this.SubView == 2 ? '修改' : '查看'))
+            SubTitle = SubTitle + this.customers.subType
+            return SubTitle
+        },
         customersItemAllPrice: function () {
             if (this.customersItem.filter(x => x.allPrice != 0).length == 0) {
                 return 0;
@@ -156,13 +167,11 @@ export default {
     },
     validations: {
         customers: {
-            organId: { required: helpers.withMessage("請選擇客戶", required), },
+
             cellphone: { required: helpers.withMessage("請填寫手機", required), },
             address: { required: helpers.withMessage("請填寫地址", required), },
             receiveName: { required: helpers.withMessage("請填寫收件人名稱", required), },
             recycle: { required: helpers.withMessage("請選擇是否舊機回收", required), },
-
-
         },
 
     },
@@ -212,6 +221,7 @@ export default {
         },
     },
     methods: {
+
         GetDriverCarNumber() {
 
             if (this.driver.driverId == null || this.driver.driverId == '') return;
@@ -278,30 +288,35 @@ export default {
                     aObj.operTime = `${aObj.date2} ${aObj.time2}`
                     aObj.totalPrice = this.customersItemAllPrice;
                     aObj.type = '出庫';
-                    aObj.subType = '配送單';
+                    //aObj.subType = '配送單';
                     delete aObj.id;
                     delete aObj.date2;
                     delete aObj.time2;
 
                     let errMsg = '';
-
                     if (bObj.length == 0) {
                         errMsg += '請至少新增一筆商品\n';
                     }
-
                     if (errMsg == '') {
-
-
-                        for (let i = 0; i < bObj.length; i++) {
-                            let b1 = bObj[i]
-                            if (b1.depotId == null || b1.depotId == '') {
-                                errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                        if (this.IsPickup1 == true) {
+                            for (let i = 0; i < bObj.length; i++) {
+                                let b1 = bObj[i]
+                                if (b1.depotId == null || b1.depotId == '') {
+                                    errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                                }
+                                if (b1.barCode == null || b1.barCode == '') {
+                                    errMsg += `#${i + 1} 請選擇商品\n`;
+                                }
                             }
-                            if (b1.barCode == null || b1.barCode == '') {
-                                errMsg += `#${i + 1} 請選擇商品\n`;
+                        } else {
+                            for (let i = 0; i < bObj.length; i++) {
+                                let b1 = bObj[i]
+                                if (b1.materialName == null || b1.materialName == '') {
+                                    errMsg += `#${i + 1} 輸入商品名稱\n`;
+                                }
+                                b1.operNumber = b1.operNumber || 1;
                             }
                         }
-
                     }
                     if (errMsg != '') {
                         alert(errMsg)
@@ -332,17 +347,25 @@ export default {
 
                     if (errMsg == '') {
 
-
-                        for (let i = 0; i < bObj.length; i++) {
-                            let b1 = bObj[i]
-                            if (b1.depotId == null || b1.depotId == '') {
-                                errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                        if (this.IsPickup1 == true) {
+                            for (let i = 0; i < bObj.length; i++) {
+                                let b1 = bObj[i]
+                                if (b1.depotId == null || b1.depotId == '') {
+                                    errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                                }
+                                if (b1.barCode == null || b1.barCode == '') {
+                                    errMsg += `#${i + 1} 請選擇商品\n`;
+                                }
                             }
-                            if (b1.barCode == null || b1.barCode == '') {
-                                errMsg += `#${i + 1} 請選擇商品\n`;
+                        } else {
+                            for (let i = 0; i < bObj.length; i++) {
+                                let b1 = bObj[i]
+                                if (b1.materialName == null || b1.materialName == '') {
+                                    errMsg += `#${i + 1} 輸入商品名稱\n`;
+                                }
+                                b1.operNumber = b1.operNumber || 1;
                             }
                         }
-
                     }
                     if (errMsg != '') {
                         alert(errMsg)
@@ -556,6 +579,7 @@ export default {
             NewObj1.counterName = ''; //"100123445",
             NewObj1.barCode = ''; //"100123445",
             NewObj1.queryMaterialList = [];
+            NewObj1.materialName = '';// 門市取貨要輸入的商品名稱
             return NewObj1;
         },
         EditDriver(RowItem) {
@@ -574,11 +598,20 @@ export default {
 
             if (RowItem.id == 0) {
                 this.SubView = 1;
+                this.submitted = false;
                 for (let key in this.customers) {
                     this.customers[key] = '';
                 }
-
-
+                if (RowItem.isPickup == 2) {
+                    this.customers.isPickup = 2
+                    this.customers.subType = '門市取貨'
+                } else if (RowItem.isPickup == 3) {
+                    this.customers.isPickup = 3
+                    this.customers.subType = '取回件'
+                } else {
+                    this.customers.isPickup = 1
+                    this.customers.subType = '配送單'
+                }
                 this.GetBuilderNumber();
                 this.filelist = [];
                 this.customers.id = 0;
@@ -823,7 +856,7 @@ export default {
                         this.customers.agreedDelivery = dayjs(this.customers.agreedDelivery).isValid() ? dayjs(this.customers.agreedDelivery).format("YYYY-MM-DD") : null;
                         this.customers.delivered = dayjs(this.customers.delivered).isValid() ? dayjs(this.customers.delivered).format("YYYY-MM-DD") : null;
 
-                        this.filelist = String(this.customers.fileName).split(",").filter(x => x != '');
+                        this.filelist = String(this.customers.fileName || '').split(",").filter(x => x != '');
                     }
                 }).catch(function (error) {
                     console.log("error", error);
@@ -1049,7 +1082,7 @@ export default {
             //"beginTime":"2023-03-01","endTime":"2023-03-02"
 
             //let queryStr = `{"type":"出庫","number":"${this.number}","materialParam":"${this.materialParam}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","organId":"${this.organId}"}`;
-            let queryStr = `{"type":"出庫","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
+            let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
 
             APIParameter += `&search=${encodeURIComponent(queryStr)}`;
             server.get(APIUrl + APIParameter)
@@ -1302,7 +1335,15 @@ export default {
                                             {{ u1.depotName }}</option>
                                     </select>
                                 </div>
-
+                                <div class="search-box me-2 mb-2 d-inline-block">
+                                    <label for="name">配送類別</label>
+                                    <select class="form-select" v-model="subType" @change="GetData()">
+                                        <option :value="u1.id" selected
+                                            v-for="u1 in [{ id: '', name: '全部' }, { id: '配送單', name: '配送單' }, { id: '門市取貨', name: '門市取貨' }, { id: '取回件', name: '取回件' }]"
+                                            :key="'query_subType_id' + u1.id">
+                                            {{ u1.name }}</option>
+                                    </select>
+                                </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">起始日期</label>
@@ -1332,8 +1373,16 @@ export default {
                             <div class="col-sm-4">
                                 <div class="text-sm-end">
                                     <button type="button" class="btn btn-success btn-rounded mb-2 me-2"
-                                        @click="EditOne({ id: 0 })">
+                                        @click="EditOne({ id: 0, isPickup: 1 })">
                                         <i class="mdi mdi-plus me-1"></i> 新增配送單
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-rounded mb-2 me-2"
+                                        @click="EditOne({ id: 0, isPickup: 2 })">
+                                        <i class="mdi mdi-plus me-1"></i> 新增門市取貨
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-rounded mb-2 me-2"
+                                        @click="EditOne({ id: 0, isPickup: 3 })">
+                                        <i class="mdi mdi-plus me-1"></i> 新增取回件
                                     </button>
                                     <button type="button" class="btn btn-success btn-rounded mb-2 me-2"
                                         @click="$refs.fileexcelin.click()"> 匯入配送單
@@ -1364,6 +1413,7 @@ export default {
                                         <th>數量</th>
                                         <th>狀態</th>
                                         <th>配送狀態</th>
+                                        <th>配送類別</th>
                                         <th>建立時間</th>
                                         <th>操作</th>
                                     </tr>
@@ -1417,6 +1467,9 @@ export default {
                                             </div>
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
+                                            SubItem.subType }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
                                             SubItem.operTimeStr }}
                                         </td>
                                         <td>
@@ -1453,8 +1506,7 @@ export default {
                     <div class="col-lg-62">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title mb-4">{{ SubView == 1 ? '新增配送單' : (SubView == 2 ? '修改配送單' : '查看配送單')
-                                }}</h4>
+                                <h4 class="card-title mb-4">{{ EditOneTitle }}</h4>
                                 <b-form>
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
@@ -1465,23 +1517,19 @@ export default {
                                             <label for="name">原始客編</label>
                                             <input type="text" class="form-control" v-model.trim="customers.sourceNumber" />
                                         </div>
+
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
 
                                             <label for="name">客戶</label>
                                             <select class="form-select" v-model="customers.organId"
-                                                @change="InitEveryRowsProduct"
-                                                :class="{ 'is-invalid': submitted && v$.customers.organId.$error, }">
+                                                @change="InitEveryRowsProduct">
                                                 <option :value="u1.id" selected v-for="u1 in supplierlist"
                                                     :key="'customers_organId' + u1.id">
                                                     {{ u1.idname }}</option>
                                             </select>
-                                            <div v-if="submitted && v$.customers.organId.$error" class="invalid-feedback">
-                                                <span v-if="v$.customers.organId.required.$message">{{
-                                                    v$.customers.organId.required.$message
-                                                }}</span>
-                                            </div>
+
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">單號</label>
@@ -1525,15 +1573,22 @@ export default {
                                                         <tr v-for="(SubItem, cidx) in customersItem" :key="SubItem.id">
                                                             <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                                             <td>
-                                                                <select class="form-select" v-model="SubItem.depotId"
-                                                                    @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
-                                                                    <option :value="u1.id" selected v-for="u1 in depotList"
-                                                                        :key="'customers_depot_id' + cidx + u1.id">
-                                                                        {{ u1.depotName }}</option>
-                                                                </select>
+                                                                <div v-if="IsPickup1">
+                                                                    <select class="form-select" v-model="SubItem.depotId"
+                                                                        @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
+                                                                        <option :value="u1.id" selected
+                                                                            v-for="u1 in depotList"
+                                                                            :key="'customers_depot_id' + cidx + u1.id">
+                                                                            {{ u1.depotName }}</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div v-else>
+                                                                    {{ customers.subType }}
+                                                                </div>
+
                                                             </td>
                                                             <td>
-                                                                <div class="position-relative">
+                                                                <div class="position-relative" v-if="IsPickup1">
                                                                     <input type="text" class="form-control"
                                                                         :list="'datalistOptions' + cidx"
                                                                         @keyup="queryMaterialByRow(SubItem, cidx)"
@@ -1548,9 +1603,14 @@ export default {
                                                                         </option>
                                                                     </datalist>
                                                                 </div>
-
+                                                                <div v-else>
+                                                                    -
+                                                                </div>
                                                             </td>
-                                                            <td> {{ SubItem.name }}
+                                                            <td>
+                                                                <div v-if="IsPickup1">{{ SubItem.name }}</div>
+                                                                <input v-else type="text" class="form-control"
+                                                                    v-model="SubItem.materialName">
                                                             </td>
 
                                                             <td> {{ SubItem.categoryName }}
@@ -1561,8 +1621,11 @@ export default {
                                                             </td>
                                                             <td> {{ SubItem.stock }}
                                                             </td>
-                                                            <td> <input type="text" class="form-control"
-                                                                    v-model="SubItem.counterName"></td>
+                                                            <td>
+
+                                                                <input type="text" class="form-control" v-if="IsPickup1"
+                                                                    v-model="SubItem.counterName">
+                                                            </td>
                                                             <td> <input type="text" class="form-control" placeholder="數量"
                                                                     @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
                                                                     v-model="SubItem.operNumber"></td>
