@@ -607,7 +607,7 @@ export default {
                     this.customers.subType = '門市取貨'
                 } else if (RowItem.isPickup == 3) {
                     this.customers.isPickup = 3
-                    this.customers.subType = '取回件'
+                    this.customers.subType = '門市取貨派送'
                 } else {
                     this.customers.isPickup = 1
                     this.customers.subType = '配送單'
@@ -1339,7 +1339,7 @@ export default {
                                     <label for="name">配送類別</label>
                                     <select class="form-select" v-model="subType" @change="GetData()">
                                         <option :value="u1.id" selected
-                                            v-for="u1 in [{ id: '', name: '全部' }, { id: '配送單', name: '配送單' }, { id: '門市取貨', name: '門市取貨' }, { id: '取回件', name: '取回件' }]"
+                                            v-for="u1 in [{ id: '', name: '全部' }, { id: '配送單', name: '配送單' }, { id: '門市取貨', name: '門市取貨' }, { id: '門市取貨派送', name: '門市取貨派送' }]"
                                             :key="'query_subType_id' + u1.id">
                                             {{ u1.name }}</option>
                                     </select>
@@ -1382,7 +1382,7 @@ export default {
                                     </button>
                                     <button type="button" class="btn btn-primary btn-rounded mb-2 me-2"
                                         @click="EditOne({ id: 0, isPickup: 3 })">
-                                        <i class="mdi mdi-plus me-1"></i> 新增取回件
+                                        <i class="mdi mdi-plus me-1"></i> 新增門市取貨派送
                                     </button>
                                     <button type="button" class="btn btn-success btn-rounded mb-2 me-2"
                                         @click="$refs.fileexcelin.click()"> 匯入配送單
