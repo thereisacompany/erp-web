@@ -286,19 +286,19 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="搜尋名稱" v-model="supplier"
+                    <input type="text" class="form-control" placeholder="搜尋名稱" v-model="supplier" autocomplete="off"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="手機號碼" v-model="telephone"
+                    <input type="text" class="form-control" placeholder="手機號碼" v-model="telephone" autocomplete="off"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="聯繫電話" v-model="phoneNum"
+                    <input type="text" class="form-control" placeholder="聯繫電話" v-model="phoneNum" autocomplete="off"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export default {
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
                             <input id="name" v-model="customers.loginName" type="text" class="form-control"
-                              :readonly="this.customers.id != 0"
+                              autocomplete="off" :readonly="this.customers.id != 0"
                               :class="{ 'is-invalid': submitted && v$.customers.loginName.$error, }" />
                             <div v-if="submitted && v$.customers.loginName.$error" class="invalid-feedback">
                               <span v-if="v$.customers.loginName.required.$message">{{
@@ -349,7 +349,7 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
                           <div class="mb-3">
                             <label for="loginPassword">登入密碼</label>
-                            <input id="loginPassword" v-model="customers.loginPassword" type="password"
+                            <input id="loginPassword" v-model="customers.loginPassword" type="password" autocomplete="off"
                               :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : '預設密碼:12345'" class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.loginPassword.$error, }" />
                             <div v-if="submitted && v$.customers.loginPassword.$error" class="invalid-feedback">
@@ -364,7 +364,7 @@ export default {
                           <div class="mb-3">
                             <label for="name">名稱</label>
                             <input id="name" v-model="customers.supplier" type="text" class="form-control"
-                              :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
+                              autocomplete="off" :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
                             <div v-if="submitted && v$.customers.supplier.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplier.required.$message">{{
                                 v$.customers.supplier.required.$message }}</span>
@@ -375,6 +375,7 @@ export default {
                           <div class="mb-3">
                             <label for="name">姓名</label>
                             <input id="name" v-model="customers.supplierall" type="text" class="form-control"
+                              autocomplete="off"
                               :class="{ 'is-invalid': submitted && v$.customers.supplierall.$error, }" />
                             <div v-if="submitted && v$.customers.supplierall.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplierall.required.$message">{{
@@ -386,43 +387,50 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">緊急聯繫人</label>
-                            <input id="name" v-model="customers.contacts" type="text" class="form-control" />
+                            <input id="name" v-model="customers.contacts" type="text" class="form-control"
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">緊急聯繫人電話</label>
-                            <input id="name" v-model="customers.emergencyPhone" type="text" class="form-control" />
+                            <input id="name" v-model="customers.emergencyPhone" type="text" class="form-control"
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">手機號碼</label>
-                            <input id="name" v-model="customers.telephone" type="text" class="form-control" />
+                            <input id="name" v-model="customers.telephone" type="text" class="form-control"
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">聯繫電話</label>
-                            <input id="name" v-model="customers.phoneNum" type="text" class="form-control" />
+                            <input id="name" v-model="customers.phoneNum" type="text" class="form-control"
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">電子郵箱</label>
-                            <input id="name" v-model="customers.email" type="text" class="form-control" />
+                            <input id="name" v-model="customers.email" type="text" class="form-control"
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">地址</label>
-                            <input id="name" v-model="customers.address" type="text" class="form-control" />
+                            <input id="name" v-model="customers.address" type="text" class="form-control"
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">車牌號碼</label>
-                            <input id="name" v-model="customers.licensePlate" type="text" class="form-control" />
+                            <input id="name" v-model="customers.licensePlate" type="text" class="form-control" disabled
+                              autocomplete="off" />
                           </div>
                         </div>
                         <div class="col-sm-12">

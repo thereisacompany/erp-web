@@ -117,6 +117,7 @@ export default {
                 assignUser: '',
 
                 filePath: '',
+                filelist: [],
                 status: 0,
                 deliveryStatusList: [],
                 reportList: [],
@@ -248,17 +249,19 @@ export default {
                 case 3: return "聯絡中";
                 case 4: return "配送中";
                 case 5: return "配送完成";
+                case 6: return "配送異常";
                 default: return dStatus
             }
         },
         formatdStatusCSS(dStatus) {
             switch (Number(dStatus)) {
-                case 0: return "btn-danger";
+                case 0: return "btn-warning";
                 case 1: return "btn-warning";
                 case 2: return "btn-primary";
                 case 3: return "btn-secondary";
                 case 4: return "btn-info";
                 case 5: return "btn-success";
+                case 6: return "btn-danger";
                 default: return dStatus
             }
         },
@@ -1063,6 +1066,10 @@ export default {
                         this.driver.filePath = jshdata.filePath
                         this.driver.status = Number(jshdata.status)
                         this.driver.deliveryStatusList = jshdata.deliveryStatusList
+                        this.driver.filelist = [];
+                        if (this.driver.filePath != null && this.driver.filePath != '') {
+                            this.driver.filelist = String(this.driver.filePath).split(',')
+                        }
 
                     }
 
@@ -1273,6 +1280,11 @@ export default {
             const filteredArray = this.filelist.filter(obj => !(obj === file1));
 
             this.filelist = filteredArray;
+        },
+        DeleteFile2(file1) {
+            const filteredArray = this.driver.filelist.filter(obj => !(obj === file1));
+
+            this.driver.filelist = filteredArray;
         }
     },
 };
@@ -1763,12 +1775,13 @@ export default {
                                         </div>
                                         <div class="col-sm-12 mt-1">
                                             <label for="name" v-if="SubView == 3">上傳檔案</label>
-                                            <div v-for="(f1, fidx) in filelist" :key="'file-' + fidx"
-                                                style="display:inline-block">
+                                            <div v-for="(f1, fidx) in filelist" :key="'filelist-' + fidx"
+                                                style="display:inline-block;word-break:break-all">
                                                 <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)"
                                                     @click="ShowImage(f1)" style="max-width:300px;max-height:300px" />
-                                                <a v-else href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
-                                                }}</a>
+                                                <a style="word-break:break-all;display:block;max-width:100px" v-else
+                                                    href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
+                                                    }}</a>
                                                 <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)">&nbsp;<i
                                                         class="bx bx-x"></i></a>
                                             </div>
@@ -1887,9 +1900,9 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="2021-05-03"
-                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
-                                                            data-provide="datepicker">
+                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
+                                                            disabled data-date-format="yyyy-mm-dd"
+                                                            data-date-container="#datepicker2" data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1904,9 +1917,9 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="2021-05-03"
-                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
-                                                            data-provide="datepicker">
+                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
+                                                            disabled data-date-format="yyyy-mm-dd"
+                                                            data-date-container="#datepicker2" data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1922,9 +1935,9 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="2021-05-03"
-                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
-                                                            data-provide="datepicker">
+                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
+                                                            disabled data-date-format="yyyy-mm-dd"
+                                                            data-date-container="#datepicker2" data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1939,9 +1952,9 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="2021-05-03"
-                                                            data-date-format="yyyy-mm-dd" data-date-container="#datepicker2"
-                                                            data-provide="datepicker">
+                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
+                                                            disabled data-date-format="yyyy-mm-dd"
+                                                            data-date-container="#datepicker2" data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -2001,7 +2014,16 @@ export default {
                                     </div>
                                     <div class="col-sm-12 bg-light pt-3 pb-3">
                                         <div class="me-2 mb-2 d-inline-block">
-                                            <img src="" style="max-width:300px;max-height:300px" />
+                                            <div v-for="(f1, fidx) in driver.filelist" :key="'driver-filelist-' + fidx"
+                                                style="display:inline-block;word-break:break-all">
+                                                <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)"
+                                                    @click="ShowImage(f1)" style="max-width:300px;max-height:300px" />
+                                                <a style="word-break:break-all;display:block;max-width:100px" v-else
+                                                    href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
+                                                    }}</a>
+                                                <a href="javascript:;" class="text-danger" @click="DeleteFile2(f1)">&nbsp;<i
+                                                        class="bx bx-x"></i></a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

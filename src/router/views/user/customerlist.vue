@@ -167,7 +167,7 @@ export default {
             this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
           }
           this.IsGetDataing = false;
-        }).catch(function (error) {
+        }).catch((error) => {
           console.log("error", error);
           this.IsGetDataing = false;
           return;

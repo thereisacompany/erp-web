@@ -32,10 +32,15 @@ server.interceptors.response.use(function(response) {
 }, function(error) {
     // 回傳的 status code 不在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response error 做處理
-    console.log(error);
+    //console.log(error);
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
-    localStorage.removeItem("user");
-    localStorage.removeItem("user_authList")
+    const errorMessage = error.response.data;
+    //console.log(errorMessage);
+    if (errorMessage == "loginOut") {
+        localStorage.removeItem("user");
+        localStorage.removeItem("user_authList")
+        window.location.reload()
+    }
     return Promise.reject(error);
 });
 

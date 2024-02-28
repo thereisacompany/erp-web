@@ -212,9 +212,14 @@ export default {
       let APIUrl = `/vehicle/add`;
       server.post(APIUrl, data1)
         .then((res) => {
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
-            this.showModal = false;
-            this.$nextTick(() => this.GetData());
+
+          if (res != null && res.data != null) {
+            if (res.data.code == 200) {
+              this.showModal = false;
+              this.$nextTick(() => { this.GetData() });
+            } else {
+              alert(res.data.data.message)
+            }
           }
           this.IsGetDataing = false;
         }).catch(function (error) {
@@ -373,8 +378,8 @@ export default {
                           <input type="date" class="form-control" placeholder="出廠日期" v-model="customers.manufacture">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
-                          <label for="testDate">檢測日期</label>
-                          <input type="date" class="form-control" placeholder="檢測日期" v-model="customers.testDate">
+                          <label for="testDate">驗車日</label>
+                          <input type="date" class="form-control" placeholder="驗車日" v-model="customers.testDate">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="insuranceDate">保險日期</label>
@@ -448,7 +453,7 @@ export default {
                     <th>里程數(公里)</th>
                     <th>引擎號碼</th>
                     <th>出廠日期</th>
-                    <th>檢測日期</th>
+                    <th>驗車日</th>
                     <th>保險日期</th>
                     <th>排放量(c.c.)</th>
                     <th>車價</th>
