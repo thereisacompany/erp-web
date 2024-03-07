@@ -65,6 +65,7 @@ export default {
             showModal: false,
             submitted: false,
             showImageModal: false,
+            showImageURL: '',
             customers: {
 
                 id: '',
@@ -1323,8 +1324,8 @@ export default {
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">商品資料</label>
-                                        <input type="text" class="form-control" placeholder="商品資料" @keyup.enter="GetData()"
-                                            v-model="materialParam" />
+                                        <input type="text" class="form-control" placeholder="商品資料"
+                                            @keyup.enter="GetData()" v-model="materialParam" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
@@ -1437,30 +1438,30 @@ export default {
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.organName }}
+            SubItem.organName }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number
-                                        }}</td>
+                                            }}</td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.customNumber
-                                        }}
+            SubItem.customNumber
+        }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.sourceNumber
-                                        }}
+                SubItem.sourceNumber
+            }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.mNumber }}
+                SubItem.mNumber }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             <div v-for="name1 in String(SubItem.materialsList).split(',')"
                                                 :key="'SubItem' + cidx + name1">{{ name1 }}</div>
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.depotName }}
+            SubItem.depotName }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.counterName }}
+            SubItem.counterName }}
                                         </td>
 
                                         <td>{{ SubItem.materialCount }}</td>
@@ -1474,24 +1475,24 @@ export default {
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <span class="btn" :class="formatdStatusCSS(SubItem.dStatus)">{{
-                                                    formatdStatus(SubItem.dStatus) }}</span>
+            formatdStatus(SubItem.dStatus) }}</span>
 
                                             </div>
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.subType }}
+            SubItem.subType }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{
-                                            SubItem.operTimeStr }}
+            SubItem.operTimeStr }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <a class="btn btn-info" href="javascript:;"
                                                     @click="EditShow(SubItem)">查看</a>
-                                                <a class="btn btn-secondary" href="javascript:;" v-if="SubItem.status == 0"
-                                                    @click="EditOne(SubItem)">編輯</a>
-                                                <a class="btn btn-success" href="javascript:;" v-if="SubItem.status == 1"
-                                                    @click="EditDriver(SubItem)">派發司機</a>
+                                                <a class="btn btn-secondary" href="javascript:;"
+                                                    v-if="SubItem.status == 0" @click="EditOne(SubItem)">編輯</a>
+                                                <a class="btn btn-success" href="javascript:;"
+                                                    v-if="SubItem.status == 1" @click="EditDriver(SubItem)">派發司機</a>
                                             </div>
 
                                         </td>
@@ -1499,7 +1500,8 @@ export default {
                                 </tbody>
                             </table>
                         </div>
-                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage"
+                            :CallGetData="GetData" />
                     </div>
                 </div>
             </div>
@@ -1523,11 +1525,13 @@ export default {
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">客單編號</label>
-                                            <input type="text" class="form-control" v-model.trim="customers.customNumber" />
+                                            <input type="text" class="form-control"
+                                                v-model.trim="customers.customNumber" />
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">原始客編</label>
-                                            <input type="text" class="form-control" v-model.trim="customers.sourceNumber" />
+                                            <input type="text" class="form-control"
+                                                v-model.trim="customers.sourceNumber" />
                                         </div>
 
                                     </div>
@@ -1586,7 +1590,8 @@ export default {
                                                             <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                                             <td>
                                                                 <div v-if="IsPickup1">
-                                                                    <select class="form-select" v-model="SubItem.depotId"
+                                                                    <select class="form-select"
+                                                                        v-model="SubItem.depotId"
                                                                         @change="SubItem.number = ''; SubItem.name = ''; queryMaterialByRow(SubItem, cidx)">
                                                                         <option :value="u1.id" selected
                                                                             v-for="u1 in depotList"
@@ -1638,12 +1643,13 @@ export default {
                                                                 <input type="text" class="form-control" v-if="IsPickup1"
                                                                     v-model="SubItem.counterName">
                                                             </td>
-                                                            <td> <input type="text" class="form-control" placeholder="數量"
+                                                            <td> <input type="text" class="form-control"
+                                                                    placeholder="數量"
                                                                     @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
                                                                     v-model="SubItem.operNumber"></td>
 
-                                                            <td> <input type="text" class="form-control" placeholder="備註"
-                                                                    v-model="SubItem.remark"></td>
+                                                            <td> <input type="text" class="form-control"
+                                                                    placeholder="備註" v-model="SubItem.remark"></td>
 
 
 
@@ -1703,8 +1709,8 @@ export default {
                                             <div v-if="submitted && v$.customers.receiveName.$error"
                                                 class="invalid-feedback">
                                                 <span v-if="v$.customers.receiveName.required.$message">{{
-                                                    v$.customers.receiveName.required.$message
-                                                }}</span>
+            v$.customers.receiveName.required.$message
+        }}</span>
                                             </div>
                                         </div>
 
@@ -1713,10 +1719,11 @@ export default {
                                             <input type="text" class="form-control" v-maska="'####-###-###'"
                                                 placeholder="####-###-###" v-model="customers.cellphone"
                                                 :class="{ 'is-invalid': submitted && v$.customers.cellphone.$error, }">
-                                            <div v-if="submitted && v$.customers.cellphone.$error" class="invalid-feedback">
+                                            <div v-if="submitted && v$.customers.cellphone.$error"
+                                                class="invalid-feedback">
                                                 <span v-if="v$.customers.cellphone.required.$message">{{
-                                                    v$.customers.cellphone.required.$message
-                                                }}</span>
+            v$.customers.cellphone.required.$message
+        }}</span>
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-4 col-lg-3">
@@ -1724,10 +1731,11 @@ export default {
                                             <input type="text" class="form-control" placeholder="地址"
                                                 v-model="customers.address"
                                                 :class="{ 'is-invalid': submitted && v$.customers.address.$error, }">
-                                            <div v-if="submitted && v$.customers.address.$error" class="invalid-feedback">
+                                            <div v-if="submitted && v$.customers.address.$error"
+                                                class="invalid-feedback">
                                                 <span v-if="v$.customers.address.required.$message">{{
-                                                    v$.customers.address.required.$message
-                                                }}</span>
+            v$.customers.address.required.$message
+        }}</span>
                                             </div>
                                         </div>
 
@@ -1746,11 +1754,12 @@ export default {
                                                 <option value="是">是</option>
                                                 <option value="否">否</option>
                                             </select>
-                                            <div v-if="submitted && v$.customers.recycle.$error" class="invalid-feedback"
+                                            <div v-if="submitted && v$.customers.recycle.$error"
+                                                class="invalid-feedback"
                                                 :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
                                                 <span v-if="v$.customers.recycle.required.$message">{{
-                                                    v$.customers.recycle.required.$message
-                                                }}</span>
+            v$.customers.recycle.required.$message
+        }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1768,7 +1777,8 @@ export default {
                                                     @click="$refs.file2.click();"></i>
                                                 上傳檔案
                                             </b-button>
-                                            <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024) }}
+                                            <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024)
+                                                }}
                                                 MB</span>
                                             <input ref="file2" type="file" class="d-none" multiple
                                                 v-on:change="handleFileUpload()">
@@ -1782,8 +1792,8 @@ export default {
                                                 <a style="word-break:break-all;display:block;max-width:100px" v-else
                                                     href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
                                                     }}</a>
-                                                <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)">&nbsp;<i
-                                                        class="bx bx-x"></i></a>
+                                                <a href="javascript:;" class="text-danger"
+                                                    @click="DeleteFile1(f1)">&nbsp;<i class="bx bx-x"></i></a>
                                             </div>
                                         </div>
                                     </div>
@@ -1797,6 +1807,7 @@ export default {
 
             </b-tab>
             <b-tab v-if="this.customers.id != 0">
+
                 <template v-slot:title>
                     <span class="d-inline-block d-sm-none">
                         <i class="far fa-user"></i>
@@ -1886,7 +1897,8 @@ export default {
                                     <div class="col-sm-12">
                                         <div class="flex-1 overflow-hidden">
                                             <h5 class="text-bold mb-1" style="font-weight:bold;"><i
-                                                    class="bx bx-info-circle"></i> 配送狀態</h5>
+                                                    class="bx bx-info-circle"></i>
+                                                配送狀態</h5>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 bg-light pt-3 pb-3">
@@ -1894,15 +1906,17 @@ export default {
 
                                             <div class="col-lg-3">
                                                 <div class="mb-3 ">
-                                                    <label class="form-label" for="subject"> <input class="form-check-input"
-                                                            :checked="driver.status >= 2" type="checkbox" id="formCheck1">
+                                                    <label class="form-label" for="subject"> <input
+                                                            class="form-check-input" :checked="driver.status >= 2"
+                                                            type="checkbox" id="formCheck1">
                                                         接單</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
                                                         <input type="text" class="form-control" placeholder="YYYY-MM-DD"
                                                             disabled data-date-format="yyyy-mm-dd"
-                                                            data-date-container="#datepicker2" data-provide="datepicker">
+                                                            data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1911,15 +1925,17 @@ export default {
                                             </div>
                                             <div class="col-lg-3">
                                                 <div class="mb-3 ">
-                                                    <label class="form-label" for="subject"><input class="form-check-input"
-                                                            :checked="driver.status >= 3" type="checkbox" id="formCheck1">
+                                                    <label class="form-label" for="subject"><input
+                                                            class="form-check-input" :checked="driver.status >= 3"
+                                                            type="checkbox" id="formCheck1">
                                                         聯絡中</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
                                                         <input type="text" class="form-control" placeholder="YYYY-MM-DD"
                                                             disabled data-date-format="yyyy-mm-dd"
-                                                            data-date-container="#datepicker2" data-provide="datepicker">
+                                                            data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1937,7 +1953,8 @@ export default {
                                                                 class="mdi mdi-calendar"></i></span>
                                                         <input type="text" class="form-control" placeholder="YYYY-MM-DD"
                                                             disabled data-date-format="yyyy-mm-dd"
-                                                            data-date-container="#datepicker2" data-provide="datepicker">
+                                                            data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1947,14 +1964,16 @@ export default {
 
                                                 <div class="mb-3">
                                                     <label class="form-label"><input class="form-check-input"
-                                                            :checked="driver.status >= 5" type="checkbox" id="formCheck1">
+                                                            :checked="driver.status >= 5" type="checkbox"
+                                                            id="formCheck1">
                                                         完成派單</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
                                                         <input type="text" class="form-control" placeholder="YYYY-MM-DD"
                                                             disabled data-date-format="yyyy-mm-dd"
-                                                            data-date-container="#datepicker2" data-provide="datepicker">
+                                                            data-date-container="#datepicker2"
+                                                            data-provide="datepicker">
 
 
                                                     </div><!-- input-group -->
@@ -1978,7 +1997,8 @@ export default {
                                         <div class="row mb-3">
                                             <div class="col-2">
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="mdi mdi-calendar"></i></span>
                                                     <input type="text" class="form-control text-center" readonly
                                                         :value="formatDate(r1.datetime)" data-date-format="yyyy-mm-dd"
                                                         data-date-container="#datepicker3" data-provide="datepicker">
@@ -2009,7 +2029,8 @@ export default {
                                     <div class="col-sm-12">
                                         <div class="flex-1 overflow-hidden">
                                             <h5 class="text-bold mb-1" style="font-weight:bold;"><i
-                                                    class="bx bx-folder-open"></i> 圖片及附件</h5>
+                                                    class="bx bx-folder-open"></i>
+                                                圖片及附件</h5>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 bg-light pt-3 pb-3">
@@ -2021,8 +2042,8 @@ export default {
                                                 <a style="word-break:break-all;display:block;max-width:100px" v-else
                                                     href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
                                                     }}</a>
-                                                <a href="javascript:;" class="text-danger" @click="DeleteFile2(f1)">&nbsp;<i
-                                                        class="bx bx-x"></i></a>
+                                                <a href="javascript:;" class="text-danger"
+                                                    @click="DeleteFile2(f1)">&nbsp;<i class="bx bx-x"></i></a>
                                             </div>
                                         </div>
                                     </div>
@@ -2031,7 +2052,8 @@ export default {
                                 <div class="row mb-2">
                                     <div class="col-sm-12">
                                         <div class="flex-1 overflow-hidden">
-                                            <h5 class="text-bold mb-1" style="font-weight:bold;"><i class="bx bx-video"></i>
+                                            <h5 class="text-bold mb-1" style="font-weight:bold;"><i
+                                                    class="bx bx-video"></i>
                                                 影片上傳專區</h5>
                                         </div>
                                     </div>
@@ -2060,7 +2082,8 @@ export default {
                 <a href="javascript:;" class="btn btn-warning" @click="customers.status = 0; handleSubmit()"
                     v-if="SubView == 3 && customers.status == 1">反審核</a>
                 <a href="javascript:;" class="btn btn-success" @click="ExcelOut" v-if="SubView == 3">匯出</a>
-                <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0; GetData()" v-if="SubView != 0">返回</a>
+                <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0; GetData()"
+                    v-if="SubView != 0">返回</a>
             </div>
         </div>
         <b-modal size="xl" v-model="showImageModal" title="顯示圖片" title-class="text-black font-18" body-class="p-3"

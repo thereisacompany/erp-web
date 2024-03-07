@@ -55,6 +55,17 @@ export default {
         price: '',
         status: '',
         ownership: '',
+
+
+        takeOver: '',//`take_over` date  '車輛接手日',
+        loanDue: '',//`loan_due` date  '貸款到期日',
+        contractExpired: '',//`contract_expired` date   '司機合約到期日',
+        insuranceDateEnd: '',//`insurance_date_end` date   '車險迄止日',
+        renewalDate: '',//`renewal_date` date   '補換照日(行照)',
+        licenseValid: '',//`license_valid` date   '行照有效日',
+        cargoInsuranceDue: '',//`cargo_insurance_due` date   '貨物險到期日',
+
+
       },
 
       licensePlateNumber: '',
@@ -146,6 +157,15 @@ export default {
         this.customers.status = 1;
         this.customers.ownership = 1;
 
+        this.customers.takeOver = '';
+        this.customers.loanDue = '';
+        this.customers.contractExpired = '';
+        this.customers.insuranceDateEnd = '';
+        this.customers.renewalDate = '';
+        this.customers.licenseValid = '';
+        this.customers.cargoInsuranceDue = '';
+
+
       }
       else {
 
@@ -165,6 +185,14 @@ export default {
         this.customers.status = RowItem.status;
         this.customers.ownership = RowItem.ownership;
 
+
+        this.customers.takeOver = RowItem.takeOver;
+        this.customers.loanDue = RowItem.loanDue;
+        this.customers.contractExpired = RowItem.contractExpired;
+        this.customers.insuranceDateEnd = RowItem.insuranceDateEnd;
+        this.customers.renewalDate = RowItem.renewalDate;
+        this.customers.licenseValid = RowItem.licenseValid;
+        this.customers.cargoInsuranceDue = RowItem.cargoInsuranceDue;
 
       }
 
@@ -316,8 +344,8 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.licensePlateNumber.$error, }" />
                             <div v-if="submitted && v$.customers.licensePlateNumber.$error" class="invalid-feedback">
                               <span v-if="v$.customers.licensePlateNumber.required.$message">{{
-                                v$.customers.licensePlateNumber.required.$message
-                              }}</span>
+      v$.customers.licensePlateNumber.required.$message
+    }}</span>
                             </div>
                           </div>
                         </div>
@@ -329,8 +357,8 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.brandModel.$error, }" />
                             <div v-if="submitted && v$.customers.brandModel.$error" class="invalid-feedback">
                               <span v-if="v$.customers.brandModel.required.$message">{{
-                                v$.customers.brandModel.required.$message
-                              }}</span>
+      v$.customers.brandModel.required.$message
+    }}</span>
                             </div>
                           </div>
                         </div>
@@ -360,9 +388,8 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.mileage.$error, }"
                               placeholder="里程數(公里)" />
                             <div v-if="submitted && v$.customers.mileage.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.mileage.numeric.$message">{{
-                                v$.customers.mileage.numeric.$message
-                              }}</span>
+                              <span v-if="v$.customers.mileage.numeric.$message">
+                                {{ v$.customers.mileage.numeric.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -381,9 +408,43 @@ export default {
                           <label for="testDate">驗車日</label>
                           <input type="date" class="form-control" placeholder="驗車日" v-model="customers.testDate">
                         </div>
-                        <div class="col-sm-12 col-md-4 col-lg-4">
+                        <div class="col-sm-12 col-md-2 col-lg-2">
                           <label for="insuranceDate">保險日期</label>
                           <input type="date" class="form-control" placeholder="保險日期" v-model="customers.insuranceDate">
+                        </div>
+
+                        <div class="col-sm-12 col-md-2 col-lg-2">
+                          <label for="insuranceDateEnd">車險迄止日</label>
+                          <input type="date" class="form-control" placeholder="車險迄止日"
+                            v-model="customers.insuranceDateEnd">
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                          <label for="takeOver">車輛接手日</label>
+                          <input type="date" class="form-control" placeholder="車輛接手日" v-model="customers.takeOver">
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                          <label for="loanDue">貸款到期日</label>
+                          <input type="date" class="form-control" placeholder="貸款到期日" v-model="customers.loanDue">
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                          <label for="contractExpired">司機合約到期日</label>
+                          <input type="date" class="form-control" placeholder="司機合約到期日"
+                            v-model="customers.contractExpired">
+                        </div>
+
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                          <label for="renewalDate">補換照日(行照)</label>
+                          <input type="date" class="form-control" placeholder="補換照日(行照)"
+                            v-model="customers.renewalDate">
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                          <label for="licenseValid">行照有效日</label>
+                          <input type="date" class="form-control" placeholder="行照有效日" v-model="customers.licenseValid">
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-4">
+                          <label for="cargoInsuranceDue">貨物險到期日</label>
+                          <input type="date" class="form-control" placeholder="貨物險到期日"
+                            v-model="customers.cargoInsuranceDue">
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-4">
@@ -393,9 +454,8 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.emissions.$error, }"
                               placeholder="排放量(c.c.)" />
                             <div v-if="submitted && v$.customers.emissions.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.emissions.numeric.$message">{{
-                                v$.customers.emissions.numeric.$message
-                              }}</span>
+                              <span v-if="v$.customers.emissions.numeric.$message">
+                                {{ v$.customers.emissions.numeric.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -405,9 +465,8 @@ export default {
                             <input id="price" v-model="customers.price" type="text" class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.price.$error, }" placeholder="車價" />
                             <div v-if="submitted && v$.customers.price.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.price.numeric.$message">{{
-                                v$.customers.price.numeric.$message
-                              }}</span>
+                              <span v-if="v$.customers.price.numeric.$message">
+                                {{ v$.customers.price.numeric.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -427,13 +486,12 @@ export default {
                           </select>
                         </div>
 
-
                       </div>
 
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
                         <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                        }}</b-button>
+                          }}</b-button>
                       </div>
                     </form>
                   </b-modal>

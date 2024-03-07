@@ -21,6 +21,7 @@ export default {
   components: { Layout, PageHeader },
   data() {
     return {
+      MaxFileSize: 1000,
       customersData: [],
       title: "人事管理",
       items: [
@@ -39,6 +40,8 @@ export default {
       ],
       showModal: false,
       submitted: false,
+      showImageModal: false,
+      showImageURL: '',
       customers: {
         id: '',
         supplier: '',
@@ -54,14 +57,23 @@ export default {
         licensePlate: '',
         loginName: '',
         loginPassword: '',
-        type: '司機'
+        type: '司機',
+        groupInsuranceStart: '',// date  '團保加保日',
+        groupInsuranceEnd: '',// date  '團保退保日',
+        laborHealthInsuranceStart: '',// date  '勞健保加保日',
+        laborHealthInsuranceSnd: '',// date  '勞健保退保日',
+        onboarding: '',// date  '入職日',
+        resign: '',// date  '離職日',
+        idNumber: '',// varchar(10)  '身分證字號',
+        birthday: '',// date  '出生年月日',
+        license: '',// varchar(255)  '駕照',
       },
       type: '全部類別',
       typelist: ['家電-司機', '家電-助手', '冷氣-師傅', '冷氣-助手', '行政'],
       supplier: '',
       telephone: '',
       phoneNum: '',
-
+      filelist: [],
       IsGetDataing: false,
       pageSize: 30,
       totalRows: 0,
@@ -95,6 +107,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      this.GetMaxFileSize();
       this.GetData();
     })
   },
@@ -116,6 +129,8 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
+        this.customers.license = this.filelist.join(',');
+
         if (this.customers.id == 0) {
           this.AddData(this.customers);
         } else if (this.customers.id > 0) {
@@ -146,6 +161,16 @@ export default {
         this.customers.loginName = '';
         this.customers.loginPassword = '';
         this.customers.type = '';
+        this.customers.groupInsuranceStart = '';
+        this.customers.groupInsuranceEnd = '';
+        this.customers.laborHealthInsuranceStart = '';
+        this.customers.laborHealthInsuranceSnd = '';
+        this.customers.onboarding = '';
+        this.customers.resign = '';
+        this.customers.idNumber = '';
+        this.customers.birthday = '';
+        this.customers.license = '';
+        this.filelist = [];
       }
       else {
 
@@ -165,6 +190,18 @@ export default {
         this.customers.loginName = RowItem.loginName;
         this.customers.loginPassword = '';
         this.customers.type = RowItem.type;
+
+        this.customers.groupInsuranceStart = RowItem.groupInsuranceStart;//: '',// date  '團保加保日',
+        this.customers.groupInsuranceEnd = RowItem.groupInsuranceEnd;//: '',// date  '團保退保日',
+        this.customers.laborHealthInsuranceStart = RowItem.laborHealthInsuranceStart;//: '',// date  '勞健保加保日',
+        this.customers.laborHealthInsuranceSnd = RowItem.laborHealthInsuranceSnd;//: '',// date  '勞健保退保日',
+        this.customers.onboarding = RowItem.onboarding;//: '',// date  '入職日',
+        this.customers.resign = RowItem.resign;//: '',// date  '離職日',
+        this.customers.idNumber = RowItem.idNumber;//: '',// varchar(10)  '身分證字號',
+        this.customers.birthday = RowItem.birthday;//: '',// date  '出生年月日',
+        this.customers.license = RowItem.license;//: '',// varchar(255)  '駕照',
+
+        this.filelist = String(this.customers.license || '').split(",").filter(x => x != '');
       }
 
 
@@ -202,6 +239,7 @@ export default {
             this.customersData = jshdata.rows;
             this.totalRows = jshdata.total;
             this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
+
           }
           this.IsGetDataing = false;
         }).catch(function (error) {
@@ -263,6 +301,99 @@ export default {
           this.IsGetDataing = false;
           return;
         });
+    },
+    GetMaxFileSize() {
+
+      let APIUrl = `/systemConfig/fileSizeLimit`;
+      server.get(APIUrl)
+        .then((res) => {
+
+          if (res != null && res.data != null && res.status == 200) {
+            let jshdata = res.data.data;
+            this.MaxFileSize = jshdata;
+
+          }
+        }).catch(function (error) {
+          console.log("error", error);
+        });
+    },
+    handleFileUpload: function () {
+      console.log("aaa", this.$refs.file2.files.length)
+      for (let i = 0; i < this.$refs.file2.files.length; i++) {
+        //this.filelist.push(this.$refs.file2.files[i]);
+        console.log("file1", i, this.$refs.file2.files[i].name, this.$refs.file2.files[i])
+        let file1 = this.$refs.file2.files[i];
+        if (file1.size <= this.MaxFileSize) {
+          this.UploadFile1("bill", file1, (uploadPath) => {
+            if (uploadPath != null) {
+              this.filelist.push(uploadPath);
+            }
+          })
+        }
+
+      }
+      this.$refs.file2.value = '';
+    },
+    UploadFile1(biz, file1, callback) {
+      //http://w66.ddns.net:9955/jshERP-boot/systemConfig/upload
+
+      let APIUrl = `/systemConfig/upload`;
+      const formData = new FormData();
+      formData.append('biz', biz);
+      formData.append('file', file1);
+      server.post(APIUrl, formData)
+        .then((res) => {
+
+          if (res != null && res.data != null && res.data.code == 200) {
+            let jshdata = res.data;
+            callback(jshdata.data)
+          }
+        }).catch(function (error) {
+          console.log("error", error);
+          callback(null)
+          return;
+        });
+
+    },
+    CheckIsImage(ImageUrl) {
+      let filename = this.GetAccessFile1(ImageUrl);
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+      const extension = filename.slice(filename.lastIndexOf('.')).toLowerCase();
+      if (imageExtensions.includes(extension)) {
+        return true;
+      }
+      return false;
+    },
+    ShowImage(ImageUrl) {
+      let filename = this.GetAccessFile1(ImageUrl);
+
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+      const extension = filename.slice(filename.lastIndexOf('.')).toLowerCase();
+      if (imageExtensions.includes(extension)) {
+        this.showImageURL = filename;
+        this.showImageModal = true;
+      } else {
+        window.open(filename, "file1");
+      }
+
+
+    },
+    GetAccessFile1(UrlPath1) {
+      ///systemConfig/static/
+
+      let APIUrl = `${process.env.VUE_APP_API_URL}/systemConfig/static/${UrlPath1}`;
+      return APIUrl;
+
+    },
+    DeleteFile1(file1) {
+      const filteredArray = this.filelist.filter(obj => !(obj === file1));
+
+      this.filelist = filteredArray;
+    },
+    DeleteFile2(file1) {
+      const filteredArray = this.driver.filelist.filter(obj => !(obj === file1));
+
+      this.driver.filelist = filteredArray;
     }
   },
 };
@@ -329,7 +460,7 @@ export default {
                             </select>
                             <div v-if="submitted && v$.customers.type.$error" class="invalid-feedback">
                               <span v-if="v$.customers.type.required.$message">{{
-                                v$.customers.type.required.$message }}</span>
+      v$.customers.type.required.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -342,19 +473,20 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.loginName.$error, }" />
                             <div v-if="submitted && v$.customers.loginName.$error" class="invalid-feedback">
                               <span v-if="v$.customers.loginName.required.$message">{{
-                                v$.customers.loginName.required.$message }}</span>
+      v$.customers.loginName.required.$message }}</span>
                             </div>
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
                           <div class="mb-3">
                             <label for="loginPassword">登入密碼</label>
-                            <input id="loginPassword" v-model="customers.loginPassword" type="password" autocomplete="off"
-                              :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : '預設密碼:12345'" class="form-control"
+                            <input id="loginPassword" v-model="customers.loginPassword" type="password"
+                              autocomplete="off" :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : '預設密碼:12345'"
+                              class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.loginPassword.$error, }" />
                             <div v-if="submitted && v$.customers.loginPassword.$error" class="invalid-feedback">
                               <span v-if="v$.customers.loginPassword.maxLength.$message">{{
-                                v$.customers.loginPassword.maxLength.$message }}</span>
+      v$.customers.loginPassword.maxLength.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -364,10 +496,11 @@ export default {
                           <div class="mb-3">
                             <label for="name">名稱</label>
                             <input id="name" v-model="customers.supplier" type="text" class="form-control"
-                              autocomplete="off" :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
+                              autocomplete="off"
+                              :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
                             <div v-if="submitted && v$.customers.supplier.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplier.required.$message">{{
-                                v$.customers.supplier.required.$message }}</span>
+      v$.customers.supplier.required.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -379,7 +512,7 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.supplierall.$error, }" />
                             <div v-if="submitted && v$.customers.supplierall.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplierall.required.$message">{{
-                                v$.customers.supplierall.required.$message }}</span>
+      v$.customers.supplierall.required.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -428,11 +561,70 @@ export default {
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
+                            <label for="name">團保加保日</label>
+                            <input id="name" v-model="customers.groupInsuranceStart" type="date" class="form-control"
+                              autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">團保退保日</label>
+                            <input id="name" v-model="customers.groupInsuranceEnd" type="date" class="form-control"
+                              autocomplete="off" />
+                          </div>
+                        </div>
+
+
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">勞健保加保日</label>
+                            <input id="name" v-model="customers.laborHealthInsuranceStart" type="date"
+                              class="form-control" autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">勞健保退保日</label>
+                            <input id="name" v-model="customers.laborHealthInsuranceSnd" type="date"
+                              class="form-control" autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">入職日</label>
+                            <input id="name" v-model="customers.onboarding" type="date" class="form-control"
+                              autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">離職日</label>
+                            <input id="name" v-model="customers.resign" type="date" class="form-control"
+                              autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">身分證字號</label>
+                            <input id="name" v-model="customers.idNumber" type="text" class="form-control"
+                              autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">出生年月日</label>
+                            <input id="name" v-model="customers.birthday" type="date" class="form-control"
+                              autocomplete="off" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
                             <label for="name">車牌號碼</label>
                             <input id="name" v-model="customers.licensePlate" type="text" class="form-control" disabled
                               autocomplete="off" />
                           </div>
                         </div>
+
                         <div class="col-sm-12">
                           <div class="mb-3">
                             <label for="name">狀態</label>
@@ -451,13 +643,36 @@ export default {
                         </div>
 
 
+                        <div class="col-sm-12">
+                          <b-button variant="light" class="w-sm">
+                            <i class="mdi mdi-upload d-block font-size-16" @click="$refs.file2.click();"></i>
+                            駕照上傳
+                          </b-button>
+                          <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024) }}
+                            MB</span>
+                          <input ref="file2" type="file" class="d-none" multiple v-on:change="handleFileUpload()">
+                        </div>
+                        <div class="col-sm-12 mt-1">
+
+                          <div v-for="(f1, fidx) in filelist" :key="'filelist-' + fidx"
+                            style="display:inline-block;word-break:break-all">
+                            <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)" @click="ShowImage(f1)"
+                              style="max-width:100px;max-height:100px" />
+                            <a style="word-break:break-all;display:block;max-width:100px" v-else href="javascript:;"
+                              @click="ShowImage(f1)">{{ f1.split('/').pop()
+                              }}</a>
+                            <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)">&nbsp;<i
+                                class="bx bx-x"></i></a>
+                          </div>
+                        </div>
+
 
                       </div>
 
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
                         <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                        }}</b-button>
+                          }}</b-button>
                       </div>
                     </form>
                   </b-modal>
@@ -516,6 +731,20 @@ export default {
         </div>
       </div>
     </div>
+    <b-modal size="xl" v-model="showImageModal" title="顯示圖片" title-class="text-black font-18" body-class="p-3"
+      hide-footer>
+      <form>
+        <div class="row text-center">
+          <div class="col-12">
+            <img :src="showImageURL" max-width="100%" max-height="100%" style="max-width: 100%;">
+          </div>
+        </div>
+
+        <div class="text-end pt-5 mt-3">
+          <b-button variant="light" @click="showImageModal = false">關閉</b-button>
+        </div>
+      </form>
+    </b-modal>
     <!-- end row -->
   </Layout>
 </template>
