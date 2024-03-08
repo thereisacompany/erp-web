@@ -61,7 +61,7 @@ export default {
         groupInsuranceStart: '',// date  '團保加保日',
         groupInsuranceEnd: '',// date  '團保退保日',
         laborHealthInsuranceStart: '',// date  '勞健保加保日',
-        laborHealthInsuranceSnd: '',// date  '勞健保退保日',
+        laborHealthInsuranceEnd: '',// date  '勞健保退保日',
         onboarding: '',// date  '入職日',
         resign: '',// date  '離職日',
         idNumber: '',// varchar(10)  '身分證字號',
@@ -164,7 +164,7 @@ export default {
         this.customers.groupInsuranceStart = '';
         this.customers.groupInsuranceEnd = '';
         this.customers.laborHealthInsuranceStart = '';
-        this.customers.laborHealthInsuranceSnd = '';
+        this.customers.laborHealthInsuranceEnd = '';
         this.customers.onboarding = '';
         this.customers.resign = '';
         this.customers.idNumber = '';
@@ -194,7 +194,7 @@ export default {
         this.customers.groupInsuranceStart = RowItem.groupInsuranceStart;//: '',// date  '團保加保日',
         this.customers.groupInsuranceEnd = RowItem.groupInsuranceEnd;//: '',// date  '團保退保日',
         this.customers.laborHealthInsuranceStart = RowItem.laborHealthInsuranceStart;//: '',// date  '勞健保加保日',
-        this.customers.laborHealthInsuranceSnd = RowItem.laborHealthInsuranceSnd;//: '',// date  '勞健保退保日',
+        this.customers.laborHealthInsuranceEnd = RowItem.laborHealthInsuranceEnd;//: '',// date  '勞健保退保日',
         this.customers.onboarding = RowItem.onboarding;//: '',// date  '入職日',
         this.customers.resign = RowItem.resign;//: '',// date  '離職日',
         this.customers.idNumber = RowItem.idNumber;//: '',// varchar(10)  '身分證字號',
@@ -585,7 +585,7 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">勞健保退保日</label>
-                            <input id="name" v-model="customers.laborHealthInsuranceSnd" type="date"
+                            <input id="name" v-model="customers.laborHealthInsuranceEnd" type="date"
                               class="form-control" autocomplete="off" />
                           </div>
                         </div>
