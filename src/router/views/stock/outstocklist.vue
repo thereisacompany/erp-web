@@ -66,6 +66,7 @@ export default {
             submitted: false,
             showImageModal: false,
             showImageURL: '',
+            showVideoURL: '',
             customers: {
 
                 id: '',
@@ -223,7 +224,14 @@ export default {
         },
     },
     methods: {
-
+        GetDriverDay(iStatus) {
+            if (this.driver == null || this.driver.deliveryStatusList == null) return "";
+            let F1List = this.driver.deliveryStatusList.filter(x => String(x.status) == String(iStatus));
+            if (F1List.length != 0) {
+                return this.formatDate(F1List[0].date)
+            }
+            return "";
+        },
         GetDriverCarNumber() {
 
             if (this.driver.driverId == null || this.driver.driverId == '') return;
@@ -1256,6 +1264,15 @@ export default {
             }
             return false;
         },
+        CheckIsVideo(ImageUrl) {
+            let filename = this.GetAccessFile1(ImageUrl);
+            const imageExtensions = ['.mp4', '.mov'];
+            const extension = filename.slice(filename.lastIndexOf('.')).toLowerCase();
+            if (imageExtensions.includes(extension)) {
+                return true;
+            }
+            return false;
+        },
         ShowImage(ImageUrl) {
             let filename = this.GetAccessFile1(ImageUrl);
 
@@ -1263,7 +1280,21 @@ export default {
             const extension = filename.slice(filename.lastIndexOf('.')).toLowerCase();
             if (imageExtensions.includes(extension)) {
                 this.showImageURL = filename;
+                this.showVideoURL = '';
                 this.showImageModal = true;
+            } else if (['.mp4', '.mov'].includes(extension)) {
+                this.showImageURL = '';
+                this.showVideoURL = filename;
+                this.showImageModal = true;
+                const video = this.$refs.videoPlayer;
+                if (video) {
+                    this.$nextTick(() => {
+                        video.style.width = '100%';
+                        video.style.height = `auto`;
+                        video.src = this.showVideoURL;
+                        video.play();
+                    })
+                }
             } else {
                 window.open(filename, "file1");
             }
@@ -1788,7 +1819,10 @@ export default {
                                             <div v-for="(f1, fidx) in filelist" :key="'filelist-' + fidx"
                                                 style="display:inline-block;word-break:break-all">
                                                 <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)"
-                                                    @click="ShowImage(f1)" style="max-width:300px;max-height:300px" />
+                                                    @click="ShowImage(f1)" style="max-width:100px;max-height:100px" />
+                                                <img class="logo-bank" v-else-if="CheckIsVideo(f1)"
+                                                    style="max-width:100px;max-height:100px" src="/images/playvideo.jpg"
+                                                    @click="ShowImage(f1)" />
                                                 <a style="word-break:break-all;display:block;max-width:100px" v-else
                                                     href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
                                                     }}</a>
@@ -1913,8 +1947,8 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
-                                                            disabled data-date-format="yyyy-mm-dd"
+                                                        <input type="text" class="form-control" disabled
+                                                            data-date-format="yyyy-mm-dd" :value="GetDriverDay(2)"
                                                             data-date-container="#datepicker2"
                                                             data-provide="datepicker">
 
@@ -1932,8 +1966,8 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
-                                                            disabled data-date-format="yyyy-mm-dd"
+                                                        <input type="text" class="form-control" disabled
+                                                            data-date-format="yyyy-mm-dd" :value="GetDriverDay(3)"
                                                             data-date-container="#datepicker2"
                                                             data-provide="datepicker">
 
@@ -1951,8 +1985,8 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
-                                                            disabled data-date-format="yyyy-mm-dd"
+                                                        <input type="text" class="form-control" disabled
+                                                            data-date-format="yyyy-mm-dd" :value="GetDriverDay(4)"
                                                             data-date-container="#datepicker2"
                                                             data-provide="datepicker">
 
@@ -1970,8 +2004,8 @@ export default {
                                                     <div class="input-group">
                                                         <span class="input-group-text"><i
                                                                 class="mdi mdi-calendar"></i></span>
-                                                        <input type="text" class="form-control" placeholder="YYYY-MM-DD"
-                                                            disabled data-date-format="yyyy-mm-dd"
+                                                        <input type="text" class="form-control" disabled
+                                                            data-date-format="yyyy-mm-dd" :value="GetDriverDay(5)"
                                                             data-date-container="#datepicker2"
                                                             data-provide="datepicker">
 
@@ -2038,7 +2072,10 @@ export default {
                                             <div v-for="(f1, fidx) in driver.filelist" :key="'driver-filelist-' + fidx"
                                                 style="display:inline-block;word-break:break-all">
                                                 <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)"
-                                                    @click="ShowImage(f1)" style="max-width:300px;max-height:300px" />
+                                                    @click="ShowImage(f1)" style="max-width:100px;max-height:100px" />
+                                                <img class="logo-bank" v-else-if="CheckIsVideo(f1)"
+                                                    style="max-width:100px;max-height:100px" src="/images/playvideo.jpg"
+                                                    @click="ShowImage(f1)" />
                                                 <a style="word-break:break-all;display:block;max-width:100px" v-else
                                                     href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
                                                     }}</a>
@@ -2059,7 +2096,7 @@ export default {
                                     </div>
                                     <div class="col-sm-12 bg-light pt-3 pb-3">
                                         <div class="me-2 mb-2 d-inline-block">
-                                            <img src="" style="max-width:300px;max-height:300px" />
+                                            <img src="" style="max-width:100px;max-height:100px" />
                                         </div>
                                     </div>
                                 </div>
@@ -2090,8 +2127,16 @@ export default {
             hide-footer>
             <form>
                 <div class="row text-center">
-                    <div class="col-12">
-                        <img :src="showImageURL" max-width="100%" max-height="100%" style="max-width: 100%;">
+                    <div class="col-12" v-if="showImageURL != ''">
+                        <img :src="showImageURL" max-width="100%" max-height="100%"
+                            style="max-width: 100%;max-height:calc(100vh - 100px)">
+                    </div>
+                    <div class="col-12" v-show="showVideoURL != ''">
+                        <video ref="videoPlayer" playsinline controls preload="auto" autoplay loop muted
+                            style="max-width: 100%;max-height:calc(100vh - 100px)">
+                            <source :src="showVideoURL" type="video/mp4">
+                            您的瀏覽器不支援影片格式
+                        </video>
                     </div>
                 </div>
 

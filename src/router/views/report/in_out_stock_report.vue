@@ -128,7 +128,7 @@ export default {
     },
     mounted() {
         server.GetSupplierList((rows) => { this.supplierlist = rows })
-
+        this.beginDate = dayjs().format("YYYY-MM-DD");//預設起始日期
         this.$nextTick(() => {
 
             this.GetDepotList();//倉庫別
@@ -268,8 +268,8 @@ export default {
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">商品資料</label>
-                                        <input type="text" class="form-control" placeholder="商品資料" @keyup.enter="GetData()"
-                                            v-model="materialParam" />
+                                        <input type="text" class="form-control" placeholder="商品資料"
+                                            @keyup.enter="GetData()" v-model="materialParam" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
@@ -312,7 +312,7 @@ export default {
                                         <th>名稱</th>
                                         <th>規格</th>
                                         <th>型號</th>
-                                        <th>備註</th>
+                                        <th>不良品</th>
                                         <th>上月結存數量</th>
                                         <th>入庫數量</th>
                                         <th>出庫數量</th>
@@ -380,7 +380,8 @@ export default {
                                 </tfoot>
                             </table>
                         </div>
-                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage"
+                            :CallGetData="GetData" />
                     </div>
                 </div>
             </div>
