@@ -6,7 +6,7 @@ import { required, helpers, minLength, maxLength } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
-
+import common from "@/api/common";
 
 import appConfig from "@/app.config";
 
@@ -42,6 +42,7 @@ export default {
       submitted: false,
       showImageModal: false,
       showImageURL: '',
+      VehicleList: [],
       customers: {
         id: '',
         supplier: '',
@@ -87,17 +88,13 @@ export default {
   validations: {
     customers: {
       supplier: {
-        required: helpers.withMessage("請填寫名稱", required),
+        required: helpers.withMessage("請填寫姓名", required),
       },
-      supplierall: {
-        required: helpers.withMessage("請填寫全名", required),
-      },
+
       type: {
         required: helpers.withMessage("請選擇人事類別", required),
       },
-      loginName: {
-        required: helpers.withMessage("司機類別請輸入登入帳號", required),
-      },
+
       loginPassword: {
         // 使用 `minLength` 规则，但添加 `optional` 选项，以便在 loginPassword 为空时不执行 minLength 验证规则
         minLength: helpers.withMessage("請輸入6-12位密碼", minLength(6), { unless: (value) => value !== '' }),
@@ -108,11 +105,53 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.GetMaxFileSize();
+      this.GetVehiclelist();
       this.GetData();
     })
   },
   methods: {
+    formatPadLeftZero(str, len) {
+      if (str == null || str == '') return ''
+      return common.PadLeftZero(str, len)
+    },
+    GetVehiclelist() {
 
+
+      let APIUrl = `/vehicle/list`;
+      let APIParameter = `?currentPage=1&pageSize=1000`;
+      let queryStr = `{"licensePlateNumber":"","brandModel":"","driver":""}`;
+      APIParameter += `&search=${encodeURIComponent(queryStr)}`;
+      server.get(APIUrl + APIParameter)
+        .then((res) => {
+          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+            let jshdata = res.data.data;
+            let list2 = jshdata.rows;
+            list2.sort((a, b) => {
+              // First, sort by driverName being empty
+              if (!a.driverName && b.driverName) {
+                return -1; // a should come before b
+              } else if (a.driverName && !b.driverName) {
+                return 1; // b should come before a
+              }
+
+              // If both have empty driverName or both have non-empty driverName, sort by licensePlateNumber
+              return a.licensePlateNumber.localeCompare(b.licensePlateNumber);
+            });
+
+            this.VehicleList = [];
+            for (let i = 0; i < list2.length; i++) {
+              let driverName = '';
+              if (list2[i].driverName != null && list2[i].driverName != '') driverName = ' / ' + this.formatPadLeftZero(list2[i].driver, 3) + ' ' + list2[i].driverName;
+              this.VehicleList.push({ licensePlateNumber: list2[i].licensePlateNumber, driverName })
+            }
+          }
+
+        }).catch(function (error) {
+          console.log("error", error);
+          return;
+        });
+
+    },
     /**
      * Modal form submit
      */
@@ -121,9 +160,17 @@ export default {
       this.submitted = true;
 
       // stop here if form is invalid
+      //console.log(this.customers.type, this.customers.loginName + 'aaa')
+      if (this.customers.type == '家電-司機') {
+        if (this.customers.loginName == '') {
+          alert("司機請填寫登入帳號和密碼!")
+          return;
+        }
 
-      if (this.customers.type != '家電-司機' && (this.customers.loginName == '' || this.customers.loginName == null)) {
-        this.customers.loginName = 'loginName'
+        if (this.customers.id == 0 && this.customers.loginPassword == '') {
+          alert("請輸入登入密碼!")
+          return;
+        }
       }
       this.v$.$touch();
       if (this.v$.$invalid) {
@@ -417,7 +464,7 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="搜尋名稱" v-model="supplier" autocomplete="off"
+                    <input type="text" class="form-control" placeholder="搜尋姓名" v-model="supplier" autocomplete="off"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
@@ -469,19 +516,15 @@ export default {
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
                             <input id="name" v-model="customers.loginName" type="text" class="form-control"
-                              autocomplete="off" :readonly="this.customers.id != 0"
-                              :class="{ 'is-invalid': submitted && v$.customers.loginName.$error, }" />
-                            <div v-if="submitted && v$.customers.loginName.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.loginName.required.$message">{{
-      v$.customers.loginName.required.$message }}</span>
-                            </div>
+                              autocomplete="off" :readonly="this.customers.id != 0" />
+
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
                           <div class="mb-3">
                             <label for="loginPassword">登入密碼</label>
                             <input id="loginPassword" v-model="customers.loginPassword" type="password"
-                              autocomplete="off" :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : '預設密碼:12345'"
+                              autocomplete="off" :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : ''"
                               class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.loginPassword.$error, }" />
                             <div v-if="submitted && v$.customers.loginPassword.$error" class="invalid-feedback">
@@ -494,7 +537,7 @@ export default {
                       <div class="row">
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
-                            <label for="name">名稱</label>
+                            <label for="name">姓名</label>
                             <input id="name" v-model="customers.supplier" type="text" class="form-control"
                               autocomplete="off"
                               :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
@@ -504,18 +547,7 @@ export default {
                             </div>
                           </div>
                         </div>
-                        <div class="col-sm-12 col-md-4 col-lg-3">
-                          <div class="mb-3">
-                            <label for="name">姓名</label>
-                            <input id="name" v-model="customers.supplierall" type="text" class="form-control"
-                              autocomplete="off"
-                              :class="{ 'is-invalid': submitted && v$.customers.supplierall.$error, }" />
-                            <div v-if="submitted && v$.customers.supplierall.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.supplierall.required.$message">{{
-      v$.customers.supplierall.required.$message }}</span>
-                            </div>
-                          </div>
-                        </div>
+
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
@@ -559,6 +591,8 @@ export default {
                               autocomplete="off" />
                           </div>
                         </div>
+                      </div>
+                      <div class="row">
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">團保加保日</label>
@@ -620,8 +654,15 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">車牌號碼</label>
-                            <input id="name" v-model="customers.licensePlate" type="text" class="form-control" disabled
-                              autocomplete="off" />
+                            <select class="form-select" v-model="customers.licensePlate">
+                              <option
+                                v-for="(lp1, lpidx) in [{ licensePlateNumber: '', driverName: '' }, ...VehicleList]"
+                                :value="lp1.licensePlateNumber" :key="'VehicleList' + lpidx">
+                                {{ lp1.licensePlateNumber }}
+                                {{ lp1.driverName }}
+                              </option>
+                            </select>
+
                           </div>
                         </div>
 
@@ -686,8 +727,8 @@ export default {
                   <tr>
                     <th width="5px">#</th>
                     <th>類別</th>
-                    <th>名稱</th>
                     <th>姓名</th>
+
                     <th>登入帳號</th>
                     <th>手機號碼</th>
 
@@ -703,7 +744,6 @@ export default {
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                     <td>{{ SubItem.type }}</td>
                     <td>{{ SubItem.supplier }}</td>
-                    <td>{{ SubItem.supplierall }}</td>
                     <td>{{ SubItem.loginName }}</td>
                     <td>{{ SubItem.telephone }}</td>
 

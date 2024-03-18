@@ -21,6 +21,7 @@ export default {
     components: { Layout, PageHeader },
     data() {
         return {
+            selectedTab: 0,
             chkAll: true,
             SubView: 0,
 
@@ -228,7 +229,7 @@ export default {
             if (this.driver == null || this.driver.deliveryStatusList == null) return "";
             let F1List = this.driver.deliveryStatusList.filter(x => String(x.status) == String(iStatus));
             if (F1List.length != 0) {
-                return this.formatDate(F1List[0].date)
+                return this.formatDateTime(F1List[0].date)
             }
             return "";
         },
@@ -239,6 +240,11 @@ export default {
             if (F1List.length != 0) this.driver.carNumber = F1List[0].licensePlate
             //server.GetSupplierByID(this.driver.driverId, (aaa) => { console.log(aaa) });
 
+        },
+        formatDateTime(value) {
+
+            if (common.IsDate(value)) return dayjs(value).format("YYYY-MM-DD HH:mm:ss")
+            return value;
         },
         formatDate(value) {
 
@@ -599,6 +605,7 @@ export default {
 
             if (RowItem.id != 0) {
                 this.SubView = 2;
+                this.selectedTab = 1;
                 this.GetDetailByNumber(RowItem.number)
                 this.GetDetailList(RowItem.id)
                 this.GetDriverInfo(RowItem.number);
@@ -607,7 +614,7 @@ export default {
             }
         },
         EditOne(RowItem) {
-
+            this.selectedTab = 0;
             if (RowItem.id == 0) {
                 this.SubView = 1;
                 this.submitted = false;
@@ -645,6 +652,7 @@ export default {
             }
             if (RowItem.id != 0) {
                 this.SubView = 2;
+
                 this.GetDetailByNumber(RowItem.number)
                 this.GetDetailList(RowItem.id)
                 this.GetDriverInfo(RowItem.number);
@@ -1521,7 +1529,7 @@ export default {
                                                 <a class="btn btn-info" href="javascript:;"
                                                     @click="EditShow(SubItem)">查看</a>
                                                 <a class="btn btn-secondary" href="javascript:;"
-                                                    v-if="SubItem.status == 0" @click="EditOne(SubItem)">編輯</a>
+                                                    @click="EditOne(SubItem)">編輯</a>
                                                 <a class="btn btn-success" href="javascript:;"
                                                     v-if="SubItem.status == 1" @click="EditDriver(SubItem)">派發司機</a>
                                             </div>
@@ -1537,7 +1545,7 @@ export default {
                 </div>
             </div>
         </div>
-        <b-tabs content-class="p-3 text-muted" v-if="SubView != 0">
+        <b-tabs content-class="p-3 text-muted" v-if="SubView != 0" v-model="selectedTab">
             <b-tab active class="border-0">
                 <template v-slot:title>
                     <span class="d-inline-block d-sm-none">
