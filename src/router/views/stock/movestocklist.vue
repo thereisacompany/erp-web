@@ -937,14 +937,16 @@ export default {
             <div class="col-lg-62">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title mb-4">{{ SubView == 1 ? '新增移倉單' : (SubView == 2 ? '修改移倉單' : '查看移倉單') }}</h4>
+                        <h4 class="card-title mb-4">{{ SubView == 1 ? '新增移倉單' : (SubView == 2 ? '修改移倉單' : '查看移倉單') }}
+                        </h4>
                         <b-form>
 
                             <div class="row">
                                 <div class="col-sm-12 col-md-6 col-lg-3">
 
                                     <label for="name">客戶</label>
-                                    <select class="form-select" v-model="customers.organId" @change="InitEveryRowsProduct"
+                                    <select class="form-select" v-model="customers.organId"
+                                        @change="InitEveryRowsProduct"
                                         :class="{ 'is-invalid': submitted && v$.customers.organId.$error, }">
                                         <option :value="u1.id" selected v-for="u1 in supplierlist"
                                             :key="'customers_organId' + u1.id">
@@ -952,21 +954,24 @@ export default {
                                     </select>
                                     <div v-if="submitted && v$.customers.organId.$error" class="invalid-feedback">
                                         <span v-if="v$.customers.organId.required.$message">{{
-                                            v$.customers.organId.required.$message
-                                        }}</span>
+            v$.customers.organId.required.$message
+        }}</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">單號</label>
-                                    <input type="text" class="form-control" readonly v-model="customers.defaultNumber" />
+                                    <input autocomplete="off" type="text" class="form-control" readonly
+                                        v-model="customers.defaultNumber" />
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">日期</label>
-                                    <input type="date" class="form-control" v-model="customers.date2" />
+                                    <input autocomplete="off" type="date" class="form-control"
+                                        v-model="customers.date2" />
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">時間</label>
-                                    <input type="time" class="form-control" v-model="customers.time2" />
+                                    <input autocomplete="off" type="time" class="form-control"
+                                        v-model="customers.time2" />
                                 </div>
                             </div>
                             <div class="row">
@@ -994,7 +999,8 @@ export default {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr v-for="(SubItem, cidx) in customersItem" :key="'SubItem_depoit' + cidx">
+                                                <tr v-for="(SubItem, cidx) in customersItem"
+                                                    :key="'SubItem_depoit' + cidx">
                                                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                                                     <td>
                                                         <select class="form-select" v-model="SubItem.depotId"
@@ -1006,7 +1012,7 @@ export default {
                                                     </td>
                                                     <td>
                                                         <div class="position-relative">
-                                                            <input type="text" class="form-control"
+                                                            <input autocomplete="off" type="text" class="form-control"
                                                                 :list="'datalistOptions' + cidx"
                                                                 @keyup="queryMaterialByRow(SubItem, cidx)"
                                                                 v-model="SubItem.number" />
@@ -1035,11 +1041,12 @@ export default {
                                                     <td> {{ SubItem.counterName }}
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control"
+                                                        <input autocomplete="off" type="text" class="form-control"
                                                             v-model="SubItem.operNumber">
                                                     </td>
                                                     <td v-if="SubView == 2 || SubView == 3">
-                                                        <input type="text" class="form-control" v-model="SubItem.amount">
+                                                        <input autocomplete="off" type="text" class="form-control"
+                                                            v-model="SubItem.amount">
                                                     </td>
 
                                                     <td v-if="SubView == 1">
@@ -1070,16 +1077,18 @@ export default {
                                             :key="'customers_anotherDepotId' + u1.id">
                                             {{ u1.depotName }}</option>
                                     </select>
-                                    <div v-if="submitted && v$.customers.anotherDepotId.$error" class="invalid-feedback">
+                                    <div v-if="submitted && v$.customers.anotherDepotId.$error"
+                                        class="invalid-feedback">
                                         <span v-if="v$.customers.anotherDepotId.required.$message">{{
-                                            v$.customers.anotherDepotId.required.$message
-                                        }}</span>
+            v$.customers.anotherDepotId.required.$message
+        }}</span>
                                     </div>
 
                                 </div>
                                 <div class="col-sm-12 col-md-4 col-lg-3">
                                     <label for="name">移入儲位</label>
-                                    <input type="text" class="form-control" v-model="customers.anotherCounterName">
+                                    <input autocomplete="off" type="text" class="form-control"
+                                        v-model="customers.anotherCounterName">
                                 </div>
 
                             </div>
@@ -1087,7 +1096,8 @@ export default {
                             <div class="row">
                                 <div class="col-sm-12">
                                     <label for="name">備註</label>
-                                    <input type="text" class="form-control" v-model="customers.remark">
+                                    <input autocomplete="off" type="text" class="form-control"
+                                        v-model="customers.remark">
                                 </div>
                             </div>
 
@@ -1136,15 +1146,15 @@ export default {
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">移倉單號</label>
-                                        <input type="text" class="form-control" placeholder="移倉單號" v-model="number"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="移倉單號"
+                                            v-model="number" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">商品資料</label>
-                                        <input type="text" class="form-control" placeholder="商品資料" @keyup.enter="GetData()"
-                                            v-model="materialParam" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="商品資料"
+                                            @keyup.enter="GetData()" v-model="materialParam" />
                                     </div>
                                 </div>
 
@@ -1201,7 +1211,8 @@ export default {
                             <table class="table table-centered table-nowrap align-middle">
                                 <thead>
                                     <tr>
-                                        <th width="5px"><input type="checkbox" v-model="chkAll"> </th>
+                                        <th width="5px"><input autocomplete="off" type="checkbox" v-model="chkAll">
+                                        </th>
                                         <th width="5px">#</th>
 
                                         <th>移倉調撥單</th>
@@ -1220,11 +1231,14 @@ export default {
                                 </thead>
                                 <tbody>
                                     <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
-                                        <td><input type="checkbox" v-model="SubItem.chk" :disabled="SubItem.status != 5">
+                                        <td><input autocomplete="off" type="checkbox" v-model="SubItem.chk"
+                                                :disabled="SubItem.status != 5">
                                         </td>
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}</td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operTime }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operTime
+                                            }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             <div v-for="name1 in String(SubItem.mname).split(',')"
@@ -1232,13 +1246,15 @@ export default {
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.mnumber }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operNumber }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operNumber
+                                            }}
                                         </td>
 
                                         <td>{{ SubItem.dname }}</td>
                                         <td>{{ SubItem.sname }}</td>
 
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.newRemark }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.newRemark
+                                            }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
@@ -1250,8 +1266,8 @@ export default {
                                             <div class="btn-group btn-group-sm">
                                                 <a class="btn btn-info" href="javascript:;"
                                                     @click="EditShow(SubItem, 3)">查看</a>
-                                                <a class="btn btn-secondary" href="javascript:;" v-if="SubItem.status == 5"
-                                                    @click="EditShow(SubItem, 2)">編輯</a>
+                                                <a class="btn btn-secondary" href="javascript:;"
+                                                    v-if="SubItem.status == 5" @click="EditShow(SubItem, 2)">編輯</a>
 
                                             </div>
 
@@ -1260,7 +1276,8 @@ export default {
                                 </tbody>
                             </table>
                         </div>
-                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage"
+                            :CallGetData="GetData" />
                     </div>
                 </div>
             </div>

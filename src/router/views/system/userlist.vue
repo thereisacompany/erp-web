@@ -353,13 +353,13 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="登入帳號" v-model="loginName"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="登入帳號" v-model="loginName"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="用戶名稱" v-model="username"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="用戶名稱" v-model="username"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
@@ -385,12 +385,12 @@ export default {
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
 
-                            <input id="name" v-model="customers.loginName" type="text" class="form-control"
-                              :readonly="customers.id != 0"
+                            <input autocomplete="off" id="name" v-model="customers.loginName" type="text"
+                              class="form-control" :readonly="customers.id != 0"
                               :class="{ 'is-invalid': submitted && v$.customers.loginName.$error, }" />
                             <div v-if="submitted && v$.customers.loginName.$error" class="invalid-feedback">
                               <span v-if="v$.customers.loginName.required.$message">{{
-                                v$.customers.loginName.required.$message }}</span>
+      v$.customers.loginName.required.$message }}</span>
                             </div>
                             <span v-if="customers.id == 0" class="text-secondary">*預設密碼:123456</span>
                           </div>
@@ -398,11 +398,12 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">用戶全名</label>
-                            <input id="name" v-model="customers.username" type="text" class="form-control"
+                            <input autocomplete="off" id="name" v-model="customers.username" type="text"
+                              class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.username.$error, }" />
                             <div v-if="submitted && v$.customers.username.$error" class="invalid-feedback">
                               <span v-if="v$.customers.username.required.$message">{{
-                                v$.customers.username.required.$message }}</span>
+      v$.customers.username.required.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -415,27 +416,30 @@ export default {
                           </select>
                           <div v-if="submitted && v$.customers.roleId.$error" class="invalid-feedback">
                             <span v-if="v$.customers.roleId.required.$message">{{
-                              v$.customers.roleId.required.$message
-                            }}</span>
+      v$.customers.roleId.required.$message
+    }}</span>
                           </div>
 
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">職稱</label>
-                            <input id="name" v-model="customers.position" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.position" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">電話</label>
-                            <input id="name" v-model="customers.phonenum" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.phonenum" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">說明</label>
-                            <input id="name" v-model="customers.description" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.description" type="text"
+                              class="form-control" />
                           </div>
                         </div>
 
@@ -452,21 +456,22 @@ export default {
                             <div class="form-check" v-for="(m1, midx) in menuItems" :key="'authList' + midx">
                               <div class="form-check form-check-inline">
                                 <i v-if="m1.icon" class="bx" :class="m1.icon">&nbsp;</i>
-                                <input :id="'authid' + m1.id" class="form-check-input" type="checkbox" name="authCheck"
-                                  :checked="CheckCustomerAuth(m1.id)" @click="ChangeCustomerAuth(m1.id)"
-                                  v-if="!m1.subItems" :value="m1.id">
+                                <input autocomplete="off" :id="'authid' + m1.id" class="form-check-input"
+                                  type="checkbox" name="authCheck" :checked="CheckCustomerAuth(m1.id)"
+                                  @click="ChangeCustomerAuth(m1.id)" v-if="!m1.subItems" :value="m1.id">
 
                                 <label :for="'authid' + m1.id" class="form-check-label" style="min-width:80px"> {{
-                                  m1.label }}
+      m1.label }}
                                 </label>
                               </div>
                               <template v-if="m1.subItems">
                                 <div class="form-check form-check-inline" v-for="(m2, m2idx) in m1.subItems"
                                   :key="'authList' + m2idx">
-                                  <input :id="'authid' + m2.id" class="form-check-input" type="checkbox" name="authCheck"
-                                    :checked="CheckCustomerAuth(m2.id)" @click="ChangeCustomerAuth(m2.id)" :value="m2.id">
+                                  <input autocomplete="off" :id="'authid' + m2.id" class="form-check-input"
+                                    type="checkbox" name="authCheck" :checked="CheckCustomerAuth(m2.id)"
+                                    @click="ChangeCustomerAuth(m2.id)" :value="m2.id">
                                   <label :for="'authid' + m2.id" class="form-check-label" style="min-width:80px"> {{
-                                    m2.label }}
+      m2.label }}
                                   </label>
 
                                 </div>

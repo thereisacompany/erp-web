@@ -295,13 +295,13 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="車牌號碼" v-model="licensePlateNumber"
-                      @keyup.enter="GetData()" />
+                    <input autocomplete="off" type="text" class="form-control" placeholder="車牌號碼"
+                      v-model="licensePlateNumber" @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="品牌型號" v-model="brandModel"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="品牌型號" v-model="brandModel"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
@@ -339,8 +339,8 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="licensePlateNumber">車牌號碼</label>
-                            <input id="licensePlateNumber" v-model="customers.licensePlateNumber" type="text"
-                              class="form-control" placeholder="車牌號碼"
+                            <input autocomplete="off" id="licensePlateNumber" v-model="customers.licensePlateNumber"
+                              type="text" class="form-control" placeholder="車牌號碼"
                               :class="{ 'is-invalid': submitted && v$.customers.licensePlateNumber.$error, }" />
                             <div v-if="submitted && v$.customers.licensePlateNumber.$error" class="invalid-feedback">
                               <span v-if="v$.customers.licensePlateNumber.required.$message">{{
@@ -352,8 +352,8 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="brandModel">品牌型號</label>
-                            <input id="brandModel" v-model="customers.brandModel" type="text" class="form-control"
-                              placeholder="品牌型號"
+                            <input autocomplete="off" id="brandModel" v-model="customers.brandModel" type="text"
+                              class="form-control" placeholder="品牌型號"
                               :class="{ 'is-invalid': submitted && v$.customers.brandModel.$error, }" />
                             <div v-if="submitted && v$.customers.brandModel.$error" class="invalid-feedback">
                               <span v-if="v$.customers.brandModel.required.$message">{{
@@ -377,15 +377,15 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="color">車身顏色</label>
-                            <input id="color" v-model="customers.color" type="text" class="form-control"
-                              placeholder="車身顏色" />
+                            <input autocomplete="off" id="color" v-model="customers.color" type="text"
+                              class="form-control" placeholder="車身顏色" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="mileage">里程數(公里)</label>
-                            <input id="mileage" v-model="customers.mileage" type="text" class="form-control"
-                              :class="{ 'is-invalid': submitted && v$.customers.mileage.$error, }"
+                            <input autocomplete="off" id="mileage" v-model="customers.mileage" type="text"
+                              class="form-control" :class="{ 'is-invalid': submitted && v$.customers.mileage.$error, }"
                               placeholder="里程數(公里)" />
                             <div v-if="submitted && v$.customers.mileage.$error" class="invalid-feedback">
                               <span v-if="v$.customers.mileage.numeric.$message">
@@ -396,61 +396,68 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="engineNumber">引擎號碼</label>
-                            <input id="engineNumber" v-model="customers.engineNumber" type="text" class="form-control"
-                              placeholder="引擎號碼" />
+                            <input autocomplete="off" id="engineNumber" v-model="customers.engineNumber" type="text"
+                              class="form-control" placeholder="引擎號碼" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="manufacture">出廠日期</label>
-                          <input type="date" class="form-control" placeholder="出廠日期" v-model="customers.manufacture">
+                          <input autocomplete="off" type="date" class="form-control" placeholder="出廠日期"
+                            v-model="customers.manufacture">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="testDate">驗車日</label>
-                          <input type="date" class="form-control" placeholder="驗車日" v-model="customers.testDate">
+                          <input autocomplete="off" type="date" class="form-control" placeholder="驗車日"
+                            v-model="customers.testDate">
                         </div>
                         <div class="col-sm-12 col-md-2 col-lg-2">
                           <label for="insuranceDate">保險日期</label>
-                          <input type="date" class="form-control" placeholder="保險日期" v-model="customers.insuranceDate">
+                          <input autocomplete="off" type="date" class="form-control" placeholder="保險日期"
+                            v-model="customers.insuranceDate">
                         </div>
 
                         <div class="col-sm-12 col-md-2 col-lg-2">
                           <label for="insuranceDateEnd">車險迄止日</label>
-                          <input type="date" class="form-control" placeholder="車險迄止日"
+                          <input autocomplete="off" type="date" class="form-control" placeholder="車險迄止日"
                             v-model="customers.insuranceDateEnd">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="takeOver">車輛接手日</label>
-                          <input type="date" class="form-control" placeholder="車輛接手日" v-model="customers.takeOver">
+                          <input autocomplete="off" type="date" class="form-control" placeholder="車輛接手日"
+                            v-model="customers.takeOver">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="loanDue">貸款到期日</label>
-                          <input type="date" class="form-control" placeholder="貸款到期日" v-model="customers.loanDue">
+                          <input autocomplete="off" type="date" class="form-control" placeholder="貸款到期日"
+                            v-model="customers.loanDue">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="contractExpired">司機合約到期日</label>
-                          <input type="date" class="form-control" placeholder="司機合約到期日"
+                          <input autocomplete="off" type="date" class="form-control" placeholder="司機合約到期日"
                             v-model="customers.contractExpired">
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="renewalDate">補換照日(行照)</label>
-                          <input type="date" class="form-control" placeholder="補換照日(行照)"
+                          <input autocomplete="off" type="date" class="form-control" placeholder="補換照日(行照)"
                             v-model="customers.renewalDate">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="licenseValid">行照有效日</label>
-                          <input type="date" class="form-control" placeholder="行照有效日" v-model="customers.licenseValid">
+                          <input autocomplete="off" type="date" class="form-control" placeholder="行照有效日"
+                            v-model="customers.licenseValid">
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <label for="cargoInsuranceDue">貨物險到期日</label>
-                          <input type="date" class="form-control" placeholder="貨物險到期日"
+                          <input autocomplete="off" type="date" class="form-control" placeholder="貨物險到期日"
                             v-model="customers.cargoInsuranceDue">
                         </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="emissions">排放量(c.c.)</label>
-                            <input id="emissions" v-model="customers.emissions" type="text" class="form-control"
+                            <input autocomplete="off" id="emissions" v-model="customers.emissions" type="text"
+                              class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.emissions.$error, }"
                               placeholder="排放量(c.c.)" />
                             <div v-if="submitted && v$.customers.emissions.$error" class="invalid-feedback">
@@ -462,8 +469,9 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-4">
                           <div class="mb-3">
                             <label for="price">車價</label>
-                            <input id="price" v-model="customers.price" type="text" class="form-control"
-                              :class="{ 'is-invalid': submitted && v$.customers.price.$error, }" placeholder="車價" />
+                            <input autocomplete="off" id="price" v-model="customers.price" type="text"
+                              class="form-control" :class="{ 'is-invalid': submitted && v$.customers.price.$error, }"
+                              placeholder="車價" />
                             <div v-if="submitted && v$.customers.price.$error" class="invalid-feedback">
                               <span v-if="v$.customers.price.numeric.$message">
                                 {{ v$.customers.price.numeric.$message }}</span>

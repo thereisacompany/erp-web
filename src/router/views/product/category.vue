@@ -307,14 +307,16 @@ export default {
                 <div class="row">
                   <div class="col-12 mb-3">
                     <label for="title">分類名稱</label>
-                    <input id="title" type="text" v-model="formData.title" class="form-control" placeholder="分類名稱" />
+                    <input autocomplete="off" id="title" type="text" v-model="formData.title" class="form-control"
+                      placeholder="分類名稱" />
                   </div>
                   <div class="col-12 mb-3">
-                    <label for="title">排序</label>
-                    <input id="title" type="text" v-model="formData.sort" class="form-control" placeholder="排序" />
+                    <label for="sort">排序</label>
+                    <input autocomplete="off" id="sort" type="text" v-model="formData.sort" class="form-control"
+                      placeholder="排序" />
                   </div>
                   <div class="col-12 mb-3">
-                    <label for="title">上層分類</label>
+                    <label>上層分類</label>
                     <select class="form-select" v-model="formData.parentId">
                       <option :value="null" selected>請選擇上層分類</option>
                       <option :value="item.id" v-for="(item, index) in formData.children" :key="index">

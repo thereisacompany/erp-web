@@ -1342,28 +1342,28 @@ export default {
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">關鍵字搜尋</label>
-                                        <input type="text" class="form-control" placeholder="關鍵字" v-model="queryKeyword"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="關鍵字"
+                                            v-model="queryKeyword" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">配送單號</label>
-                                        <input type="text" class="form-control" placeholder="配送單號" v-model="number"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="配送單號"
+                                            v-model="number" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">品號</label>
-                                        <input type="text" class="form-control" placeholder="品號" v-model="mNumber"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="品號"
+                                            v-model="mNumber" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">商品資料</label>
-                                        <input type="text" class="form-control" placeholder="商品資料"
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="商品資料"
                                             @keyup.enter="GetData()" v-model="materialParam" />
                                     </div>
                                 </div>
@@ -1564,12 +1564,12 @@ export default {
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">客單編號</label>
-                                            <input type="text" class="form-control"
+                                            <input autocomplete="off" type="text" class="form-control"
                                                 v-model.trim="customers.customNumber" />
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">原始客編</label>
-                                            <input type="text" class="form-control"
+                                            <input autocomplete="off" type="text" class="form-control"
                                                 v-model.trim="customers.sourceNumber" />
                                         </div>
 
@@ -1588,17 +1588,17 @@ export default {
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">單號</label>
-                                            <input type="text" class="form-control" placeholder="單號" readonly
-                                                v-model="customers.defaultNumber" />
+                                            <input autocomplete="off" type="text" class="form-control" placeholder="單號"
+                                                readonly v-model="customers.defaultNumber" />
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">日期</label>
-                                            <input type="date" class="form-control" placeholder="日期"
+                                            <input autocomplete="off" type="date" class="form-control" placeholder="日期"
                                                 v-model="customers.date2" />
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">時間</label>
-                                            <input type="time" class="form-control" placeholder="時間"
+                                            <input autocomplete="off" type="time" class="form-control" placeholder="時間"
                                                 v-model="customers.time2" />
                                         </div>
                                     </div>
@@ -1645,7 +1645,8 @@ export default {
                                                             </td>
                                                             <td>
                                                                 <div class="position-relative" v-if="IsPickup1">
-                                                                    <input type="text" class="form-control"
+                                                                    <input autocomplete="off" type="text"
+                                                                        class="form-control"
                                                                         :list="'datalistOptions' + cidx"
                                                                         @keyup="queryMaterialByRow(SubItem, cidx)"
                                                                         v-model="SubItem.number" />
@@ -1665,8 +1666,8 @@ export default {
                                                             </td>
                                                             <td>
                                                                 <div v-if="IsPickup1">{{ SubItem.name }}</div>
-                                                                <input v-else type="text" class="form-control"
-                                                                    v-model="SubItem.materialName">
+                                                                <input autocomplete="off" v-else type="text"
+                                                                    class="form-control" v-model="SubItem.materialName">
                                                             </td>
 
                                                             <td> {{ SubItem.categoryName }}
@@ -1679,16 +1680,18 @@ export default {
                                                             </td>
                                                             <td>
 
-                                                                <input type="text" class="form-control" v-if="IsPickup1"
+                                                                <input autocomplete="off" type="text"
+                                                                    class="form-control" v-if="IsPickup1"
                                                                     v-model="SubItem.counterName">
                                                             </td>
-                                                            <td> <input type="text" class="form-control"
-                                                                    placeholder="數量"
+                                                            <td> <input autocomplete="off" type="text"
+                                                                    class="form-control" placeholder="數量"
                                                                     @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
                                                                     v-model="SubItem.operNumber"></td>
 
-                                                            <td> <input type="text" class="form-control"
-                                                                    placeholder="備註" v-model="SubItem.remark"></td>
+                                                            <td> <input autocomplete="off" type="text"
+                                                                    class="form-control" placeholder="備註"
+                                                                    v-model="SubItem.remark"></td>
 
 
 
@@ -1715,24 +1718,24 @@ export default {
                                     <div class="row">
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">主商品到貨日</label>
-                                            <input type="date" class="form-control" placeholder="主商品到貨日"
-                                                v-model="customers.mainArrival">
+                                            <input autocomplete="off" type="date" class="form-control"
+                                                placeholder="主商品到貨日" v-model="customers.mainArrival">
 
                                         </div>
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">贈品到貨日</label>
-                                            <input type="date" class="form-control" placeholder="贈品到貨日"
-                                                v-model="customers.extrasArrival">
+                                            <input autocomplete="off" type="date" class="form-control"
+                                                placeholder="贈品到貨日" v-model="customers.extrasArrival">
 
                                         </div>
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">約配日</label>
-                                            <input type="date" class="form-control" placeholder="約配日"
+                                            <input autocomplete="off" type="date" class="form-control" placeholder="約配日"
                                                 v-model="customers.agreedDelivery">
                                         </div>
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">配達日</label>
-                                            <input type="date" class="form-control" placeholder="配達日"
+                                            <input autocomplete="off" type="date" class="form-control" placeholder="配達日"
                                                 v-model="customers.delivered">
                                         </div>
 
@@ -1742,8 +1745,8 @@ export default {
 
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">收件人名稱</label>
-                                            <input type="text" class="form-control" placeholder="收件人名稱"
-                                                v-model="customers.receiveName"
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                placeholder="收件人名稱" v-model="customers.receiveName"
                                                 :class="{ 'is-invalid': submitted && v$.customers.receiveName.$error, }">
                                             <div v-if="submitted && v$.customers.receiveName.$error"
                                                 class="invalid-feedback">
@@ -1755,8 +1758,9 @@ export default {
 
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">手機</label>
-                                            <input type="text" class="form-control" v-maska="'####-###-###'"
-                                                placeholder="####-###-###" v-model="customers.cellphone"
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                v-maska="'####-###-###'" placeholder="####-###-###"
+                                                v-model="customers.cellphone"
                                                 :class="{ 'is-invalid': submitted && v$.customers.cellphone.$error, }">
                                             <div v-if="submitted && v$.customers.cellphone.$error"
                                                 class="invalid-feedback">
@@ -1767,7 +1771,7 @@ export default {
                                         </div>
                                         <div class="col-sm-12 col-md-4 col-lg-3">
                                             <label for="name">地址</label>
-                                            <input type="text" class="form-control" placeholder="地址"
+                                            <input autocomplete="off" type="text" class="form-control" placeholder="地址"
                                                 v-model="customers.address"
                                                 :class="{ 'is-invalid': submitted && v$.customers.address.$error, }">
                                             <div v-if="submitted && v$.customers.address.$error"
@@ -1783,7 +1787,8 @@ export default {
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">安裝方式</label>
-                                            <input type="text" class="form-control" v-model="customers.install" />
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                v-model="customers.install" />
                                         </div>
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">舊機回收(是/否)</label>
@@ -1805,7 +1810,7 @@ export default {
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <label for="name">備註</label>
-                                            <input type="text" class="form-control" placeholder="備註"
+                                            <input autocomplete="off" type="text" class="form-control" placeholder="備註"
                                                 v-model="customers.remark">
                                         </div>
                                     </div>
@@ -1819,7 +1824,7 @@ export default {
                                             <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024)
                                                 }}
                                                 MB</span>
-                                            <input ref="file2" type="file" class="d-none" multiple
+                                            <input autocomplete="off" ref="file2" type="file" class="d-none" multiple
                                                 v-on:change="handleFileUpload()">
                                         </div>
                                         <div class="col-sm-12 mt-1">

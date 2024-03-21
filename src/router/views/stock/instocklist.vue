@@ -787,38 +787,42 @@ export default {
             <div class="col-lg-62">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title mb-4">{{ SubView == 1 ? '新增進貨單' : (SubView == 2 ? '修改進貨單' : '查看進貨單') }}</h4>
+                        <h4 class="card-title mb-4">{{ SubView == 1 ? '新增進貨單' : (SubView == 2 ? '修改進貨單' : '查看進貨單') }}
+                        </h4>
                         <b-form>
                             <div class="row">
                                 <div class="col-sm-12 col-md-6 col-lg-3">
 
                                     <label for="name">客戶</label>
-                                    <select class="form-select" v-model="customers.organId" @change="InitEveryRowsProduct"
+                                    <select class="form-select" v-model="customers.organId"
+                                        @change="InitEveryRowsProduct"
                                         :class="{ 'is-invalid': submitted && v$.customers.organId.$error, }">
                                         <option :value="u1.id" selected v-for="u1 in supplierlist"
                                             :key="'customers_organId' + u1.id">
                                             {{ u1.idname }}</option>
                                     </select>
                                     <div v-if="submitted && v$.customers.organId.$error" class="invalid-feedback">
-                                        <span v-if="v$.customers.organId.required.$message">{{
-                                            v$.customers.organId.required.$message
-                                        }}</span>
+                                        <span v-if="v$.customers.organId.required.$message">
+                                            {{ v$.customers.organId.required.$message }}
+                                        </span>
                                     </div>
                                 </div>
 
 
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">單號</label>
-                                    <input type="text" class="form-control" placeholder="單號" readonly
+                                    <input autocomplete="off" type="text" class="form-control" placeholder="單號" readonly
                                         v-model="customers.defaultNumber" />
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">日期</label>
-                                    <input type="date" class="form-control" placeholder="日期" v-model="customers.date2" />
+                                    <input autocomplete="off" type="date" class="form-control" placeholder="日期"
+                                        v-model="customers.date2" />
                                 </div>
                                 <div class="col-sm-12 col-md-6 col-lg-3">
                                     <label for="name">時間</label>
-                                    <input type="time" class="form-control" placeholder="時間" v-model="customers.time2" />
+                                    <input autocomplete="off" type="time" class="form-control" placeholder="時間"
+                                        v-model="customers.time2" />
                                 </div>
                             </div>
                             <div class="row">
@@ -858,7 +862,7 @@ export default {
                                                     </td>
                                                     <td>
                                                         <div class="position-relative">
-                                                            <input type="text" class="form-control"
+                                                            <input autocomplete="off" type="text" class="form-control"
                                                                 :list="'datalistOptions' + cidx"
                                                                 @keyup="queryMaterialByRow(SubItem, cidx)"
                                                                 v-model="SubItem.number" />
@@ -885,13 +889,14 @@ export default {
                                                     </td>
                                                     <td> {{ SubItem.stock }}
                                                     </td>
-                                                    <td> <input type="text" class="form-control"
+                                                    <td> <input autocomplete="off" type="text" class="form-control"
                                                             v-model="SubItem.counterName"></td>
-                                                    <td> <input type="text" class="form-control"
+                                                    <td> <input autocomplete="off" type="text" class="form-control"
                                                             @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
                                                             v-model="SubItem.operNumber"></td>
 
-                                                    <td> <input type="text" class="form-control" v-model="SubItem.remark">
+                                                    <td> <input autocomplete="off" type="text" class="form-control"
+                                                            v-model="SubItem.remark">
                                                     </td>
 
 
@@ -919,24 +924,30 @@ export default {
                             <div class="row">
                                 <div class="col-sm-12">
                                     <label for="name">備註</label>
-                                    <input type="text" class="form-control" placeholder="備註" v-model="customers.remark">
+                                    <input autocomplete="off" type="text" class="form-control" placeholder="備註"
+                                        v-model="customers.remark">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-12" v-if="SubView == 1 || SubView == 2">
                                     <b-button variant="light" class="w-sm">
-                                        <i class="mdi mdi-upload d-block font-size-16" @click="$refs.file2.click();"></i>
+                                        <i class="mdi mdi-upload d-block font-size-16"
+                                            @click="$refs.file2.click();"></i>
                                         上傳檔案
                                     </b-button>
-                                    <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024) }} MB</span>
-                                    <input ref="file2" type="file" class="d-none" multiple v-on:change="handleFileUpload()">
+                                    <span class="text-danger"> 最大檔案大小: {{ Math.floor(MaxFileSize / 1024 / 1024) }}
+                                        MB</span>
+                                    <input ref="file2" type="file" class="d-none" multiple
+                                        v-on:change="handleFileUpload()">
                                 </div>
                                 <div class="col-sm-12 mt-1">
                                     <label for="name" v-if="SubView == 3">上傳檔案</label>
-                                    <div v-for="(f1, fidx) in filelist" :key="'file-' + fidx" style="display:inline-block">
+                                    <div v-for="(f1, fidx) in filelist" :key="'file-' + fidx"
+                                        style="display:inline-block">
                                         <img v-if="CheckIsImage(f1)" :src="GetAccessFile1(f1)" @click="ShowImage(f1)"
                                             style="max-width:300px;max-height:300px" />
-                                        <a v-else href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop() }}</a>
+                                        <a v-else href="javascript:;" @click="ShowImage(f1)">{{ f1.split('/').pop()
+                                            }}</a>
                                         <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)">&nbsp;<i
                                                 class="bx bx-x"></i></a>
                                     </div>
@@ -989,29 +1000,29 @@ export default {
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">關鍵字搜尋</label>
-                                        <input type="text" class="form-control" placeholder="關鍵字" v-model="queryKeyword"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="關鍵字"
+                                            v-model="queryKeyword" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">進貨單號</label>
-                                        <input type="text" class="form-control" placeholder="進貨單號" v-model="number"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="進貨單號"
+                                            v-model="number" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">品號</label>
-                                        <input type="text" class="form-control" placeholder="品號" v-model="mNumber"
-                                            @keyup.enter="GetData()" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="品號"
+                                            v-model="mNumber" @keyup.enter="GetData()" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">商品資料</label>
-                                        <input type="text" class="form-control" placeholder="商品資料" @keyup.enter="GetData()"
-                                            v-model="materialParam" />
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="商品資料"
+                                            @keyup.enter="GetData()" v-model="materialParam" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
@@ -1096,9 +1107,11 @@ export default {
                                 <tbody>
                                     <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.organName }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.organName
+                                            }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}</td>
+                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}
+                                        </td>
                                         <td>{{ SubItem.mNumber }}</td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             <div v-for="name1 in String(SubItem.materialsList).split(',')"
@@ -1116,14 +1129,15 @@ export default {
                                                 <span class="btn btn-danger" v-if="SubItem.status == 0">未審核</span>
                                             </div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operTimeStr }}
+                                        <td style="white-space: break-spaces;word-break:break-all">{{
+            SubItem.operTimeStr }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <a class="btn btn-info" href="javascript:;"
                                                     @click="EditShow(SubItem)">查看</a>
-                                                <a class="btn btn-secondary" href="javascript:;" v-if="SubItem.status == 0"
-                                                    @click="EditOne(SubItem)">編輯</a>
+                                                <a class="btn btn-secondary" href="javascript:;"
+                                                    v-if="SubItem.status == 0" @click="EditOne(SubItem)">編輯</a>
                                             </div>
 
                                         </td>
@@ -1131,7 +1145,8 @@ export default {
                                 </tbody>
                             </table>
                         </div>
-                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
+                        <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage"
+                            :CallGetData="GetData" />
                     </div>
                 </div>
             </div>

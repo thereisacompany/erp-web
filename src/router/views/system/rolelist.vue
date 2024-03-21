@@ -204,7 +204,8 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="角色名稱" v-model="name" @keyup.enter="GetData()" />
+                    <input autocomplete="off" type="text" class="form-control" placeholder="角色名稱" v-model="name"
+                      @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
@@ -227,11 +228,11 @@ export default {
                         <div class="col-sm-12 ">
                           <div class="mb-3">
                             <label for="name">角色名稱</label>
-                            <input id="name" v-model="customers.name" type="text" class="form-control"
-                              :class="{ 'is-invalid': submitted && v$.customers.name.$error, }" />
+                            <input autocomplete="off" id="name" v-model="customers.name" type="text"
+                              class="form-control" :class="{ 'is-invalid': submitted && v$.customers.name.$error, }" />
                             <div v-if="submitted && v$.customers.name.$error" class="invalid-feedback">
                               <span v-if="v$.customers.name.required.$message">{{
-                                v$.customers.name.required.$message }}</span>
+      v$.customers.name.required.$message }}</span>
                             </div>
                           </div>
                         </div>
@@ -249,7 +250,8 @@ export default {
                         <div class="col-sm-12 ">
                           <div class="mb-3">
                             <label for="description">說明</label>
-                            <input id="description" v-model="customers.description" type="text" class="form-control" />
+                            <input autocomplete="off" id="description" v-model="customers.description" type="text"
+                              class="form-control" />
                           </div>
                         </div>
 
@@ -277,7 +279,7 @@ export default {
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
                         <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                        }}</b-button>
+                          }}</b-button>
                       </div>
                     </form>
                   </b-modal>

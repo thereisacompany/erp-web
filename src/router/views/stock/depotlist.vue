@@ -227,12 +227,14 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="倉庫名稱" v-model="name" @keyup.enter="GetData()" />
+                    <input autocomplete="off" type="text" class="form-control" placeholder="倉庫名稱" v-model="name"
+                      @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="備註" v-model="remark" @keyup.enter="GetData()" />
+                    <input autocomplete="off" type="text" class="form-control" placeholder="備註" v-model="remark"
+                      @keyup.enter="GetData()" />
                   </div>
                 </div>
 
@@ -256,30 +258,32 @@ export default {
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">倉庫名稱</label>
-                            <input id="name" v-model="customers.name" type="text" class="form-control" placeholder="倉庫名稱"
+                            <input autocomplete="off" id="name" v-model="customers.name" type="text"
+                              class="form-control" placeholder="倉庫名稱"
                               :class="{ 'is-invalid': submitted && v$.customers.name.$error, }" />
                             <div v-if="submitted && v$.customers.name.$error" class="invalid-feedback">
                               <span v-if="v$.customers.name.required.$message">{{ v$.customers.name.required.$message
-                              }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">倉庫地址</label>
-                            <input id="name" v-model="customers.address" type="text" class="form-control"
-                              placeholder="倉庫地址" />
+                            <input autocomplete="off" id="name" v-model="customers.address" type="text"
+                              class="form-control" placeholder="倉庫地址" />
 
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">空間大小</label>
-                            <input id="name" v-model="customers.space" type="text" class="form-control" placeholder="空間大小"
+                            <input autocomplete="off" id="name" v-model="customers.space" type="text"
+                              class="form-control" placeholder="空間大小"
                               :class="{ 'is-invalid': submitted && v$.customers.space.$error, }" />
                             <div v-if="submitted && v$.customers.space.$error" class="invalid-feedback">
                               <span v-if="v$.customers.space.required.$message">{{ v$.customers.space.required.$message
-                              }}</span>
+                                }}</span>
                             </div>
 
                           </div>
@@ -296,27 +300,29 @@ export default {
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">電話</label>
-                            <input id="name" v-model="customers.telephone" type="text" class="form-control"
-                              placeholder="電話" />
+                            <input autocomplete="off" id="name" v-model="customers.telephone" type="text"
+                              class="form-control" placeholder="電話" />
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">傳真</label>
-                            <input id="name" v-model="customers.fax" type="text" class="form-control" placeholder="傳真" />
+                            <input autocomplete="off" id="name" v-model="customers.fax" type="text" class="form-control"
+                              placeholder="傳真" />
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">備註</label>
-                            <input id="name" v-model="customers.remark" type="text" class="form-control"
-                              placeholder="備註" />
+                            <input autocomplete="off" id="name" v-model="customers.remark" type="text"
+                              class="form-control" placeholder="備註" />
                           </div>
                         </div>
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">順序</label>
-                            <input id="name" v-model="customers.sort" type="text" class="form-control" placeholder="順序" />
+                            <input autocomplete="off" id="name" v-model="customers.sort" type="text"
+                              class="form-control" placeholder="順序" />
                           </div>
                         </div>
                         <div class="col-12">
@@ -343,7 +349,7 @@ export default {
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
                         <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                        }}</b-button>
+                          }}</b-button>
                       </div>
                     </form>
                   </b-modal>

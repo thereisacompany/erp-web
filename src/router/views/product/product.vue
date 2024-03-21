@@ -390,8 +390,8 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="關鍵字(名稱/規格/型號)" v-model="materialParam"
-                      @keyup.enter="GetData()" />
+                    <input autocomplete="off" type="text" class="form-control" placeholder="關鍵字(名稱/規格/型號)"
+                      v-model="materialParam" @keyup.enter="GetData()" />
                   </div>
                 </div>
 
@@ -478,21 +478,22 @@ export default {
               <div class="row">
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="name">品名</label>
-                  <input id="name" type="text" v-model="formData.name" class="form-control"
+                  <input autocomplete="off" id="name" type="text" v-model="formData.name" class="form-control"
                     :class="{ 'is-invalid': submitted && v$.formData.$error, }" />
                   <div v-if="submitted && v$.formData.name.$error" class="invalid-feedback">
                     <span v-if="v$.formData.name.required.$message">{{
-                      v$.formData.name.required.$message
-                    }}</span>
+      v$.formData.name.required.$message
+    }}</span>
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="standard">規格</label>
-                  <input id="standard" type="text" v-model="formData.standard" class="form-control" />
+                  <input autocomplete="off" id="standard" type="text" v-model="formData.standard"
+                    class="form-control" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="model">型號</label>
-                  <input id="model" type="text" v-model="formData.model" class="form-control" />
+                  <input autocomplete="off" id="model" type="text" v-model="formData.model" class="form-control" />
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
@@ -520,37 +521,40 @@ export default {
                     </div>
                     <div v-if="submitted && v$.categoryActiveTitle.$error" class="invalid-feedback">
                       <span v-if="v$.categoryActiveTitle.required.$message">{{
-                        v$.categoryActiveTitle.required.$message
-                      }}</span>
+      v$.categoryActiveTitle.required.$message
+    }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="length">長</label>
-                  <input id="length" type="text" v-model="formData.length" class="form-control" @change="calVolume()" />
+                  <input autocomplete="off" id="length" type="text" v-model="formData.length" class="form-control"
+                    @change="calVolume()" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="width">寬</label>
-                  <input id="width" type="text" v-model="formData.width" class="form-control" @change="calVolume()" />
+                  <input autocomplete="off" id="width" type="text" v-model="formData.width" class="form-control"
+                    @change="calVolume()" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="high">高</label>
-                  <input id="high" type="text" v-model="formData.high" class="form-control" @change="calVolume()" />
+                  <input autocomplete="off" id="high" type="text" v-model="formData.high" class="form-control"
+                    @change="calVolume()" />
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="volume">材積=((長*寬*高)+基本差異數)/27826</label>
-                  <input id="volume" type="text" v-model="formData.volume" class="form-control" />
+                  <input autocomplete="off" id="volume" type="text" v-model="formData.volume" class="form-control" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="model">品號</label>
-                  <input id="model" type="text" v-model="formData.number" class="form-control" readonly="readonly"
-                    placeholder="系統自動產生/或需要手動可告知修改" />
+                  <input autocomplete="off" id="model" type="text" v-model="formData.number" class="form-control"
+                    readonly="readonly" placeholder="系統自動產生/或需要手動可告知修改" />
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="mBarCode">條碼</label>
-                  <input id="mBarCode" type="text" v-model="formData.barcode" class="form-control" />
+                  <input autocomplete="off" id="mBarCode" type="text" v-model="formData.barcode" class="form-control" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="enabled">狀態</label>
@@ -574,7 +578,7 @@ export default {
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="counter">儲位</label>
-                  <input id="counter" type="text" v-model="formData.counter" class="form-control" />
+                  <input autocomplete="off" id="counter" type="text" v-model="formData.counter" class="form-control" />
                 </div>
               </div>
 
@@ -583,7 +587,7 @@ export default {
                   關閉
                 </b-button>
                 <b-button type="submit" variant="success" class="ms-1" @click="handleSubmit(modelInfo.type)">{{
-                  modelInfo.submitName }}</b-button>
+      modelInfo.submitName }}</b-button>
               </div>
             </b-modal>
           </div>

@@ -158,7 +158,7 @@ export default {
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server.get(APIUrl + APIParameter)
         .then((res) => {
-          console.log("回傳資料成功 res=", res);
+          //console.log("回傳資料成功 res=", res);
           if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
             //回傳資料成功
             let jshdata = res.data.data;
@@ -227,19 +227,19 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="客戶名稱" v-model="supplier"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="客戶名稱" v-model="supplier"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="手機號碼" v-model="telephone"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="手機號碼" v-model="telephone"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="聯繫電話" v-model="phoneNum"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="聯繫電話" v-model="phoneNum"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
@@ -263,59 +263,67 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">客戶名稱</label>
-                            <input id="name" v-model="customers.supplier" type="text" class="form-control"
+                            <input autocomplete="off" id="name" v-model="customers.supplier" type="text"
+                              class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
                             <div v-if="submitted && v$.customers.supplier.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplier.required.$message">{{
-                                v$.customers.supplier.required.$message }}</span>
+      v$.customers.supplier.required.$message }}</span>
                             </div>
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">客戶全名</label>
-                            <input id="name" v-model="customers.supplierall" type="text" class="form-control"
+                            <input autocomplete="off" id="name" v-model="customers.supplierall" type="text"
+                              class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.supplierall.$error, }" />
                             <div v-if="submitted && v$.customers.supplierall.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplierall.required.$message">{{
-                                v$.customers.supplierall.required.$message }}</span>
+      v$.customers.supplierall.required.$message }}</span>
                             </div>
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">統一編號</label>
-                            <input id="name" v-model="customers.taxid" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.taxid" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">聯繫人</label>
-                            <input id="name" v-model="customers.contacts" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.contacts" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">手機號碼</label>
-                            <input id="name" v-model="customers.telephone" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.telephone" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">聯繫電話</label>
-                            <input id="name" v-model="customers.phoneNum" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.phoneNum" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">電子郵箱</label>
-                            <input id="name" v-model="customers.email" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.email" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">地址</label>
-                            <input id="name" v-model="customers.address" type="text" class="form-control" />
+                            <input autocomplete="off" id="name" v-model="customers.address" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-12">
@@ -342,7 +350,7 @@ export default {
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
                         <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                        }}</b-button>
+                          }}</b-button>
                       </div>
                     </form>
                   </b-modal>

@@ -464,19 +464,19 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="搜尋姓名" v-model="supplier" autocomplete="off"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="搜尋姓名" v-model="supplier"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="手機號碼" v-model="telephone" autocomplete="off"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="手機號碼" v-model="telephone"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="聯繫電話" v-model="phoneNum" autocomplete="off"
+                    <input autocomplete="off" type="text" class="form-control" placeholder="聯繫電話" v-model="phoneNum"
                       @keyup.enter="GetData()" />
                   </div>
                 </div>
@@ -515,16 +515,16 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
-                            <input id="name" v-model="customers.loginName" type="text" class="form-control"
-                              autocomplete="off" :readonly="this.customers.id != 0" />
+                            <input autocomplete="off" id="name" v-model="customers.loginName" type="text"
+                              class="form-control" :readonly="this.customers.id != 0" />
 
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3" v-if="customers.type == '家電-司機'">
                           <div class="mb-3">
                             <label for="loginPassword">登入密碼</label>
-                            <input id="loginPassword" v-model="customers.loginPassword" type="password"
-                              autocomplete="off" :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : ''"
+                            <input autocomplete="off" id="loginPassword" v-model="customers.loginPassword"
+                              type="password" :placeholder="this.customers.id != 0 ? '密碼不修改可保留空白' : ''"
                               class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.loginPassword.$error, }" />
                             <div v-if="submitted && v$.customers.loginPassword.$error" class="invalid-feedback">
@@ -538,8 +538,8 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">姓名</label>
-                            <input id="name" v-model="customers.supplier" type="text" class="form-control"
-                              autocomplete="off"
+                            <input autocomplete="off" id="name" v-model="customers.supplier" type="text"
+                              class="form-control"
                               :class="{ 'is-invalid': submitted && v$.customers.supplier.$error, }" />
                             <div v-if="submitted && v$.customers.supplier.$error" class="invalid-feedback">
                               <span v-if="v$.customers.supplier.required.$message">{{
@@ -552,43 +552,43 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">緊急聯繫人</label>
-                            <input id="name" v-model="customers.contacts" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.contacts" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">緊急聯繫人電話</label>
-                            <input id="name" v-model="customers.emergencyPhone" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.emergencyPhone" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">手機號碼</label>
-                            <input id="name" v-model="customers.telephone" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.telephone" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">聯繫電話</label>
-                            <input id="name" v-model="customers.phoneNum" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.phoneNum" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">電子郵箱</label>
-                            <input id="name" v-model="customers.email" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.email" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">地址</label>
-                            <input id="name" v-model="customers.address" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.address" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                       </div>
@@ -596,15 +596,15 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">團保加保日</label>
-                            <input id="name" v-model="customers.groupInsuranceStart" type="date" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.groupInsuranceStart" type="date"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">團保退保日</label>
-                            <input id="name" v-model="customers.groupInsuranceEnd" type="date" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.groupInsuranceEnd" type="date"
+                              class="form-control" />
                           </div>
                         </div>
 
@@ -612,43 +612,43 @@ export default {
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">勞健保加保日</label>
-                            <input id="name" v-model="customers.laborHealthInsuranceStart" type="date"
-                              class="form-control" autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.laborHealthInsuranceStart"
+                              type="date" class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">勞健保退保日</label>
-                            <input id="name" v-model="customers.laborHealthInsuranceEnd" type="date"
-                              class="form-control" autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.laborHealthInsuranceEnd" type="date"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">入職日</label>
-                            <input id="name" v-model="customers.onboarding" type="date" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.onboarding" type="date"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">離職日</label>
-                            <input id="name" v-model="customers.resign" type="date" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.resign" type="date"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">身分證字號</label>
-                            <input id="name" v-model="customers.idNumber" type="text" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.idNumber" type="text"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">出生年月日</label>
-                            <input id="name" v-model="customers.birthday" type="date" class="form-control"
-                              autocomplete="off" />
+                            <input autocomplete="off" id="name" v-model="customers.birthday" type="date"
+                              class="form-control" />
                           </div>
                         </div>
                         <div class="col-sm-12 col-md-4 col-lg-3">

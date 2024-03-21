@@ -268,25 +268,29 @@ export default {
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
                                         <label for="name">商品資料</label>
-                                        <input type="text" class="form-control" placeholder="商品資料"
+                                        <input autocomplete="off" type="text" class="form-control" placeholder="商品資料"
                                             @keyup.enter="GetData()" v-model="materialParam" />
                                     </div>
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <label for="name">起始日期</label>
-                                    <input type="date" class="form-control" @change="GetData()" v-model="beginDate" />
+                                    <input autocomplete="off" type="date" class="form-control" @change="GetData()"
+                                        v-model="beginDate" />
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <label for="name">起始時間</label>
-                                    <input type="time" class="form-control" @change="GetData()" v-model="beginTime" />
+                                    <input autocomplete="off" type="time" class="form-control" @change="GetData()"
+                                        v-model="beginTime" />
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <label for="name">結束日期</label>
-                                    <input type="date" class="form-control" @change="GetData()" v-model="endDate" />
+                                    <input autocomplete="off" type="date" class="form-control" @change="GetData()"
+                                        v-model="endDate" />
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <label for="name">結束時間</label>
-                                    <input type="time" class="form-control" @change="GetData()" v-model="endTime" />
+                                    <input autocomplete="off" type="time" class="form-control" @change="GetData()"
+                                        v-model="endTime" />
                                 </div>
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="position-relative">
