@@ -148,5 +148,66 @@ server.GetMaterialListByRow = function(wObj, callback) {
             if (callback) callback(null)
         });
 }
+server.GetVehiclelist = function(wObj, callback) {
 
+
+    let APIUrl = `/vehicle/list`;
+    let APIParameter = `?currentPage=1&pageSize=1000`;
+    let queryStr = `{"licensePlateNumber":"","brandModel":"","driver":""}`;
+    APIParameter += `&search=${encodeURIComponent(queryStr)}`;
+    server.get(APIUrl + APIParameter)
+        .then((res) => {
+            if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+                let jshdata = res.data.data;
+                let list2 = jshdata.rows;
+                list2.sort((a, b) => {
+                    // // First, sort by driverName being empty
+                    // if (!a.driverName && b.driverName) {
+                    //     return -1; // a should come before b
+                    // } else if (a.driverName && !b.driverName) {
+                    //     return 1; // b should come before a
+                    // }
+
+                    // If both have empty driverName or both have non-empty driverName, sort by licensePlateNumber
+                    return a.licensePlateNumber.localeCompare(b.licensePlateNumber);
+                });
+                // list2.sort((a, b) => {
+                //     // First, sort by driverName being empty
+                //     if (!a.driverName && b.driverName) {
+                //         return -1; // a should come before b
+                //     } else if (a.driverName && !b.driverName) {
+                //         return 1; // b should come before a
+                //     }
+
+                //     // If both have empty driverName or both have non-empty driverName, sort by licensePlateNumber
+                //     return a.licensePlateNumber.localeCompare(b.licensePlateNumber);
+                // });
+
+                // let VehicleList = [];
+                // for (let i = 0; i < list2.length; i++) {
+                //     let driverName = '';
+                //     if (list2[i].driverName != null && list2[i].driverName != '') driverName = ' / ' + common.PadLeftZero(list2[i].driver, 3) + ' ' + list2[i].driverName;
+                //     VehicleList.push({ licensePlateNumber: list2[i].licensePlateNumber, driverName })
+                // }
+                if (callback) {
+                    let VehicleList = list2.map(x => {
+                        return {
+                            id: x.id,
+                            licensePlateNumber: x.licensePlateNumber,
+                            idname: common.PadLeftZero(x.id, 3) + ' ' + x.licensePlateNumber,
+                            driverId: x.driver,
+                            driverName: x.driverName,
+                            driverIdName: common.PadLeftZero(x.driver, 3) + ' ' + x.driverName,
+                        }
+                    })
+                    callback(VehicleList);
+                }
+            }
+
+        }).catch(function(error) {
+            console.log("error", error);
+            return;
+        });
+
+}
 export { server };

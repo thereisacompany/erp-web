@@ -41,6 +41,7 @@ export const menuItems = [{
         icon: "bxs-report",
         subItems: [
             { id: 13002, label: "進銷存統計", link: "/report/in_out_stock_report", parentId: 13001 },
+            { id: 13003, label: "司機配送統計表", link: "/report/driver_stock_report", parentId: 13001 },
 
         ]
     },

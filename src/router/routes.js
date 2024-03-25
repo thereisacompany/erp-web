@@ -22,6 +22,7 @@ export default [{
     { path: "/stock/returnstocklist", name: "returnstocklist", meta: { authRequired: true, }, component: require("./views/stock/returnstocklist").default },
     { path: "/stock/movestocklist", name: "movestocklist", meta: { authRequired: true, }, component: require("./views/stock/movestocklist").default },
     { path: "/report/in_out_stock_report", name: "in_out_stock_report", meta: { authRequired: true, }, component: require("./views/report/in_out_stock_report").default },
+    { path: "/report/driver_stock_report", name: "driver_stock_report", meta: { authRequired: true, }, component: require("./views/report/driver_stock_report").default },
     { path: "/system/userlist", name: "userlist", meta: { authRequired: true, }, component: require("./views/system/userlist").default },
     { path: "/system/rolelist", name: "rolelist", meta: { authRequired: true, }, component: require("./views/system/rolelist").default },
 
@@ -50,7 +51,7 @@ export default [{
         component: () =>
             import ("./views/dashboards/default"),
     },
-  
+
     {
         path: "/login",
         name: "login",
@@ -141,5 +142,5 @@ export default [{
     //   path: "*",
     //   redirect: "404",
     // },
-  
+
 ];

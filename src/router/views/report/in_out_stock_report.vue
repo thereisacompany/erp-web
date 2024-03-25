@@ -186,11 +186,11 @@ export default {
             }
             if (common.IsDate(this.endDate)) {
                 endDateTime += `&endDateTime=${dayjs(this.endDate).format("YYYY-MM-DD")}`;
-                if (common.IsTime(this.endTime + ':00')) {
+                if (common.IsTime(this.endTime + ':59')) {
                     //格式: 2023-12-08 22:07:00
-                    endDateTime += ` ${this.endTime + ':00'}`;
+                    endDateTime += ` ${this.endTime + ':59'}`;
                 } else {
-                    endDateTime += ` 00:00:00`;
+                    endDateTime += ` 23:59:59`;
                 }
             }
             APIParameter += beginDateTime + endDateTime;
