@@ -12,7 +12,7 @@ export const menuItems = [{
 
             { id: 11004, label: "客戶管理", link: "/user/customerlist", parentId: 11001 },
             { id: 11006, label: "人事管理", link: "/user/driverlist", parentId: 11001 },
-            { id: 12005, label: "車輛管理", link: "/stock/vehiclelist", parentId: 11001 },
+            { id: 11005, label: "車輛管理", link: "/stock/vehiclelist", parentId: 11001 },
         ]
     },
     {

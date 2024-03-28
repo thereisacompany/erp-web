@@ -128,7 +128,7 @@ export default {
     },
     mounted() {
         server.GetSupplierList((rows) => { this.supplierlist = rows })
-        this.beginDate = dayjs().format("YYYY-MM-DD");//預設起始日期
+        this.endDate = dayjs().format("YYYY-MM-DD");//預設起始日期
         this.$nextTick(() => {
 
             this.GetDepotList();//倉庫別

@@ -236,6 +236,7 @@ export default {
         .then((res) => {
           console.log(res);
           this.clearForm();
+          this.formData.enabled = true;
           this.showModal = false;
           this.GetData();
         })
@@ -527,17 +528,17 @@ export default {
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
-                  <label for="length">長</label>
+                  <label for="length">長(cm)</label>
                   <input autocomplete="off" id="length" type="text" v-model="formData.length" class="form-control"
                     @change="calVolume()" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
-                  <label for="width">寬</label>
+                  <label for="width">寬(cm)</label>
                   <input autocomplete="off" id="width" type="text" v-model="formData.width" class="form-control"
                     @change="calVolume()" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
-                  <label for="high">高</label>
+                  <label for="high">高(cm)</label>
                   <input autocomplete="off" id="high" type="text" v-model="formData.high" class="form-control"
                     @change="calVolume()" />
                 </div>
@@ -587,7 +588,7 @@ export default {
                   關閉
                 </b-button>
                 <b-button type="submit" variant="success" class="ms-1" @click="handleSubmit(modelInfo.type)">{{
-      modelInfo.submitName }}</b-button>
+                  modelInfo.submitName }}</b-button>
               </div>
             </b-modal>
           </div>
