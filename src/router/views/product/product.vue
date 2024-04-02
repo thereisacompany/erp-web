@@ -424,11 +424,9 @@ export default {
                     <th width="180">規格</th>
                     <th width="180">型號</th>
 
-
-                    <th width="120">條碼</th>
-                    <th width="60">長</th>
-                    <th width="60">寬</th>
-                    <th width="60">高</th>
+                    <th width="60">長(cm)</th>
+                    <th width="60">寬(cm)</th>
+                    <th width="60">高(cm)</th>
 
                     <th width="60">材積</th>
                     <th width="180">類別</th>
@@ -446,7 +444,6 @@ export default {
                     <td style="white-space: break-spaces">{{ item.standard }}</td>
                     <td style="white-space: break-spaces">{{ item.model }}</td>
 
-                    <td style="white-space: break-spaces">{{ item.barcode }}</td>
                     <td>{{ item.length }}</td>
                     <td>{{ item.width }}</td>
                     <td>{{ item.high }}</td>
@@ -544,7 +541,7 @@ export default {
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
-                  <label for="volume">材積=((長*寬*高)+基本差異數)/27826</label>
+                  <label for="volume">材積=(長*寬*高)/27826</label>
                   <input autocomplete="off" id="volume" type="text" v-model="formData.volume" class="form-control" />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
@@ -553,10 +550,7 @@ export default {
                     readonly="readonly" placeholder="系統自動產生/或需要手動可告知修改" />
                 </div>
 
-                <div class="col-sm-12 col-md-4 col-lg-3">
-                  <label for="mBarCode">條碼</label>
-                  <input autocomplete="off" id="mBarCode" type="text" v-model="formData.barcode" class="form-control" />
-                </div>
+
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="enabled">狀態</label>
                   <select class="form-select" v-model="formData.enabled">

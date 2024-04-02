@@ -1219,6 +1219,7 @@ export default {
                                         <th>時間</th>
                                         <th>商品</th>
                                         <th>品號</th>
+                                        <th>建單人員</th>
                                         <th>數量</th>
                                         <th>移出</th>
                                         <th>移入</th>
@@ -1235,26 +1236,31 @@ export default {
                                                 :disabled="SubItem.status != 5">
                                         </td>
                                         <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.number }}
-                                        </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operTime
-                                            }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.number }} </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.operTime }}
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             <div v-for="name1 in String(SubItem.mname).split(',')"
                                                 :key="'SubItem' + cidx + name1">{{ name1 }}</div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.mnumber }}
+
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.mnumber }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.operNumber
-                                            }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.userName }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all;text-align: center;">
+                                            {{ SubItem.operNumber }}
                                         </td>
 
                                         <td>{{ SubItem.dname }}</td>
                                         <td>{{ SubItem.sname }}</td>
 
-                                        <td style="white-space: break-spaces;word-break:break-all">{{ SubItem.newRemark
-                                            }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.newRemark }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">

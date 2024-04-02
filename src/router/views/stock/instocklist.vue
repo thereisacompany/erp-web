@@ -844,6 +844,7 @@ export default {
                                                     <th width="5%">庫存</th>
                                                     <th width="10%">儲位</th>
                                                     <th width="5%">數量</th>
+                                                    <th width="5%">下單數量</th>
 
                                                     <th width="10%">備註</th>
                                                     <th width="1%">操作</th>
@@ -894,7 +895,8 @@ export default {
                                                     <td> <input autocomplete="off" type="text" class="form-control"
                                                             @change="SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice"
                                                             v-model="SubItem.operNumber"></td>
-
+                                                    <td> {{ SubItem.orderNumber }}
+                                                    </td>
                                                     <td> <input autocomplete="off" type="text" class="form-control"
                                                             v-model="SubItem.remark">
                                                     </td>
@@ -1097,7 +1099,10 @@ export default {
                                         <th>倉庫別</th>
                                         <th>儲位</th>
                                         <th>數量</th>
+                                        <th>下單數量</th>
+
                                         <th>狀態</th>
+                                        <th>建單人員</th>
                                         <th>建立時間</th>
                                         <th>操作</th>
 
@@ -1122,15 +1127,18 @@ export default {
 
                                         <td>{{ SubItem.materialCount }}</td>
 
-
+                                        <td>{{ SubItem.orderCount }}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <span class="btn btn-success" v-if="SubItem.status == 1">己審核</span>
                                                 <span class="btn btn-danger" v-if="SubItem.status == 0">未審核</span>
                                             </div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{
-            SubItem.operTimeStr }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.userName }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.operTimeStr }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">

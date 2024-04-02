@@ -1466,6 +1466,7 @@ export default {
                                         <th>狀態</th>
                                         <th>配送狀態</th>
                                         <th>配送類別</th>
+                                        <th>建單人員</th>
                                         <th>建立時間</th>
                                         <th>操作</th>
                                     </tr>
@@ -1496,11 +1497,11 @@ export default {
                                             <div v-for="name1 in String(SubItem.materialsList).split(',')"
                                                 :key="'SubItem' + cidx + name1">{{ name1 }}</div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{
-            SubItem.depotName }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.depotName }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{
-            SubItem.counterName }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.counterName }}
                                         </td>
 
                                         <td>{{ SubItem.materialCount }}</td>
@@ -1513,16 +1514,20 @@ export default {
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <span class="btn" :class="formatdStatusCSS(SubItem.dStatus)">{{
-            formatdStatus(SubItem.dStatus) }}</span>
+                                                <span class="btn" :class="formatdStatusCSS(SubItem.dStatus)">
+                                                    {{ formatdStatus(SubItem.dStatus) }}
+                                                </span>
 
                                             </div>
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{
-            SubItem.subType }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.subType }}
                                         </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">{{
-            SubItem.operTimeStr }}
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.userName }}
+                                        </td>
+                                        <td style="white-space: break-spaces;word-break:break-all">
+                                            {{ SubItem.operTimeStr }}
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
