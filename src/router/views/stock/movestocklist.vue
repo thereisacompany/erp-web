@@ -106,6 +106,9 @@ export default {
 
             name: '',
             remark: '',
+
+            LogList: [],
+
             IsGetDataing: false,
             pageSize: 30,
             totalRows: 0,
@@ -121,7 +124,13 @@ export default {
             let itemallPrice = this.customersItem.filter(x => x.allPrice != 0).map(y => y.allPrice).reduce((a, b) => a + b);
 
             return itemallPrice;
-        }
+        },
+        move2depotList: function () {
+
+            let list2 = this.customersItem.map(x => x.depotId);
+            //console.log(list2, this.depotList.map(x => x.id))
+            return this.depotList.filter(x => list2.includes(x.id) == false);
+        },
     },
     setup() {
 
@@ -377,6 +386,7 @@ export default {
                 this.customers.date2 = dayjs().format("YYYY-MM-DD");
                 this.customers.time2 = dayjs().format("HH:mm:ss");
                 this.NewRow1();
+                this.LogList = [];
                 return;
             }
             if (RowItem.number != null && RowItem.number != '') {
@@ -426,7 +436,9 @@ export default {
                 this.customersItem[0].stock = RowItem.stock;
 
             });
-
+            server.GetLog({ content: RowItem.number }, (rows) => {
+                this.LogList = rows
+            })
         },
 
         queryMaterialByRow(SubItem, cidx) {
@@ -591,43 +603,51 @@ export default {
                 });
 
         },
-        // GetDetailByNumber(number) {
-        //     ///jshERP-boot/depotHead/getDetailByNumber?number=CGRK00000000994
-        //     let APIUrl = `/depotHead/getDetailByNumber?number=${number}`;
-        //     server.get(APIUrl)
-        //         .then((res) => {
 
-        //             if (res != null && res.data != null && res.status == 200) {
-        //                 let jshdata = res.data.data;
-        //                 this.customers = jshdata;
-        //                 this.customers.date2 = dayjs(this.customers.operTime).format("YYYY-MM-DD");
-        //                 this.customers.time2 = dayjs(this.customers.operTime).format("HH:mm:ss");
-        //                 this.customers.mainArrival = dayjs(this.customers.mainArrival).isValid() ? dayjs(this.customers.mainArrival).format("YYYY-MM-DD") : null;
-        //                 this.customers.extrasArrival = dayjs(this.customers.extrasArrival).isValid() ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD") : null;
-        //                 this.customers.agreedDelivery = dayjs(this.customers.agreedDelivery).isValid() ? dayjs(this.customers.agreedDelivery).format("YYYY-MM-DD") : null;
-        //                 this.customers.delivered = dayjs(this.customers.delivered).isValid() ? dayjs(this.customers.delivered).format("YYYY-MM-DD") : null;
+        SetInvalidStatus() {
+            //單一移倉設置狀態-移倉完成
+            if (this.IsGetDataing == true) return;
 
-        //                 this.filelist = this.customers.fileName.split(",").filter(x => x != '');
-        //             }
-        //         }).catch(function (error) {
-        //             console.log("error", error);
-        //         });
-        // },
+            if (this.customers.id == null || this.customers.id == 0) {
+                alert('請選擇一個單據!')
+                return;
+            }
 
-        GetDetailList(headerId) {
-            ///jshERP-boot/depotItem/getDetailList?headerId=289&mpList=%E5%88%B6%E9%80%A0%E5%95%86,%E8%87%AA%E5%AE%9A%E4%B9%891,%E8%87%AA%E5%AE%9A%E4%B9%892,%E8%87%AA%E5%AE%9A%E4%B9%893&linkType=basic&isReadOnly=1
-            let APIUrl = `/depotItem/getDetailList?headerId=${headerId}&mpList=3&linkType=basic&isReadOnly=1`;
-            server.get(APIUrl)
+            if (confirm(`確認作廢單號:${this.customers.defaultNumber}移倉單\n商品:${this.customersItem[0].name}?`) != true) {
+                return;
+            }
+
+            // 移倉功能-需有作廢功能
+            // POST /transferDepot/setInvalid/{id}
+            // 傳入移倉細單id (在api /depotHead/findAllocationDetail 取得的 subId)
+            // 需為移倉中 或 未有移倉完成的商品，才可以有作廢按鈕出現
+            // 移倉列表-作廢的status為6
+            this.IsGetDataing = true;
+            let data1 = {}
+
+            let APIUrl = `/transferDepot/setInvalid/${this.customersItem[0].subId}`;
+
+            server.post(APIUrl, data1)
                 .then((res) => {
 
-                    if (res != null && res.data != null && res.status == 200) {
-                        let jshdata = res.data.data;
-                        this.customersItem = jshdata.rows;
-                        this.customersItem.pop();
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            this.showModal = false;
+                            this.SubView = 0;
+                            this.$nextTick(() => { this.GetData() });
+                        } else {
+                            alert(res.data.data.message)
+                        }
                     }
+                    this.IsGetDataing = false;
+
+
                 }).catch(function (error) {
                     console.log("error", error);
+                    this.IsGetDataing = false;
+                    return;
                 });
+
         },
 
 
@@ -1073,7 +1093,7 @@ export default {
                                     <label for="name">移入倉庫</label>
                                     <select class="form-select" v-model="customers.anotherDepotId"
                                         :class="{ 'is-invalid': submitted && v$.customers.anotherDepotId.$error, }">
-                                        <option :value="u1.id" selected v-for="u1 in depotList"
+                                        <option :value="u1.id" selected v-for="u1 in move2depotList"
                                             :key="'customers_anotherDepotId' + u1.id">
                                             {{ u1.depotName }}</option>
                                     </select>
@@ -1108,12 +1128,28 @@ export default {
                 </div>
             </div>
 
-
+            <div class="loglist" v-if="SubView != 0 && LogList.length != 0">
+                <table class="table table-centered table-bordered table-nowrap align-middle">
+                    <tr>
+                        <th class="text-center" width="50px">#</th>
+                        <th width="150px">操作時間</th>
+                        <th width="150px">操作人員</th>
+                        <th>操作詳情</th>
+                    </tr>
+                    <tr v-for="(log1, logidx) in LogList" :key="'LogList' + logidx">
+                        <td class="text-center">{{ logidx + 1 }}</td>
+                        <td>{{ log1.createTimeStr }}</td>
+                        <td>{{ log1.loginName }}({{ log1.userName }})</td>
+                        <td>{{ log1.content }}</td>
+                    </tr>
+                </table>
+            </div>
             <div>
                 <div class="button-items">
                     <a href="javascript:;" class="btn btn-primary" @click="handleSubmit(1)" v-if="SubView == 1">新增</a>
                     <a href="javascript:;" class="btn btn-primary" @click="handleSubmit(2)" v-if="SubView == 2">保存</a>
                     <a href="javascript:;" class="btn btn-primary" @click="SingleSetStatus" v-if="SubView == 2">移倉完成</a>
+                    <a href="javascript:;" class="btn btn-danger" @click="SetInvalidStatus" v-if="SubView == 2">作廢</a>
 
                     <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0">返回</a>
                 </div>
@@ -1200,9 +1236,7 @@ export default {
                                         @click="EditOne({ number: '' })">
                                         <i class="mdi mdi-plus me-1"></i> 新增移倉單
                                     </button>
-                                    <button type="button" class="btn btn-success btn-rounded mb-2 me-2"
-                                        @click="BatchSetStatus()"> 批次移倉完成
-                                    </button>
+
                                 </div>
                             </div>
                             <!-- end col-->
@@ -1265,7 +1299,8 @@ export default {
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <span class="btn btn-success" v-if="SubItem.status == 4">已完成</span>
-                                                <span class="btn btn-danger" v-if="SubItem.status == 5">移倉中</span>
+                                                <span class="btn btn-warning" v-if="SubItem.status == 5">移倉中</span>
+                                                <span class="btn btn-danger" v-if="SubItem.status == 6">作廢</span>
                                             </div>
                                         </td>
                                         <td>

@@ -162,6 +162,75 @@ export default {
                 });
         },
 
+        GetSubStock(SubItem) {
+
+            if (SubItem.IsSubStock == 1) {
+                SubItem.IsSubStock = 0
+                return;
+            }
+            let APIUrl = `/depotItem/getAllDepotStock`;
+
+            //organId=6&MNumber=0000013&beginDateTime&endDateTime=2024-04-04 23:59:59
+            let APIParameter = `?organId=${this.organId}&MNumber=${SubItem.materialNumber}&depotId=${this.depotId}`;
+
+            let beginDateTime = '';
+            let endDateTime = '';
+
+            if (common.IsDate(this.beginDate)) {
+                beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format("YYYY-MM-DD")}`;
+                if (common.IsTime(this.beginTime + ':00')) {
+                    beginDateTime += ` ${this.beginTime + ':00'}`;
+                } else {
+                    beginDateTime += ` 00:00:00`;
+                }
+            }
+            if (common.IsDate(this.endDate)) {
+                endDateTime += `&endDateTime=${dayjs(this.endDate).format("YYYY-MM-DD")}`;
+                if (common.IsTime(this.endTime + ':59')) {
+                    endDateTime += ` ${this.endTime + ':59'}`;
+                } else {
+                    endDateTime += ` 23:59:59`;
+                }
+            }
+            APIParameter += beginDateTime + endDateTime;
+            server.get(APIUrl + APIParameter)
+                .then((res) => {
+                    if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+                        let jshdata = res.data.data;
+
+                        SubItem.IsSubStock = 1;
+                        SubItem.SubStockList = jshdata.rows;
+                    }
+
+                }).catch(function (error) {
+                    console.log("error", error);
+
+                    return;
+                });
+
+
+            // GET /jshERP-boot/depotItem/getAllDepotStock?organId=6&MNumber=0000013&beginDateTime&endDateTime=2024-04-04 23:59:59
+
+            // {
+            //     "code": 200,
+            //     "data": {
+            //         "rows": [
+            //             {
+            //                 "depotName": "高雄倉",
+            //                 "counterName": "A01",
+            //                 "stock": 30.000000
+            //             },
+            //             {
+            //                 "depotName": "台北倉",
+            //                 "counterName": "A01",
+            //                 "stock": 1.000000
+            //             }
+            //         ]
+            //     }
+            // }
+        },
+
+
         GetData() {
             if (this.IsGetDataing == true) return;
             this.IsGetDataing = true;
@@ -316,41 +385,73 @@ export default {
                                         <th>名稱</th>
                                         <th>規格</th>
                                         <th>型號</th>
-                                        <th>不良品</th>
-                                        <th>上月結存數量</th>
-                                        <th>入庫數量</th>
-                                        <th>出庫數量</th>
-                                        <th>本月結存數量</th>
+                                        <th class="text-center">不良品</th>
+
+                                        <th class="text-center">入庫數量</th>
+                                        <th class="text-center">出庫數量</th>
+                                        <th class="text-center">結存數量</th>
 
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
-                                        <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ formatOrganName(SubItem) }}
-                                        </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ SubItem.materialNumber }}
-                                        </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ SubItem.materialName }}
-                                        </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ SubItem.materialStandard }}
-                                        </td>
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ SubItem.materialModel }}
-                                        </td>
+                                    <template v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
+                                        <tr>
+                                            <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
+                                            <td style="white-space: break-spaces;word-break:break-all">
+                                                {{ formatOrganName(SubItem) }}
+                                            </td>
+                                            <td style="white-space: break-spaces;word-break:break-all">
+                                                {{ SubItem.materialNumber }}
+                                            </td>
+                                            <td style="white-space: break-spaces;word-break:break-all">
+                                                {{ SubItem.materialName }}
+                                            </td>
+                                            <td style="white-space: break-spaces;word-break:break-all">
+                                                {{ SubItem.materialStandard }}
+                                            </td>
+                                            <td style="white-space: break-spaces;word-break:break-all">
+                                                {{ SubItem.materialModel }}
+                                            </td>
 
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            {{ SubItem.materialOther }}
-                                        </td>
-                                        <td class="text-center">{{ SubItem.prevSum }}</td>
-                                        <td class="text-center">{{ SubItem.inSum }}</td>
-                                        <td class="text-center">{{ SubItem.outSum }}</td>
-                                        <td class="text-center">{{ SubItem.thisSum }}</td>
-                                    </tr>
+                                            <td class="text-center">
+                                                {{ SubItem.defectiveSum }}
+                                            </td>
+                                            <td class="text-center">{{ SubItem.inSum }}</td>
+                                            <td class="text-center">{{ SubItem.outSum }}</td>
+                                            <td class="text-center">
+                                                <a href="javascript:;" @click="GetSubStock(SubItem)">
+                                                    {{ SubItem.thisSum }}</a>
+                                            </td>
+                                        </tr>
+                                        <tr class="subtr" v-if="SubItem.IsSubStock == 1">
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td class="text-right">&nbsp;</td>
+                                            <td class="text-center" colspan="4">
+                                                <table class="table table-centered table-nowrap align-middle subtable">
+                                                    <tr>
+                                                        <th class="text-center" width="40%">倉庫</th>
+                                                        <th class="text-center" width="30%">儲位</th>
+                                                        <th class="text-center" width="30%">數量
+                                                            <i class="bx bxs-hide" @click="SubItem.IsSubStock = 0"></i>
+                                                        </th>
+                                                    </tr>
+                                                    <tr v-for="(ss1, ssidx) in SubItem.SubStockList"
+                                                        :key="'SubStockList' + ssidx">
+                                                        <td class="text-center">{{ ss1.depotName }}</td>
+                                                        <td class="text-center">{{ ss1.counterName }}</td>
+                                                        <td class="text-center">{{ ss1.stock }}</td>
+                                                    </tr>
+                                                </table>
+
+                                            </td>
+
+                                        </tr>
+                                    </template>
+
 
                                 </tbody>
                                 <tfoot>
@@ -372,9 +473,7 @@ export default {
                                             &nbsp;
                                         </td>
 
-                                        <td style="white-space: break-spaces;word-break:break-all">
-                                            &nbsp;
-                                        </td>
+
                                         <td class="text-center">總計:</td>
                                         <td class="text-center">{{ totalIn }}</td>
                                         <td class="text-center">{{ totalOut }}</td>

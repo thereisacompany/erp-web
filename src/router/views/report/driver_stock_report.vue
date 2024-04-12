@@ -227,7 +227,7 @@ export default {
                 }
             }
 
-            let queryStr = `{"type":"","subType":"","number":"","MNumber":"","materialParam":"","organId":"","beginDateTime":"${beginDateTime}","beginDateTime":"${endDateTime}","depotId":"","keyword":"${this.keyword}","dStatus":"${dStatus}"}`;
+            let queryStr = `{"type":"","subType":"","number":"","MNumber":"","materialParam":"","organId":"","beginDateTime":"${beginDateTime}","endDateTime":"${endDateTime}","driverId":"${SubItem.driverId}","keyword":"${this.keyword}","dStatus":"${dStatus}"}`;
 
             APIParameter += `&search=${encodeURIComponent(queryStr)}`;
             server.get(APIUrl + APIParameter)
@@ -330,7 +330,7 @@ export default {
                 </div>
             </form>
         </b-modal>
-        <div class="row">
+        <div class="row" v-show="SubView == 0">
             <div class="row mb-2">
                 <div class="col-sm-12">
 

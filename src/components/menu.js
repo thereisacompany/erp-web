@@ -33,6 +33,7 @@ export const menuItems = [{
             { id: 12003, label: "進貨單", link: "/stock/instocklist", parentId: 12001 },
             { id: 12004, label: "配送單", link: "/stock/outstocklist", parentId: 12001 },
             { id: 12005, label: "移倉管理", link: "/stock/movestocklist", parentId: 12001 },
+            { id: 12006, label: "退貨單", link: "/stock/returnstocklist", parentId: 12001 },
         ]
     },
     {

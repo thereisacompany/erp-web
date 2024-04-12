@@ -1,7 +1,5 @@
 @use 'sass:math';
-
 @import "custom/components/animation";
-
 .modal-backdrop {
     opacity: .5;
 }
@@ -20,7 +18,6 @@
         width: 1em;
         height: 1em;
         z-index: 2;
-
         button {
             display: none;
         }
@@ -56,9 +53,7 @@
 .vue-simple-drawer {
     background: $gray-100 !important;
     color: $gray-800 !important;
-
     .close-btn {
-
         .leftright,
         .rightleft {
             width: 20px !important;
@@ -76,12 +71,10 @@ body {
 .b-form-btn-label-control {
     padding: 0;
     border: none;
-
     >.btn {
         position: absolute;
         right: 0;
         top: 0;
-
         &:focus {
             box-shadow: none;
         }
@@ -96,35 +89,29 @@ body {
     // common
     position: fixed;
     overflow: auto;
-
     &.closeable {
         padding-top: 40px;
     }
-
     &.left {
         left: 0;
         top: 0;
         bottom: 0;
     }
-
     &.right {
         right: 0;
         top: 0;
         bottom: 0;
     }
-
     &.up {
         top: 0;
         left: 0;
         right: 0;
     }
-
     &.down {
         bottom: 0;
         left: 0;
         right: 0;
     }
-
     .close-btn {
         width: $--simple-drawer-close-width;
         height: $--simple-drawer-close-width;
@@ -136,7 +123,6 @@ body {
         font-size: 20px;
         cursor: pointer;
         user-select: none;
-
         .leftright {
             height: 4px;
             width: $--simple-drawer-close-width;
@@ -147,7 +133,6 @@ body {
             transform: rotate(45deg);
             transition: all 0.3s ease-in;
         }
-
         .rightleft {
             height: 4px;
             width: $--simple-drawer-close-width;
@@ -158,17 +143,14 @@ body {
             transform: rotate(-45deg);
             transition: all 0.3s ease-in;
         }
-
         .close {
             margin: 60px 0 0 5px;
             position: absolute;
         }
-
         &:hover .leftright {
             transform: rotate(-45deg);
             background-color: $--simple-drawer-tomatored;
         }
-
         &:hover .rightleft {
             transform: rotate(45deg);
             background-color: $--simple-drawer-tomatored;
@@ -186,7 +168,8 @@ body {
     height: 100%;
 }
 
-.slider-tooltip , .slider-connect{
+.slider-tooltip,
+.slider-connect {
     background: $primary
 }
 
@@ -211,28 +194,31 @@ body {
         padding-left: 0;
     }
 }
-#page-topbar { 
+
+#page-topbar {
     .lang-dropdown {
         background-color: $header-bg;
         color: $header-dark-item-color;
     }
 }
+
 body[data-layout="horizontal"][data-topbar="colored"] {
-    #page-topbar{
+    #page-topbar {
         .lang-dropdown {
-            background-color: $primary;    
+            background-color: $primary;
         }
     }
-
 }
+
 body[data-topbar="dark"] {
-    #page-topbar { 
+    #page-topbar {
         .lang-dropdown {
             background-color: $primary;
             color: $header-dark-item-color;
         }
     }
 }
+
 html[dir="rtl"] {
     body[data-topbar="dark"] {
         #page-topbar {
@@ -243,10 +229,12 @@ html[dir="rtl"] {
         }
     }
 }
+
 .is-loading {
     position: relative;
-  }
-  .preloader-component {
+}
+
+.preloader-component {
     position: absolute;
     top: 0;
     left: 0;
@@ -255,12 +243,46 @@ html[dir="rtl"] {
     background-color: $card-bg;
     z-index: 999;
     width: 100%;
-  }
-  .status {
+}
+
+.status {
     width: 40px;
     height: 40px;
     position: absolute;
     left: 50%;
     top: 50%;
     margin: -20px 0 0 -20px;
-  }
+}
+
+.loglist table,
+.subtable {
+    border-collapse: collapse;
+    border: 2px solid lightgrey;
+}
+
+.loglist table th,
+.subtable th {
+    border-bottom: 1px solid lightgrey;
+}
+
+table.table .subtr td {
+    margin: 0px;
+    padding: 0px;
+}
+
+table.table .subtr i.bx {
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+    cursor: pointer;
+    font-size: 18px;
+    color: silver;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #fafafa;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}

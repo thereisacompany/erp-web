@@ -94,6 +94,8 @@ export default {
             name: '',
             remark: '',
 
+            LogList: [],
+
             IsGetDataing: false,
             pageSize: 30,
             totalRows: 0,
@@ -334,13 +336,16 @@ export default {
                 this.customers.date2 = dayjs().format("YYYY-MM-DD");
                 this.customers.time2 = dayjs().format("HH:mm:ss");
                 this.NewRow1();
+                this.LogList = [];
                 return;
             }
             if (RowItem.id != 0) {
                 this.SubView = 2;
                 this.GetDetailByNumber(RowItem.number)
                 this.GetDetailList(RowItem.id)
-
+                server.GetLog({ content: RowItem.number }, (rows) => {
+                    this.LogList = rows
+                })
                 return;
             }
         },
@@ -348,6 +353,9 @@ export default {
             this.SubView = 3;
             this.GetDetailByNumber(RowItem.number)
             this.GetDetailList(RowItem.id)
+            server.GetLog({ content: RowItem.number }, (rows) => {
+                this.LogList = rows
+            })
         },
 
         queryMaterialByRow(SubItem, cidx) {
@@ -962,7 +970,22 @@ export default {
                 </div>
             </div>
 
-
+            <div class="loglist" v-if="SubView != 0 && LogList.length != 0">
+                <table class="table table-centered table-bordered table-nowrap align-middle">
+                    <tr>
+                        <th class="text-center" width="50px">#</th>
+                        <th width="150px">操作時間</th>
+                        <th width="150px">操作人員</th>
+                        <th>操作詳情</th>
+                    </tr>
+                    <tr v-for="(log1, logidx) in LogList" :key="'LogList' + logidx">
+                        <td class="text-center">{{ logidx + 1 }}</td>
+                        <td>{{ log1.createTimeStr }}</td>
+                        <td>{{ log1.loginName }}({{ log1.userName }})</td>
+                        <td>{{ log1.content }}</td>
+                    </tr>
+                </table>
+            </div>
             <div>
                 <div class="button-items">
                     <a href="javascript:;" class="btn btn-primary" @click="handleSubmit" v-if="SubView == 1">新增</a>

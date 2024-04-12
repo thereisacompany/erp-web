@@ -210,4 +210,29 @@ server.GetVehiclelist = function(wObj, callback) {
         });
 
 }
+
+
+server.GetLog = function(wObj, callback) {
+
+    // GET /jshERP-boot/log/list?search={"content":"S20240327205"}&currentPage=1&pageSize=100
+    // content 帶入單號查詢即可，currentPage、pageSize 固定帶 1跟100
+
+    let APIUrl = `/log/list`;
+    let APIParameter = `?currentPage=1&pageSize=100`;
+    let queryStr = `{"content":"${wObj.content}"}`;
+    APIParameter += `&search=${encodeURIComponent(queryStr)}`;
+    server.get(APIUrl + APIParameter)
+        .then((res) => {
+            if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+                let jshdata = res.data.data;
+                let list2 = jshdata.rows;
+                if (callback) { callback(list2); }
+            }
+
+        }).catch(function(error) {
+            console.log("error", error);
+            return;
+        });
+
+}
 export { server };
