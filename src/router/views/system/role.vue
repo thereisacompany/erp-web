@@ -19,12 +19,12 @@
           <div
             class="d-flex justify-content-between align-items-center filter__item"
           >
-            <label for="remark" class="form-label">備註:</label>
+            <label for="description" class="form-label">備註:</label>
             <input
-              v-model="filterValue.remark"
+              v-model="filterValue.description"
               type="text"
               class="form-control"
-              id="remark"
+              id="description"
             />
           </div>
           <button type="button" class="btn btn-primary" @click="handleSearch">
@@ -58,20 +58,24 @@
           :row-config="{ isHover: true }"
           :data="tableData"
           :checkbox-config="{ highlight: true }"
-          :scroll-x="{ enable: true }"
+          :scroll-x="{ enabled: true }"
         >
           <vxe-column type="checkbox" width="40"></vxe-column>
           <vxe-column field="id" title="ID" width="40"></vxe-column>
           <vxe-column field="name" title="角色名稱" width="180"></vxe-column>
-          <vxe-column field="state" title="狀態" width="100">
+          <vxe-column field="enabled" title="狀態" width="100">
             <template #default="{ row }">
-              <div :class="row.state ? 'tag-enable' : 'tag-disable'">
-                {{ row.state ? "啟用" : "禁用" }}
+              <div :class="row.enabled ? 'tag-enabled' : 'tag-disable'">
+                {{ row.enabled ? "啟用" : "禁用" }}
               </div>
             </template>
           </vxe-column>
           <vxe-column field="type" title="數據類型" minWidth="220"></vxe-column>
-          <vxe-column field="remark" title="備註" minWidth="200"></vxe-column>
+          <vxe-column
+            field="description"
+            title="備註"
+            minWidth="200"
+          ></vxe-column>
           <vxe-column field="action" title="操作" width="220">
             <!--  <template #default="{ row }"> -->
             <template #default>
@@ -108,6 +112,14 @@
             </template>
           </vxe-column>
         </vxe-table>
+
+        <vxe-pager
+          v-model:currentPage="currentPage"
+          v-model:pageSize="pageSize"
+          :total="total"
+          @page-change="pageChange"
+        >
+        </vxe-pager>
       </div>
 
       <!-- Modals -->
@@ -134,7 +146,7 @@
   </Layout>
 </template>
 <script>
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, onMounted, nextTick } from "vue";
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import "vxe-table/lib/style.css";
@@ -144,6 +156,7 @@ import TipsModal from "./component/TipsModal.vue";
 import AllocationFunctionModal from "./component/AllocationFunctionModal.vue";
 // import AllocationBtnModal from "./component/AllocationBtnModal.vue";
 import { message } from "ant-design-vue";
+import { server } from "@/api";
 
 export default defineComponent({
   components: {
@@ -166,7 +179,7 @@ export default defineComponent({
         active: true,
       },
     ];
-    const filterValue = reactive({ name: "", remark: "" });
+    const filterValue = reactive({ name: "", description: "" });
     const buttonList = reactive([
       {
         type: "add",
@@ -179,7 +192,7 @@ export default defineComponent({
         iconClass: "mdi mdi-delete-outline fs-3 me-2",
       },
       {
-        type: "enable",
+        type: "enabled",
         name: "啟用",
         iconClass: "mdi mdi-lock-open-variant-outline fs-3 me-2",
       },
@@ -189,39 +202,66 @@ export default defineComponent({
         iconClass: "mdi mdi-lock-outline fs-3 me-2",
       },
     ]);
-    const tableData = ref([
-      {
-        id: 1,
-        name: "Test1",
-        state: true,
-        type: "Develop",
-        remark: "1",
-      },
-      {
-        id: 2,
-        name: "Test2",
-        state: false,
-        type: "Develop 2",
-        remark: "2",
-      },
-    ]);
+    const tableData = ref();
     const vxeTableRef = ref(null);
+    const currentPage = ref(1);
+    const pageSize = ref(10);
+    const total = ref(0);
+    const searchParams = ref();
     // Modal
     const addModalRef = ref(null);
     const tipsRef = ref(null);
     const allocationFunctionRef = ref(null);
     // const allocationBtnRef = ref(null);
     const lastActionType = ref(""); // 前一步驟種類
+
     // function
-    // 篩選器
-    function handleSearch() {
-      console.log("search", filterValue);
+    // fetch api
+    function fetchData() {
+      let url = `/role/list?currentPage=${currentPage.value}&pageSize=${pageSize.value}`;
+      if (searchParams.value && searchParams.value !== "") {
+        url = url + searchParams.value;
+      }
+      console.log("url", url);
+      server
+        .get(url)
+        .then((res) => {
+          console.log("回傳資料成功 res=", res.data.data.rows);
+          const dataSource = res.data.data.rows;
+          tableData.value = dataSource;
+          total.value = res.data.data.total;
+        })
+        .catch((error) => {
+          console.log("error from fetch role list", error);
+        });
     }
 
+    // 篩選器
+    function handleSearch() {
+      // 初始化 searchParams
+      let params = [];
+      // 根據篩選條件添加參數
+      if (filterValue.name !== "") {
+        params.push(`name=${filterValue.name}`);
+      }
+      if (filterValue.description !== "") {
+        params.push(`description=${filterValue.description}`);
+      }
+      // 組合參數為字串
+      searchParams.value = params.length ? `&${params.join("&")}` : "";
+      console.log("searchParams", searchParams.value == "");
+      fetchData();
+    }
+
+    // 清除篩選器
     function handleReset() {
       console.log("handleReset", filterValue);
       filterValue.name = "";
-      filterValue.remark = "";
+      filterValue.description = "";
+      handleSearch();
+      nextTick(() => {
+        fetchData();
+      });
     }
 
     // 按鈕動作
@@ -234,10 +274,10 @@ export default defineComponent({
         lastActionType.value = type;
       } else if (type == "delete") {
         console.log("clickActions delete");
-      } else if (type == "enable") {
-        console.log("clickActions enable");
+      } else if (type == "enabled") {
+        console.log("clickActions enabled");
       } else if (type == "disable") {
-        console.log("clickActions enable");
+        console.log("clickActions enabled");
       }
 
       if (type !== "add") {
@@ -265,6 +305,10 @@ export default defineComponent({
       }
     }
 
+    onMounted(() => {
+      fetchData();
+    });
+
     return {
       items,
       filterValue,
@@ -281,6 +325,9 @@ export default defineComponent({
       // allocationBtnRef,
       openTips,
       vxeTableRef,
+      currentPage,
+      pageSize,
+      total,
     };
   },
 });
@@ -315,7 +362,7 @@ export default defineComponent({
         border: transparent;
       }
 
-      &__enable {
+      &__enabled {
         background-color: #35c38f;
         border: transparent;
       }
@@ -327,7 +374,7 @@ export default defineComponent({
     }
   }
 
-  .tag-enable {
+  .tag-enabled {
     padding: 4px;
     border-radius: 8px;
     background-color: #35c38f;
