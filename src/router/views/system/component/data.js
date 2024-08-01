@@ -67,3 +67,17 @@ export const menuItems = [
     },]
   }
 ];
+
+// 過濾obj值為null的item
+export function filterNullValues(obj) {
+  if (obj === null || obj === undefined) {
+    return {};
+  }
+
+  return Object.keys(obj).reduce((acc, key) => {
+    if (obj[key] !== null) {
+      acc[key] = obj[key];
+    }
+    return acc;
+  }, {});
+}

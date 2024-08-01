@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref } from "vue";
 import { Modal } from "ant-design-vue";
 
 export default defineComponent({
@@ -32,7 +32,6 @@ export default defineComponent({
 
     // 開啟
     function openModal(nextStep) {
-      console.log("openModal", nextStep);
       nextStepName.value = nextStep;
       if (nextStep == "分配功能") {
         content.value = "已保存角色，請問是否要繼續分配功能？";
@@ -52,14 +51,12 @@ export default defineComponent({
     // 若點擊確認，回傳至父層打開modal
     function handleOk() {
       if (nextStepName.value == "分配功能") {
-        emit("openNextStep", "allocationFunction");
+        emit("openModal", "allocationFunction", null);
       } else if (nextStepName.value == "分配按鈕") {
-        emit("openNextStep", "allocationBtn");
+        emit("openModal", "allocationBtn", null);
       }
       open.value = false;
     }
-
-    onMounted(() => {});
 
     return {
       open,

@@ -24,8 +24,8 @@ export default defineComponent({
     const open = ref(false);
 
     // 開啟
-    function openModal() {
-      console.log("modalRef");
+    function openModal(data) {
+      console.log("modalRef", data);
       open.value = true;
     }
 
@@ -38,7 +38,7 @@ export default defineComponent({
     // 點擊確認後，完成所有步驟
     function handleOk() {
       console.log("handleOk");
-      emit("openNextStep", "finished");
+      emit("openModal", "finished");
       open.value = false;
     }
 

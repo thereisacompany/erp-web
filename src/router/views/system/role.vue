@@ -1,7 +1,8 @@
 <template>
   <Layout>
     <PageHeader title="角色管理-new" :items="items" />
-    <div class="role p-3">
+    <a-spin tip="Loading..." v-if="loading" />
+    <div class="role p-3" v-else>
       <div class="role__filter p-3">
         <!-- filter -->
         <form class="d-flex justify-content-between align-items-center w-75">
@@ -14,6 +15,7 @@
               type="text"
               class="form-control"
               id="role-name"
+              @keyup.enter="handleSearch"
             />
           </div>
           <div
@@ -25,6 +27,7 @@
               type="text"
               class="form-control"
               id="description"
+              @keyup.enter="handleSearch"
             />
           </div>
           <button type="button" class="btn btn-primary" @click="handleSearch">
@@ -59,9 +62,10 @@
           :data="tableData"
           :checkbox-config="{ highlight: true }"
           :scroll-x="{ enabled: true }"
+          :loading="loading"
         >
           <vxe-column type="checkbox" width="40"></vxe-column>
-          <vxe-column field="id" title="ID" width="40"></vxe-column>
+          <vxe-column field="id" title="ID" width="60"></vxe-column>
           <vxe-column field="name" title="角色名稱" width="180"></vxe-column>
           <vxe-column field="enabled" title="狀態" width="100">
             <template #default="{ row }">
@@ -78,33 +82,33 @@
           ></vxe-column>
           <vxe-column field="action" title="操作" width="220">
             <!--  <template #default="{ row }"> -->
-            <template #default>
+            <template #default="{ row }">
               <div class="table__action d-flex align-items-center">
                 <button
                   type="button"
                   class="btn btn-link p-0"
-                  @click="handleClick('add')"
+                  @click="openModal('allocationFunction', row)"
                 >
                   <span class="mx-1">分配功能</span>
                 </button>
                 <button
                   type="button"
                   class="btn btn-link p-0"
-                  @click="handleClick('add')"
+                  @click="openModal('allocationBtn', row)"
                 >
                   <span class="mx-1">分配按鈕</span>
                 </button>
                 <button
                   type="button"
                   class="btn btn-link p-0"
-                  @click="handleClick('add')"
+                  @click="openModal('edit', row)"
                 >
                   <span class="mx-1">編輯</span>
                 </button>
                 <button
                   type="button"
                   class="btn btn-link p-0"
-                  @click="handleClick('add')"
+                  @click="deleteRole(row.id)"
                 >
                   <span class="mx-1">刪除</span>
                 </button>
@@ -126,7 +130,7 @@
       <AddModal ref="addModalRef" @openTips="openTips" />
       <AllocationFunctionModal
         ref="allocationFunctionRef"
-        @openNextStep="openNextStep"
+        @openModal="openModal"
         @openTips="openTips"
         :type="lastActionType"
       />
@@ -134,19 +138,15 @@
       <!-- 分配按鈕暫時不用 -->
       <!-- <AllocationBtnModal
         ref="allocationBtnRef"
-        @openNextStep="openNextStep"
+        @openModal="openModal"
         :type="lastActionType"
       /> -->
-      <TipsModal
-        ref="tipsRef"
-        @openNextStep="openNextStep"
-        :type="lastActionType"
-      />
+      <TipsModal ref="tipsRef" @openModal="openModal" :type="lastActionType" />
     </div>
   </Layout>
 </template>
 <script>
-import { defineComponent, reactive, ref, onMounted, nextTick } from "vue";
+import { defineComponent, reactive, ref, onMounted } from "vue";
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import "vxe-table/lib/style.css";
@@ -157,7 +157,7 @@ import AllocationFunctionModal from "./component/AllocationFunctionModal.vue";
 // import AllocationBtnModal from "./component/AllocationBtnModal.vue";
 import { message } from "ant-design-vue";
 import { server } from "@/api";
-
+import { filterNullValues } from "./component/data";
 export default defineComponent({
   components: {
     Layout,
@@ -186,11 +186,11 @@ export default defineComponent({
         name: "新增",
         iconClass: "mdi mdi-plus fs-3 me-2",
       },
-      {
-        type: "delete",
-        name: "刪除",
-        iconClass: "mdi mdi-delete-outline fs-3 me-2",
-      },
+      // {
+      //   type: "delete",
+      //   name: "刪除",
+      //   iconClass: "mdi mdi-delete-outline fs-3 me-2",
+      // },
       {
         type: "enabled",
         name: "啟用",
@@ -208,21 +208,23 @@ export default defineComponent({
     const pageSize = ref(10);
     const total = ref(0);
     const searchParams = ref();
+    const loading = ref(true);
     // Modal
     const addModalRef = ref(null);
     const tipsRef = ref(null);
     const allocationFunctionRef = ref(null);
     // const allocationBtnRef = ref(null);
     const lastActionType = ref(""); // 前一步驟種類
+    // 新增角色後新的角色資料
+    const newRoleData = ref();
 
     // function
     // fetch api
-    function fetchData() {
+    function fetchData(type) {
       let url = `/role/list?currentPage=${currentPage.value}&pageSize=${pageSize.value}`;
-      if (searchParams.value && searchParams.value !== "") {
-        url = url + searchParams.value;
+      if (searchParams.value !== null && searchParams.value !== undefined) {
+        url = url + `&search=${encodeURIComponent(searchParams.value)}`;
       }
-      console.log("url", url);
       server
         .get(url)
         .then((res) => {
@@ -230,6 +232,16 @@ export default defineComponent({
           const dataSource = res.data.data.rows;
           tableData.value = dataSource;
           total.value = res.data.data.total;
+          loading.value = false;
+          if (type == "openTips") {
+            newRoleData.value = tableData.value.reduce(
+              (max, item) => (item.id > max.id ? item : max),
+              tableData.value[0]
+            );
+            console.log("newRoleData0", newRoleData.value);
+          } else {
+            newRoleData.value = null;
+          }
         })
         .catch((error) => {
           console.log("error from fetch role list", error);
@@ -238,37 +250,40 @@ export default defineComponent({
 
     // 篩選器
     function handleSearch() {
-      // 初始化 searchParams
-      let params = [];
-      // 根據篩選條件添加參數
-      if (filterValue.name !== "") {
-        params.push(`name=${filterValue.name}`);
+      loading.value = true;
+      const params = {
+        name:
+          filterValue.name && filterValue.name !== undefined
+            ? filterValue.name
+            : null,
+        description:
+          filterValue.description && filterValue.description !== undefined
+            ? filterValue.description
+            : null,
+      };
+
+      const filterParams = filterNullValues(params);
+
+      if (Object.keys(filterParams).length !== 0) {
+        searchParams.value = JSON.stringify(filterParams);
+      } else {
+        searchParams.value = null;
       }
-      if (filterValue.description !== "") {
-        params.push(`description=${filterValue.description}`);
-      }
-      // 組合參數為字串
-      searchParams.value = params.length ? `&${params.join("&")}` : "";
-      console.log("searchParams", searchParams.value == "");
+
       fetchData();
     }
 
     // 清除篩選器
     function handleReset() {
-      console.log("handleReset", filterValue);
       filterValue.name = "";
       filterValue.description = "";
       handleSearch();
-      nextTick(() => {
-        fetchData();
-      });
     }
 
     // 按鈕動作
     function clickActions(type) {
       // 已勾選的table data
       const records = vxeTableRef.value.getCheckboxRecords(true);
-
       if (type == "add") {
         addModalRef.value.openModal();
         lastActionType.value = type;
@@ -291,18 +306,31 @@ export default defineComponent({
     // 開啟操作提示modal
     function openTips(nextType) {
       console.log("openTips", nextType);
+      fetchData("openTips");
       tipsRef.value.openModal(nextType);
     }
 
     // 開啟指定modal
-    function openNextStep(type) {
+    function openModal(type, data) {
       if (type == "allocationFunction") {
-        allocationFunctionRef.value.openModal();
+        console.log("openModal", data);
+        console.log("newRoleData", newRoleData.value);
+        // 若data為null表示為新增後連續設定
+        if (data == null && newRoleData.value !== null)
+          data = newRoleData.value;
+        allocationFunctionRef.value.openModal(data);
       } else if (type == "allocationBtn") {
-        // allocationBtnRef.value.openModal();
+        // allocationBtnRef.value.openModal(data);
       } else {
         console.log("全部結束");
       }
+    }
+
+    function deleteRole(id) {
+      server.delete(`role/delete?id=${id}`).then((res) => {
+        console.log("delete", id, res);
+        fetchData();
+      });
     }
 
     onMounted(() => {
@@ -318,7 +346,7 @@ export default defineComponent({
       tableData,
       buttonList,
       addModalRef,
-      openNextStep,
+      openModal,
       tipsRef,
       lastActionType,
       allocationFunctionRef,
@@ -328,6 +356,8 @@ export default defineComponent({
       currentPage,
       pageSize,
       total,
+      loading,
+      deleteRole,
     };
   },
 });
@@ -355,21 +385,25 @@ export default defineComponent({
       &__add {
         background-color: #556ee6;
         border: transparent;
+        color: #fff;
       }
 
       &__delete {
         background-color: #f46a6a;
-        border: transparent;
+        border: #f46a6a;
+        color: #fff;
       }
 
       &__enabled {
         background-color: #35c38f;
         border: transparent;
+        color: #fff;
       }
 
       &__disable {
-        background-color: #74788d;
+        background-color: #f46a6a;
         border: transparent;
+        color: #fff;
       }
     }
   }

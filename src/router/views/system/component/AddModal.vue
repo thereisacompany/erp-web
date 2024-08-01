@@ -8,17 +8,23 @@
     cancel-text="取消"
   >
     <a-form
-      :model="formState"
+      :model="formData"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
       class="mt-5 p-3"
     >
-      <a-form-item label="角色名稱">
-        <a-input v-model:value="formState.name" placeholder="請輸入角色名稱" />
+      <a-form-item
+        label="角色名稱"
+        :rules="[{ required: true, message: '請輸入角色名稱' }]"
+      >
+        <a-input v-model:value="formData.name" placeholder="請輸入角色名稱" />
       </a-form-item>
 
-      <a-form-item label="數據類型">
-        <a-select v-model:value="formState.type" placeholder="選擇數據類型">
+      <a-form-item
+        label="數據類型"
+        :rules="[{ required: true, message: '請選擇數據類型' }]"
+      >
+        <a-select v-model:value="formData.type" placeholder="請選擇數據類型">
           <a-select-option
             :value="option"
             v-for="option in options"
@@ -29,16 +35,16 @@
       </a-form-item>
 
       <a-form-item label="備註">
-        <a-textarea v-model:value="formState.remark" placeholder="備註" />
+        <a-textarea v-model:value="formData.description" placeholder="備註" />
       </a-form-item>
 
-      <a-form-item label="狀態">
+      <!-- <a-form-item label="狀態">
         <a-switch
-          v-model:checked="formState.state"
+          v-model:checked="formData.state"
           checked-children="啟用"
           un-checked-children="禁用"
         />
-      </a-form-item>
+      </a-form-item> -->
     </a-form>
   </a-modal>
 </template>
@@ -53,9 +59,12 @@ import {
   Select,
   SelectOption,
   Textarea,
-  Switch,
+  // Switch,
   message,
 } from "ant-design-vue";
+import { server } from "@/api";
+import { filterNullValues } from "./data";
+
 export default defineComponent({
   components: {
     AModal: Modal,
@@ -65,35 +74,53 @@ export default defineComponent({
     ASelect: Select,
     ASelectOption: SelectOption,
     ATextarea: Textarea,
-    ASwitch: Switch,
+    // ASwitch: Switch,
   },
   emits: ["openTips"],
   setup(_, { emit }) {
     const open = ref(false);
-    const formState = reactive({
-      name: "",
-      remark: "",
-      type: undefined,
-      state: true,
+    const formData = reactive({
+      name: null,
+      description: null,
+      type: null,
+      // state: true,
     });
     const labelCol = { style: { width: "100px" } };
     const wrapperCol = { span: 14 };
     const options = reactive(["全部數據", "個人數據"]);
+
     function openModal() {
-      console.log("modalRef");
       open.value = true;
     }
 
     function closeModal() {
+      formData.name = null;
+      formData.description = null;
+      formData.type = null;
       open.value = false;
     }
 
     // 點擊確認，回傳父層打開操作提示modal並帶入下一步名稱
     function handleOk() {
-      console.log("handleOk");
-      emit("openTips", "分配功能");
-      message.success("新增角色成功！");
-      open.value = false;
+      // 串接新增api
+      let url = `/role/add`;
+      const params = {
+        name: formData.name ? formData.name : null,
+        type: formData.type ? formData.type : null,
+        description: formData.description ? formData.description : null,
+      };
+      filterNullValues(params);
+      server
+        .post(url, params)
+        .then((res) => {
+          console.log("res", res);
+          message.success("新增角色成功！");
+          open.value = false;
+          emit("openTips", "分配功能");
+        })
+        .catch((error) => {
+          console.log("error from add role", error);
+        });
     }
 
     return {
@@ -101,7 +128,7 @@ export default defineComponent({
       openModal,
       closeModal,
       handleOk,
-      formState,
+      formData,
       labelCol,
       wrapperCol,
       options,
