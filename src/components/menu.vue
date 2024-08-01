@@ -1,29 +1,33 @@
 <template>
   <div class="menu__wrapper">
     <ul>
-      <li
-        v-for="menu in menuLists"
-        :key="menu"
-        :class="isActive(menu)"
-        @click="handleClickMenuItem(menu)"
-      >
-        <div class="menu">
-          <div class="menu__title">
-            <!--  :style="{transform: rotate(180deg);}" -->
-            <i :class="`icon bx ${findIcon(menu.url)}`"></i
-            ><span>{{ menu.text }}/{{ menu.haveActive }}</span>
+      <li v-for="menu in menuLists" :key="menu" :class="isActive(menu)">
+        <div class="menu" @click="handleClickOpenSubmenu(menu)">
+          <div class="menu__item">
+            <div class="menu__title">
+              <i :class="`icon bx ${findIcon(menu.url)}`"></i
+              ><span>{{ menu.text }}</span>
+            </div>
+            <i
+              :class="
+                activeKey.includes(menu.id)
+                  ? `arrow-icon mdi mdi-chevron-down`
+                  : `arrow-icon mdi mdi-chevron-up`
+              "
+              v-if="menu.children"
+            ></i>
           </div>
-          <i :class="`arrow-icon mdi mdi-chevron-up`" v-if="menu.children"></i>
         </div>
 
-        <ul class="submenu" v-if="menu.children">
+        <ul class="submenu" v-if="menu.children && activeKey.includes(menu.id)">
           <li
             class="submenu__title"
             v-for="subMenu in menu.children"
             :key="subMenu"
+            :class="subMenu.isActive ? 'active' : ''"
             @click="handleClickMenuItem(subMenu)"
           >
-            {{ subMenu.text }}
+            <span>{{ subMenu.text }}</span>
           </li>
         </ul>
       </li>
@@ -39,20 +43,18 @@ export default defineComponent({
   setup() {
     const menuLists = ref();
     const activeMenuId = ref();
+    const activeKey = ref([]);
     // 菜單項目跳轉
     function handleClickMenuItem(menu) {
+      console.log("menu", menu.url);
       window.location = menu.url;
     }
 
     // 判斷active狀態
     function isActive(subMenu) {
       const currentRouter = window.location.pathname.split("/dev")[1];
-      if (currentRouter === subMenu.url) {
-        activeMenuId.value = subMenu.id;
-        return true;
-      } else {
-        return false;
-      }
+      if (currentRouter === subMenu.url) activeMenuId.value = subMenu.id;
+      return currentRouter === subMenu.url;
     }
 
     // 尋找對應的icon
@@ -61,18 +63,43 @@ export default defineComponent({
       return value.icon;
     }
 
+    // 點擊開啟submenu
+    function handleClickOpenSubmenu(menu) {
+      console.log("activeKey", activeKey.value);
+      console.log("menu", menu);
+      console.log("children", menu.children);
+      if (menu.children == undefined) {
+        handleClickMenuItem(menu);
+      } else {
+        if (!activeKey.value.includes(menu.id)) {
+          activeKey.value.push(menu.id);
+        } else {
+          activeKey.value = activeKey.value.filter((id) => id !== menu.id);
+        }
+      }
+
+      // menu.haveActive = !menu.haveActive;
+      // menu.children.forEach((children) => {
+      //   console.log("children", children.isActive);
+      //   children.isActive = !children.isActive;
+      // });
+    }
+
+    // 初始化
     function setData() {
-      console.log("setData", menuLists.value);
       menuLists.value.forEach((menu) => {
         if (menu.children && menu.children.length > 0) {
           menu.children.forEach((children) => {
             children["isActive"] = isActive(children);
-            menu["haveActive"] = isActive(children);
           });
+
+          menu["haveActive"] = menu.children.some(
+            (item) => item.isActive === true
+          );
+
+          if (menu.haveActive) activeKey.value.push(menu.id);
         }
       });
-
-      //activeMenuId.value
     }
 
     onMounted(() => {
@@ -97,6 +124,8 @@ export default defineComponent({
       isActive,
       findIcon,
       setData,
+      handleClickOpenSubmenu,
+      activeKey,
     };
   },
 });
@@ -107,8 +136,6 @@ export default defineComponent({
     margin: 0;
     padding: 0;
     li {
-      margin: 5px 0;
-      padding: 8px 8px 8px 28px;
       height: 100%;
       color: #fff;
       list-style-type: none;
@@ -116,12 +143,7 @@ export default defineComponent({
       flex-direction: column;
       align-items: flex-start;
       justify-content: space-between;
-      padding: 0 30px;
       cursor: pointer;
-
-      &:hover {
-        background-color: #3449b1;
-      }
 
       .menu {
         display: flex;
@@ -130,6 +152,19 @@ export default defineComponent({
         justify-content: space-between;
         width: 100%;
         height: 40px;
+        margin: 5px 0;
+
+        &:hover {
+          background-color: #3449b1;
+        }
+
+        &__item {
+          width: 100%;
+          padding: 0 30px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
 
         &__title {
           display: flex;
@@ -157,10 +192,22 @@ export default defineComponent({
         width: 100%;
         li {
           justify-content: center;
-
-          padding: 0;
           height: 40px;
           width: 100%;
+          padding: 0 0 0 55px;
+          margin: 5px 0;
+          &:hover {
+            background-color: #3449b1;
+          }
+
+          span {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 15px;
+          }
         }
       }
     }
