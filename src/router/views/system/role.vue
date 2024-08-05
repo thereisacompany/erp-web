@@ -3,8 +3,8 @@
     <PageHeader title="角色管理-new" :items="items" />
     <a-spin tip="Loading..." v-if="loading" />
     <div class="role p-3" v-else>
+      <!-- filter -->
       <div class="role__filter p-3">
-        <!-- filter -->
         <form class="d-flex justify-content-between align-items-center w-75">
           <div
             class="d-flex justify-content-between align-items-center filter__item"
@@ -64,17 +64,17 @@
           :scroll-x="{ enabled: true }"
           :loading="loading"
         >
-          <vxe-column type="checkbox" width="40"></vxe-column>
-          <vxe-column field="id" title="ID" width="60"></vxe-column>
+          <!-- <vxe-column type="checkbox" width="40"></vxe-column> -->
+          <vxe-column field="id" title="ID" width="50"></vxe-column>
           <vxe-column field="name" title="角色名稱" width="180"></vxe-column>
-          <vxe-column field="enabled" title="狀態" width="100">
+          <vxe-column field="enabled" title="狀態" width="120">
             <template #default="{ row }">
               <div :class="row.enabled ? 'tag-enabled' : 'tag-disable'">
                 {{ row.enabled ? "啟用" : "禁用" }}
               </div>
             </template>
           </vxe-column>
-          <vxe-column field="type" title="數據類型" minWidth="220"></vxe-column>
+          <vxe-column field="type" title="數據類型" minWidth="100"></vxe-column>
           <vxe-column
             field="description"
             title="備註"
@@ -108,7 +108,7 @@
                 <button
                   type="button"
                   class="btn btn-link p-0"
-                  @click="deleteRole(row.id)"
+                  @click="deleteRole(row)"
                 >
                   <span class="mx-1">刪除</span>
                 </button>
@@ -121,6 +121,7 @@
           v-model:currentPage="currentPage"
           v-model:pageSize="pageSize"
           :total="total"
+          :i18n="i18nHandler"
           @page-change="pageChange"
         >
         </vxe-pager>
@@ -146,16 +147,17 @@
   </Layout>
 </template>
 <script>
-import { defineComponent, reactive, ref, onMounted } from "vue";
+import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import "vxe-table/lib/style.css";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 // Modal
 import AddModal from "./component/AddModal.vue";
 import TipsModal from "./component/TipsModal.vue";
 import AllocationFunctionModal from "./component/AllocationFunctionModal.vue";
 // import AllocationBtnModal from "./component/AllocationBtnModal.vue";
-import { message } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
 import { server } from "@/api";
 import { filterNullValues } from "./component/data";
 export default defineComponent({
@@ -191,16 +193,16 @@ export default defineComponent({
       //   name: "刪除",
       //   iconClass: "mdi mdi-delete-outline fs-3 me-2",
       // },
-      {
-        type: "enabled",
-        name: "啟用",
-        iconClass: "mdi mdi-lock-open-variant-outline fs-3 me-2",
-      },
-      {
-        type: "disable",
-        name: "禁用",
-        iconClass: "mdi mdi-lock-outline fs-3 me-2",
-      },
+      // {
+      //   type: "enabled",
+      //   name: "啟用",
+      //   iconClass: "mdi mdi-lock-open-variant-outline fs-3 me-2",
+      // },
+      // {
+      //   type: "disable",
+      //   name: "禁用",
+      //   iconClass: "mdi mdi-lock-outline fs-3 me-2",
+      // },
     ]);
     const tableData = ref();
     const vxeTableRef = ref(null);
@@ -209,6 +211,16 @@ export default defineComponent({
     const total = ref(0);
     const searchParams = ref();
     const loading = ref(true);
+    const i18nHandler = (key) => {
+      const translations = {
+        "vxe.pager.total.label": "總共 {total} 條記錄",
+        "vxe.pager.pagesize.label": "每頁 {size} 條",
+        "vxe.pager.prev.page": "上一頁",
+        "vxe.pager.next.page": "下一頁",
+        "vxe.pager.page.number": "{number}",
+      };
+      return translations[key] || key;
+    };
     // Modal
     const addModalRef = ref(null);
     const tipsRef = ref(null);
@@ -218,7 +230,6 @@ export default defineComponent({
     // 新增角色後新的角色資料
     const newRoleData = ref();
 
-    // function
     // fetch api
     function fetchData(type) {
       let url = `/role/list?currentPage=${currentPage.value}&pageSize=${pageSize.value}`;
@@ -305,7 +316,6 @@ export default defineComponent({
     // emit
     // 開啟操作提示modal
     function openTips(nextType) {
-      console.log("openTips", nextType);
       fetchData("openTips");
       tipsRef.value.openModal(nextType);
     }
@@ -313,8 +323,6 @@ export default defineComponent({
     // 開啟指定modal
     function openModal(type, data) {
       if (type == "allocationFunction") {
-        console.log("openModal", data);
-        console.log("newRoleData", newRoleData.value);
         // 若data為null表示為新增後連續設定
         if (data == null && newRoleData.value !== null)
           data = newRoleData.value;
@@ -326,10 +334,27 @@ export default defineComponent({
       }
     }
 
-    function deleteRole(id) {
-      server.delete(`role/delete?id=${id}`).then((res) => {
-        console.log("delete", id, res);
-        fetchData();
+    // 刪除角色
+    function deleteRole(row) {
+      Modal.confirm({
+        title: "請確認",
+        icon: createVNode(ExclamationCircleOutlined),
+        content: createVNode(
+          "span",
+          { style: "" },
+          `是否要刪除名稱為： ${row.name} 的角色`
+        ),
+        okText: "確認",
+        cancelText: "取消",
+        onOk() {
+          server.delete(`role/delete?id=${row.id}`).then(() => {
+            fetchData();
+            message.warning("已成功刪除角色！");
+          });
+        },
+        onCancel() {
+          console.log("Cancel");
+        },
       });
     }
 
@@ -358,6 +383,7 @@ export default defineComponent({
       total,
       loading,
       deleteRole,
+      i18nHandler,
     };
   },
 });
@@ -409,6 +435,7 @@ export default defineComponent({
   }
 
   .tag-enabled {
+    width: 80%;
     padding: 4px;
     border-radius: 8px;
     background-color: #35c38f;
@@ -417,6 +444,7 @@ export default defineComponent({
   }
 
   .tag-disable {
+    width: 80%;
     padding: 4px;
     border-radius: 8px;
     background-color: #e6e6e6;

@@ -9,15 +9,14 @@
     cancel-text="取消"
   >
     <div class="mt-4 mx-3">
-      checkedKeys/{{ checkedKeys }}
       <a-tree
         v-model:checkedKeys="checkedKeys"
         :defaultExpandAll="true"
         :tree-data="menuItems"
         checkable
       >
-        <template #title="{ title }">
-          <span>{{ title }}</span>
+        <template #title="{ text }">
+          <span>{{ text }}</span>
         </template>
       </a-tree>
     </div>
@@ -40,25 +39,40 @@ export default defineComponent({
   // _, { emit }
   setup() {
     const open = ref(false);
-    const checkedKeys = ref([]); // 選中的item
-    const checkedAll = ref(false);
-    const rowData = ref();
-
+    const checkedKeys = ref([]); // current checked key list
+    const checkedAll = ref(false); // 全選
+    const rowData = ref(); // 角色列表data
+    const originalCheckedKeys = ref([]); // 儲存原始的checkedKeys
+    const wasNewAdd = ref(true); // 判斷是否為第一次更新
+    const wasSameList = ref(true); // 判斷勾選的與原始的陣列是否相同
     // 開啟
     function openModal(data) {
       checkedKeys.value = [];
-
+      console.log("openModal", data);
       if (data !== null) {
+        // 取得角色對應checked的功能列表
         rowData.value = data;
-        console.log("rowData", rowData.value);
-        const url = `/function/findMenuByPNumber`;
-        const params = {
-          pNumber: 0,
-          userId: 63,
-        };
-        server.post(url, params).then((res) => {
-          const data = res.data[0].children;
-          console.log("data", data);
+        const url = `/function/findRoleFunction?UBType=RoleFunctions&UBKeyId=${rowData.value.id}`;
+        server.get(url).then((res) => {
+          const dataList = res.data[0].children;
+          dataList.forEach((data) => {
+            if (data.children.length > 0) {
+              data.children.forEach((item) => {
+                if (item.checked == true) {
+                  if (!checkedKeys.value.includes(data.key)) {
+                    checkedKeys.value.push(data.key);
+                  }
+                  checkedKeys.value.push(item.key);
+                }
+              });
+            } else {
+              if (data.checked == true) {
+                checkedKeys.value.push(data.key);
+              }
+            }
+            wasNewAdd.value = checkedKeys.value.length === 0;
+            originalCheckedKeys.value = [...checkedKeys.value];
+          });
         });
       }
 
@@ -71,13 +85,40 @@ export default defineComponent({
       checkedKeys.value = [];
     }
 
+    // 找出新勾選的項目
+    function compareArrays() {
+      if (checkedKeys.value.length !== originalCheckedKeys.value.length) {
+        wasSameList.value = false;
+      }
+
+      for (let i = 0; i < checkedKeys.value.length; i++) {
+        if (checkedKeys.value[i] !== originalCheckedKeys.value[i]) {
+          wasSameList.value = false;
+        }
+      }
+
+      if (wasSameList.value == false) {
+        // 使用 filter 方法找出不同的元素
+        const differences = checkedKeys.value
+          .map((item, index) =>
+            item !== originalCheckedKeys.value[index] ? item : null
+          )
+          .filter((item) => item !== null);
+        checkedKeys.value = differences;
+      }
+    }
+
     // 確認
     // 點擊確認，回傳父層打開操作提示modal並帶入下一步名稱
     function handleOk() {
+      compareArrays();
       // 暫時先不用分配按鈕
       // emit("openTips", "分配按鈕");
-      // 串接新增api
-      let url = `/userBusiness/add`;
+      // 判斷post or put
+
+      // 移除全選的key 0
+      checkedKeys.value = checkedKeys.value.filter((item) => item !== 0);
+
       const params = {
         // name: rowData.value.name,
         type: "RoleFunctions",
@@ -85,27 +126,41 @@ export default defineComponent({
         value: checkedKeys.value,
       };
       filterNullValues(params);
-      server
-        .post(url, params)
-        .then((res) => {
-          console.log("分配功能成功 res=", res.data.data.rows);
-          message.success("分配功能成功！");
-          open.value = false;
-        })
-        .catch((error) => {
-          console.log("error from add role", error);
-        });
+      // current與原始checkedKey陣列不同且為第一次新增
+      if (!wasSameList.value && wasNewAdd.value) {
+        // 串接新增api
+        console.log("串接新增api", checkedKeys.value);
+        let url = `/userBusiness/add`;
+
+        server
+          .post(url, params)
+          .then(() => {
+            message.success("分配功能成功！");
+            open.value = false;
+          })
+          .catch((error) => {
+            console.log("error from add role", error);
+          });
+      } else if (!wasSameList.value && !wasNewAdd.value) {
+        // 編輯角色功能列表
+        console.log("串接編輯api", checkedKeys.value);
+        let url = `/userBusiness/update`;
+        server
+          .put(url, params)
+          .then(() => {
+            message.success("編輯功能成功！");
+            open.value = false;
+          })
+          .catch((error) => {
+            console.log("error from add role", error);
+          });
+      }
+      message.success("!?");
     }
 
     onMounted(() => {
       checkedKeys.value = [];
       console.log("onMounted", checkedKeys.value);
-
-      let user = JSON.parse(localStorage.getItem("user"));
-      if (user) {
-        const userId = user.UserID;
-        console.log("userId", userId);
-      }
     });
 
     return {

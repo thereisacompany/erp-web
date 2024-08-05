@@ -1,6 +1,5 @@
 import store from "@/state/store";
 
-// TODO: 修改router
 export default [
     // 首頁
     {
@@ -13,7 +12,6 @@ export default [
     },
     // 供應商管理
     // { path: "/user/vendorlist", name: "vendorlist", meta: { authRequired: true, }, component: require("./views/user/vendorlist").default },
-
     // 人事管理
     { path: "/systemA", name: "driverlist", meta: { authRequired: true, }, component: require("./views/user/driverlist").default },
     // 客戶管理
