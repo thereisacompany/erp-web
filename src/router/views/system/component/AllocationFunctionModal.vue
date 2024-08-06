@@ -43,12 +43,10 @@ export default defineComponent({
     const checkedAll = ref(false); // 全選
     const rowData = ref(); // 角色列表data
     const originalCheckedKeys = ref([]); // 儲存原始的checkedKeys
-    const wasNewAdd = ref(true); // 判斷是否為第一次更新
     const wasSameList = ref(true); // 判斷勾選的與原始的陣列是否相同
     // 開啟
     function openModal(data) {
       checkedKeys.value = [];
-      console.log("openModal", data);
       if (data !== null) {
         // 取得角色對應checked的功能列表
         rowData.value = data;
@@ -70,7 +68,6 @@ export default defineComponent({
                 checkedKeys.value.push(data.key);
               }
             }
-            wasNewAdd.value = checkedKeys.value.length === 0;
             originalCheckedKeys.value = [...checkedKeys.value];
           });
         });
@@ -96,71 +93,89 @@ export default defineComponent({
           wasSameList.value = false;
         }
       }
+      // if (wasSameList.value == false) {
+      //   // 使用 filter 方法找出不同的元素
+      //   const differences = checkedKeys.value
+      //     .map((item, index) =>
+      //       item !== originalCheckedKeys.value[index] ? item : null
+      //     )
+      //     .filter((item) => item !== null);
+      //   checkedKeys.value = differences;
+      // }
+    }
 
-      if (wasSameList.value == false) {
-        // 使用 filter 方法找出不同的元素
-        const differences = checkedKeys.value
-          .map((item, index) =>
-            item !== originalCheckedKeys.value[index] ? item : null
-          )
-          .filter((item) => item !== null);
-        checkedKeys.value = differences;
-      }
+    // 確認此功能是否已分配給角色
+    // 確認此功能是否已分配給角色
+    function checkKeyId(id) {
+      const url = `userBusiness/checkIsValueExist?type=RoleFunctions&keyId=${id}`;
+      return server
+        .get(url)
+        .then((res) => {
+          return res.data.data.id;
+        })
+        .catch((error) => {
+          console.log("error from add role", error);
+          throw error; // 将错误抛出，以便在调用者中捕获
+        });
     }
 
     // 確認
     // 點擊確認，回傳父層打開操作提示modal並帶入下一步名稱
-    function handleOk() {
+    async function handleOk() {
       compareArrays();
       // 暫時先不用分配按鈕
       // emit("openTips", "分配按鈕");
-      // 判斷post or put
 
-      // 移除全選的key 0
-      checkedKeys.value = checkedKeys.value.filter((item) => item !== 0);
+      try {
+        // 异步调用 checkKeyId 函数并等待其完成
+        const checkReturnId = await checkKeyId(rowData.value.id);
+        // console.log("checkReturnId", checkReturnId);
 
-      const params = {
-        // name: rowData.value.name,
-        type: "RoleFunctions",
-        keyId: rowData.value.id,
-        value: checkedKeys.value,
-      };
-      filterNullValues(params);
-      // current與原始checkedKey陣列不同且為第一次新增
-      if (!wasSameList.value && wasNewAdd.value) {
-        // 串接新增api
-        console.log("串接新增api", checkedKeys.value);
-        let url = `/userBusiness/add`;
-
-        server
-          .post(url, params)
-          .then(() => {
-            message.success("分配功能成功！");
-            open.value = false;
-          })
-          .catch((error) => {
-            console.log("error from add role", error);
-          });
-      } else if (!wasSameList.value && !wasNewAdd.value) {
-        // 編輯角色功能列表
-        console.log("串接編輯api", checkedKeys.value);
-        let url = `/userBusiness/update`;
-        server
-          .put(url, params)
-          .then(() => {
-            message.success("編輯功能成功！");
-            open.value = false;
-          })
-          .catch((error) => {
-            console.log("error from add role", error);
-          });
+        // 移除全選的key 0
+        checkedKeys.value = checkedKeys.value.filter((item) => item !== 0);
+        const data = {
+          type: "RoleFunctions",
+          keyId: rowData.value.id,
+          value: checkedKeys.value,
+          id: checkReturnId == undefined ? null : checkReturnId,
+        };
+        const params = filterNullValues(data);
+        // 判斷post or put
+        // current與原始checkedKey陣列不同且為第一次新增
+        if (!wasSameList.value && checkReturnId == undefined) {
+          // 串接新增api
+          // console.log("串接新增api", params);
+          let url = `/userBusiness/add`;
+          server
+            .post(url, params)
+            .then(() => {
+              message.success("分配功能成功！");
+              open.value = false;
+            })
+            .catch((error) => {
+              console.log("error from add role", error);
+            });
+        } else if (!wasSameList.value && checkReturnId) {
+          // 編輯角色功能列表
+          // console.log("串接編輯api", params);
+          let url = `/userBusiness/update`;
+          server
+            .put(url, params)
+            .then(() => {
+              message.success("編輯功能成功！");
+              open.value = false;
+            })
+            .catch((error) => {
+              console.log("error from add role", error);
+            });
+        }
+      } catch (error) {
+        console.error("Error in handleOk:", error);
       }
-      message.success("!?");
     }
 
     onMounted(() => {
       checkedKeys.value = [];
-      console.log("onMounted", checkedKeys.value);
     });
 
     return {

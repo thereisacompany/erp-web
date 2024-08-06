@@ -193,5 +193,13 @@ export default [
     //   path: "*",
     //   redirect: "404",
     // },
-
+    // 首頁
+    {
+        path: "/",
+        name: "default",
+        meta: {
+            authRequired: true,
+        },
+        component: require("./views/home/home").default,
+    },
 ];
