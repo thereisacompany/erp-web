@@ -5,7 +5,7 @@
         <div class="menu" @click="handleClickOpenSubmenu(menu)">
           <div class="menu__item">
             <div class="menu__title">
-              <i :class="`icon bx ${findIcon(menu.url)}`"></i
+              <i :class="`icon bx ${menu.icon}`"></i
               ><span>{{ menu.text }}</span>
             </div>
             <i
@@ -37,7 +37,7 @@
 <script>
 import { defineComponent, onMounted, ref } from "vue";
 import { server } from "@/api";
-import { menuItems } from "./menu.js";
+// import { menuItems } from "./menu.js";
 
 export default defineComponent({
   setup() {
@@ -58,10 +58,10 @@ export default defineComponent({
     }
 
     // 尋找對應的icon
-    function findIcon(url) {
-      const value = menuItems.find((item) => item.key == url);
-      return value.icon;
-    }
+    // function findIcon(url) {
+    //   const value = menuItems.find((item) => item.key == url);
+    //   return value.icon;
+    // }
 
     // 點擊開啟submenu
     function handleClickOpenSubmenu(menu) {
@@ -113,6 +113,7 @@ export default defineComponent({
         };
         server.post(url, params).then((res) => {
           menuLists.value = res.data;
+          console.log("menuLists", menuLists.value);
           setData();
         });
       }
@@ -122,7 +123,7 @@ export default defineComponent({
       menuLists,
       handleClickMenuItem,
       isActive,
-      findIcon,
+      // findIcon,
       setData,
       handleClickOpenSubmenu,
       activeKey,

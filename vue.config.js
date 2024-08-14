@@ -11,10 +11,16 @@ module.exports = {
         port: 8080,
         proxy: {
             '/jshERP-boot': {
-                target: 'http://34.80.85.84:10000', // 请求本地IP: http://34.80.85.84 需要jshERP-boot后台项目 port:9999 正式環境// 10000:測試, New DNS: https://ep.jsl.tw/
+                target: 'http://34.80.85.84:10000',
                 ws: false,
                 changeOrigin: true
             },
         }
+    },
+    configureWebpack: {
+        // 設置模式為 development
+        mode: 'development',
+        // 設定 source map 為 'eval-source-map' 以利於調試
+        devtool: 'eval-source-map',
     },
 }
