@@ -134,7 +134,7 @@ export default {
     //server.GetSupplierList((rows) => { this.supplierlist = rows })
 
     // this.beginDate = dayjs().format("YYYY-MM-01");//預設起始日期
-    this.endDate = dayjs().format("YYYY-MM-01"); //預設結束日期
+    this.endDate = dayjs().format("YYYY-MM-DD"); //預設結束日期
     this.$nextTick(() => {
       server.GetSupplier2List("家電-司機", (rows) => {
         this.driverlist = rows;
