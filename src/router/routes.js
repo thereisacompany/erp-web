@@ -4,7 +4,7 @@ export default [
     // 首頁
     {
         path: "/dashboard/analysis",
-        name: "default",
+        name: "home",
         meta: {
             authRequired: true,
         },
@@ -180,6 +180,14 @@ export default [
             },
         },
     },
+    // {
+    //     path: "/dashboard/analysis",
+    //     name: "default",
+    //     meta: {
+    //         authRequired: true,
+    //     },
+    //     component: require("./views/home/home").default,
+    // },
     // Error
     {
         path: "/404",
