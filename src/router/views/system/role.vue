@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <PageHeader title="角色管理-new" :items="items" />
+    <PageHeader title="角色管理" :items="items" />
     <a-spin tip="Loading..." v-if="loading" />
     <div class="role p-3" v-else>
       <!-- filter -->
@@ -45,7 +45,7 @@
           :key="btn"
           class="px-2 py-0 d-flex align-items-center"
           :class="`actions__${btn.type}`"
-          @click="clickActions(btn.type)"
+          @click="clickActions(btn.type, null)"
         >
           <i :class="btn.iconClass"></i>
           <span class="me-2">{{ btn.name }}</span></b-button
@@ -80,7 +80,7 @@
             title="備註"
             minWidth="200"
           ></vxe-column>
-          <vxe-column field="action" title="操作" width="220">
+          <vxe-column field="action" title="操作" width="160">
             <!--  <template #default="{ row }"> -->
             <template #default="{ row }">
               <div class="table__action d-flex align-items-center">
@@ -95,6 +95,7 @@
                   type="button"
                   class="btn btn-link p-0"
                   @click="openModal('allocationBtn', row)"
+                  v-if="false"
                 >
                   <span class="mx-1">分配按鈕</span>
                 </button>
@@ -109,6 +110,7 @@
                   type="button"
                   class="btn btn-link p-0"
                   @click="deleteRole(row)"
+                  v-if="false"
                 >
                   <span class="mx-1">刪除</span>
                 </button>
@@ -128,7 +130,7 @@
       </div>
 
       <!-- Modals -->
-      <AddModal ref="addModalRef" @openTips="openTips" />
+      <AddModal ref="addModalRef" @openTips="openTips" @submit="reload" />
       <AllocationFunctionModal
         ref="allocationFunctionRef"
         @openModal="openModal"
@@ -292,11 +294,11 @@ export default defineComponent({
     }
 
     // 按鈕動作
-    function clickActions(type) {
+    function clickActions(type, data) {
       // 已勾選的table data
-      const records = vxeTableRef.value.getCheckboxRecords(true);
+      // const records = vxeTableRef.value.getCheckboxRecords(true);
       if (type == "add") {
-        addModalRef.value.openModal();
+        addModalRef.value.openModal("新增角色", null);
         lastActionType.value = type;
       } else if (type == "delete") {
         console.log("clickActions delete");
@@ -304,13 +306,15 @@ export default defineComponent({
         console.log("clickActions enabled");
       } else if (type == "disable") {
         console.log("clickActions enabled");
+      } else if (type == "edit") {
+        addModalRef.value.openModal("編輯角色", data);
       }
 
-      if (type !== "add") {
-        if (records.length == 0) {
-          message.warning("請勾選角色");
-        }
-      }
+      // if (type !== "add") {
+      //   if (records.length == 0) {
+      //     message.warning("請勾選角色");
+      //   }
+      // }
     }
 
     // emit
@@ -329,6 +333,8 @@ export default defineComponent({
         allocationFunctionRef.value.openModal(data);
       } else if (type == "allocationBtn") {
         // allocationBtnRef.value.openModal(data);
+      } else if (type === "edit") {
+        clickActions("edit", data);
       } else {
         console.log("全部結束");
       }
@@ -358,6 +364,11 @@ export default defineComponent({
       });
     }
 
+    // 刷新table資料
+    function reload() {
+      fetchData();
+    }
+
     onMounted(() => {
       fetchData();
     });
@@ -384,11 +395,11 @@ export default defineComponent({
       loading,
       deleteRole,
       i18nHandler,
+      reload,
     };
   },
 });
 </script>
-
 <style lang="scss" scoped>
 .role {
   border-radius: 8px;

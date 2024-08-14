@@ -105,7 +105,6 @@ export default defineComponent({
     }
 
     // 確認此功能是否已分配給角色
-    // 確認此功能是否已分配給角色
     function checkKeyId(id) {
       const url = `userBusiness/checkIsValueExist?type=RoleFunctions&keyId=${id}`;
       return server
