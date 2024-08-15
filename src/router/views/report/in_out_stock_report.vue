@@ -385,7 +385,7 @@ export default {
                                         <th>名稱</th>
                                         <th>規格</th>
                                         <th>型號</th>
-                                        <th class="text-center">不良品</th>
+                                        <th class="text-center">在途中</th>
 
                                         <th class="text-center">入庫數量</th>
                                         <th class="text-center">出庫數量</th>

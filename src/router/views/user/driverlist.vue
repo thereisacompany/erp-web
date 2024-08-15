@@ -161,17 +161,17 @@ export default {
 
       // stop here if form is invalid
       //console.log(this.customers.type, this.customers.loginName + 'aaa')
-      if (this.customers.type == '家電-司機') {
-        if (this.customers.loginName == '') {
-          alert("司機請填寫登入帳號和密碼!")
-          return;
-        }
+      // if (this.customers.type == '家電-司機') {
+      //   if (this.customers.loginName == '') {
+      //     alert("司機請填寫登入帳號和密碼!")
+      //     return;
+      //   }
 
-        if (this.customers.id == 0 && this.customers.loginPassword == '') {
-          alert("請輸入登入密碼!")
-          return;
-        }
-      }
+      //   if (this.customers.id == 0 && this.customers.loginPassword == '') {
+      //     alert("請輸入登入密碼!")
+      //     return;
+      //   }
+      // }
       this.v$.$touch();
       if (this.v$.$invalid) {
         return;
@@ -516,7 +516,7 @@ export default {
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
                             <input autocomplete="off" id="name" v-model="customers.loginName" type="text"
-                              class="form-control" :readonly="this.customers.id != 0" />
+                              class="form-control" />
 
                           </div>
                         </div>
@@ -547,7 +547,20 @@ export default {
                             </div>
                           </div>
                         </div>
-
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">身分證字號</label>
+                            <input autocomplete="off" id="name" v-model="customers.idNumber" type="text"
+                              class="form-control" />
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-md-4 col-lg-3">
+                          <div class="mb-3">
+                            <label for="name">出生年月日</label>
+                            <input autocomplete="off" id="name" v-model="customers.birthday" type="date"
+                              class="form-control" />
+                          </div>
+                        </div>
 
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
@@ -637,20 +650,7 @@ export default {
                               class="form-control" />
                           </div>
                         </div>
-                        <div class="col-sm-12 col-md-4 col-lg-3">
-                          <div class="mb-3">
-                            <label for="name">身分證字號</label>
-                            <input autocomplete="off" id="name" v-model="customers.idNumber" type="text"
-                              class="form-control" />
-                          </div>
-                        </div>
-                        <div class="col-sm-12 col-md-4 col-lg-3">
-                          <div class="mb-3">
-                            <label for="name">出生年月日</label>
-                            <input autocomplete="off" id="name" v-model="customers.birthday" type="date"
-                              class="form-control" />
-                          </div>
-                        </div>
+
                         <div class="col-sm-12 col-md-4 col-lg-3">
                           <div class="mb-3">
                             <label for="name">車牌號碼</label>

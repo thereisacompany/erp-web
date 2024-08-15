@@ -56,7 +56,7 @@ export default {
       remark: '',
       depotList: [],
       IsGetDataing: false,
-      pageSize: 30,
+      pageSize: 50,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
@@ -268,7 +268,8 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="備註" v-model="remark" @keyup.enter="GetData()" />
+                    <input type="text" class="form-control" placeholder="備註" v-model="remark"
+                      @keyup.enter="GetData()" />
                   </div>
                 </div>
 
@@ -297,7 +298,8 @@ export default {
                           <div class="mb-3">
                             <label for="name">倉庫別</label>
                             <select class="form-select" v-model="customers.depotId" @change="GetData()">
-                              <option :value="u1.id" selected v-for="u1 in [{ id: '', depotName: '謮選擇倉庫' }, ...depotList]"
+                              <option :value="u1.id" selected
+                                v-for="u1 in [{ id: '', depotName: '謮選擇倉庫' }, ...depotList]"
                                 :key="'query_customers_depot_id' + u1.id">
                                 {{ u1.depotName }}</option>
                             </select>
@@ -308,11 +310,11 @@ export default {
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">儲位名稱</label>
-                            <input id="name" v-model="customers.name" type="text" class="form-control" placeholder="儲位名稱"
-                              :class="{ 'is-invalid': submitted && v$.customers.name.$error, }" />
+                            <input id="name" v-model="customers.name" type="text" class="form-control"
+                              placeholder="儲位名稱" :class="{ 'is-invalid': submitted && v$.customers.name.$error, }" />
                             <div v-if="submitted && v$.customers.name.$error" class="invalid-feedback">
                               <span v-if="v$.customers.name.required.$message">{{ v$.customers.name.required.$message
-                              }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </div>
@@ -320,11 +322,11 @@ export default {
                         <div class="col-12">
                           <div class="mb-3">
                             <label for="name">空間大小</label>
-                            <input id="name" v-model="customers.space" type="text" class="form-control" placeholder="空間大小"
-                              :class="{ 'is-invalid': submitted && v$.customers.space.$error, }" />
+                            <input id="name" v-model="customers.space" type="text" class="form-control"
+                              placeholder="空間大小" :class="{ 'is-invalid': submitted && v$.customers.space.$error, }" />
                             <div v-if="submitted && v$.customers.space.$error" class="invalid-feedback">
                               <span v-if="v$.customers.space.required.$message">{{ v$.customers.space.required.$message
-                              }}</span>
+                                }}</span>
                             </div>
 
                           </div>
@@ -354,7 +356,7 @@ export default {
                               :class="{ 'is-invalid': submitted && v$.customers.sort.$error, }" />
                             <div v-if="submitted && v$.customers.sort.$error" class="invalid-feedback">
                               <span v-if="v$.customers.sort.required.$message">{{ v$.customers.sort.required.$message
-                              }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </div>
@@ -382,7 +384,7 @@ export default {
                       <div class="text-end pt-5 mt-3">
                         <b-button variant="light" @click="showModal = false">關閉</b-button>
                         <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                        }}</b-button>
+                          }}</b-button>
                       </div>
                     </form>
                   </b-modal>

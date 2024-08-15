@@ -59,7 +59,7 @@ export default {
       remark: '',
 
       IsGetDataing: false,
-      pageSize: 30,
+      pageSize: 50,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,

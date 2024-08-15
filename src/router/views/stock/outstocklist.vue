@@ -111,6 +111,10 @@ export default {
                 isPickup: 1,
                 install: '',
                 recycle: '',
+                storeMan: '',
+                storeName: '',
+                storeAddress: '',
+                storePhone: '',
             },
             driver: {
 
@@ -132,16 +136,34 @@ export default {
             LogList: [],
 
             IsGetDataing: false,
-            pageSize: 30,
+            pageSize: 50,
             totalRows: 0,
             currentPage: 1,
             maxPage: 10,
         };
     },
     computed: {
+        receiveNameText() {
+            if (this.customers.subType == '門市取貨' || String(this.customers.isPickup) == 2) {
+                return "取件人名稱"
+            }
+
+            return "收件人名稱";
+        },
         IsPickup1() {
             if (this.customers.subType == "配送單") return true
             return false
+        },
+        EditOneDescription() {
+
+            if (this.customers.subType == '門市取貨' || String(this.customers.isPickup) == 2) {
+                return "(不入庫不扣公司庫存,單純取貨待通知配送)"
+            }
+            if (this.customers.subType == '門市取貨派送' || String(this.customers.isPickup) == 3) {
+                return "(1.當天門市取貨當天直接派送 2.門市取貨後待配送時間使用 3.不扣公司庫存)"
+            }
+
+            return "";
         },
         EditOneTitle() {
             let SubTitle = (this.SubView == 1 ? '新增' : (this.SubView == 2 ? '修改' : '查看'))
@@ -177,7 +199,7 @@ export default {
 
             cellphone: { required: helpers.withMessage("請填寫手機", required), },
             address: { required: helpers.withMessage("請填寫地址", required), },
-            receiveName: { required: helpers.withMessage("請填寫收件人名稱", required), },
+            receiveName: { required: helpers.withMessage("請填寫名稱", required), },
             recycle: { required: helpers.withMessage("請選擇是否舊機回收", required), },
         },
 
@@ -522,7 +544,7 @@ export default {
                 .then((res) => {
                     if (res != null && res.data != null) {
                         if (res.data.code == 200) {
-                            alert("客服己回覆!")
+                            alert("客服已回覆!")
                             this.showModal = false;
                         } else {
                             alert(res.data.data.message)
@@ -762,6 +784,91 @@ export default {
                     this.CalPayMoney();
                 }
             })
+
+        },
+        // BatchPrintOut_EXCELLIST() {
+
+
+        //     let NumberList = this.customersData.filter(x => x.chk == true).map(y => y.number);
+        //     let subIdList = this.customersData.filter(x => x.chk == true).map(y => y.subId);
+        //     //console.log(NumberList)
+
+        //     if (NumberList == null || NumberList.length == 0) {
+        //         alert('請至少選擇一個單據!')
+        //         return;
+        //     }
+
+
+        //     let numberStr = `numbers=` + NumberList.join(',')
+        //     let subIds = `subIds=` + subIdList.join(',')
+
+
+
+        //     if (this.IsGetDataing == true) return;
+        //     this.IsGetDataing = true;
+        //     ///depotHead/print/list?numbers=G20240327202644&sudIds=61,62,63
+        //     let APIUrl = `/depotHead/print/list-path?${numberStr}&${subIds}`;
+        //     ///depotHead/print/list-path?numbers=S20240422125849741&subIds=164
+        //     //console.log("APIUrl", APIUrl)
+        //     server.get(APIUrl)
+        //         .then((res) => {
+        //             // console.log("res", res)
+        //             if (res != null && res.data != null) {
+        //                 //console.log(res.data)
+        //                 let list2 = res.data.data.map(x => { return this.GetAccessFile1(x) })
+        //                 console.log(list2)
+
+        //             }
+        //             this.IsGetDataing = false;
+        //         }).catch(function (error) {
+        //             console.log("error", error);
+        //             this.IsGetDataing = false;
+        //             return;
+        //         });
+
+        // },
+        BatchPrintOut() {
+
+
+            let NumberList = this.customersData.filter(x => x.chk == true).map(y => y.number);
+            let subIdList = this.customersData.filter(x => x.chk == true).map(y => y.subId);
+            //console.log(NumberList)
+
+            if (NumberList == null || NumberList.length == 0) {
+                alert('請至少選擇一個單據!')
+                return;
+            }
+
+
+            let numberStr = `numbers=` + NumberList.join(',')
+            let subIds = `subIds=` + subIdList.join(',')
+
+
+
+            if (this.IsGetDataing == true) return;
+            this.IsGetDataing = true;
+            ///depotHead/print/list?numbers=G20240327202644&sudIds=61,62,63
+            let APIUrl = `/depotHead/print/list?${numberStr}&${subIds}`;
+            ///depotHead/print/list-path?numbers=S20240422125849741&subIds=164
+            //console.log("APIUrl", APIUrl)
+            server.get(APIUrl, { responseType: 'blob' })
+                .then((res) => {
+                    // console.log("res", res)
+                    if (res != null && res.data != null) {
+
+                        var fileURL = window.URL.createObjectURL(new Blob([res.data]));
+                        var fileLink = document.createElement('a');
+                        fileLink.href = fileURL;
+                        fileLink.setAttribute('download', `批次列印配送單_${dayjs().format("YYYYMMDD_HHmmss")}.zip`);
+                        document.body.appendChild(fileLink);
+                        fileLink.click();
+                    }
+                    this.IsGetDataing = false;
+                }).catch(function (error) {
+                    console.log("error", error);
+                    this.IsGetDataing = false;
+                    return;
+                });
 
         },
         BatchExcelOut() {
@@ -1202,6 +1309,49 @@ export default {
                     return;
                 });
         },
+        Cancel2(SubItem) {
+
+
+
+            // 配送單增加一個作廢功能
+
+            // 呼叫api : delete   /depotHead/delete?id=1 (/depotHead/list 內回傳的id)
+            if (SubItem == null || SubItem.id == null || SubItem.id == 0) return;
+
+            let errMsg = '';
+
+            if (errMsg != '') {
+                alert(errMsg)
+                return;
+            }
+            if (confirm(`確認作廢配送單?`) != true) {
+                return;
+            }
+
+
+            this.IsGetDataing = true;
+            let data2 = {}
+            let APIUrl = `/depotHead/delete?id=${SubItem.id}`;
+            server.delete(APIUrl, data2)
+                .then((res) => {
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            alert("已作廢!")
+                            this.showModal = false;
+                            this.SubView = 0;
+                            this.IsGetDataing = false;
+                            this.GetData()
+                        } else {
+                            alert('錯誤!' + res.data.data.message || '')
+                        }
+                    }
+                    this.IsGetDataing = false;
+                }).catch(function (error) {
+                    console.log("error", error);
+                    this.IsGetDataing = false;
+                    return;
+                });
+        },
         ExcelIn() {
             let file1 = this.$refs.fileexcelin.files[0];
 
@@ -1455,6 +1605,7 @@ export default {
                                     <button type="button" class="btn btn-success btn-rounded mb-2 me-2"
                                         @click="BatchExcelOut"> 批次匯出
                                     </button>
+
                                     <input ref="fileexcelin" type="file" class="d-none" accept=".xls"
                                         v-on:change="ExcelIn()">
                                 </div>
@@ -1476,7 +1627,7 @@ export default {
                                         <th>倉庫別</th>
                                         <th>儲位</th>
                                         <th>數量</th>
-                                        <th>狀態</th>
+                                        <th>狀態/已列印</th>
                                         <th>配送狀態</th>
                                         <th>配送類別</th>
                                         <th>建單人員</th>
@@ -1522,20 +1673,24 @@ export default {
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <span class="btn btn-success" v-if="SubItem.status == 1">已審核</span>
-                                                <span class="btn btn-danger" v-if="SubItem.status == 0">未審核</span>
+                                                <span class="btn btn-warning" v-if="SubItem.status == 0">未審核</span>
+                                                <span class="btn btn-danger" v-if="SubItem.status == 6">已作廢</span>
                                             </div>
+                                            <span>/</span>
+                                            <span class="text-danger" v-if="String(SubItem.isPrint) == '1'">是</span>
+                                            <span class="text-success" v-else>否</span>
                                         </td>
                                         <td>
-                                            <div class="btn-group btn-group-sm">
-                                                <span class="btn" :class="formatdStatusCSS(SubItem.dStatus)">
-                                                    {{ formatdStatus(SubItem.dStatus) }}
-                                                </span>
 
-                                            </div>
+                                            <span class="btn btn-sm" :class="formatdStatusCSS(SubItem.dStatus)">
+                                                {{ formatdStatus(SubItem.dStatus) }}
+                                            </span>
+
                                         </td>
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             {{ SubItem.subType }}
                                         </td>
+
                                         <td style="white-space: break-spaces;word-break:break-all">
                                             {{ SubItem.userName }}
                                         </td>
@@ -1547,9 +1702,13 @@ export default {
                                                 <a class="btn btn-info" href="javascript:;"
                                                     @click="EditShow(SubItem)">查看</a>
                                                 <a class="btn btn-secondary" href="javascript:;"
+                                                    v-if="[0, 1].indexOf(SubItem.status) != -1"
                                                     @click="EditOne(SubItem)">編輯</a>
+
                                                 <a class="btn btn-success" href="javascript:;"
                                                     v-if="SubItem.status == 1" @click="EditDriver(SubItem)">派發司機</a>
+                                                <a class="btn btn-danger" href="javascript:;" v-if="SubItem.status == 0"
+                                                    @click="Cancel2(SubItem)">作廢</a>
                                             </div>
 
                                         </td>
@@ -1577,7 +1736,9 @@ export default {
                     <div class="col-lg-62">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title mb-4">{{ EditOneTitle }}</h4>
+                                <h4 class="card-title mb-4">{{ EditOneTitle }} <span class="title-description">{{
+            EditOneDescription
+        }}</span></h4>
                                 <b-form>
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
@@ -1731,7 +1892,29 @@ export default {
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" v-if="customers.subType == '門市取貨派送'">
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">取貨人</label>
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                v-model="customers.storeMan" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">門市名稱</label>
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                v-model="customers.storeName" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">門市位置</label>
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                v-model="customers.storeAddress" />
+                                        </div>
+                                        <div class="col-sm-12 col-md-6 col-lg-3">
+                                            <label for="name">電話</label>
+                                            <input autocomplete="off" type="text" class="form-control"
+                                                v-model="customers.storePhone" />
+                                        </div>
 
+                                    </div>
 
                                     <div class="row">
                                         <div class="col-sm-12 col-md-4 col-lg-3">
@@ -1762,9 +1945,9 @@ export default {
 
 
                                         <div class="col-sm-12 col-md-4 col-lg-3">
-                                            <label for="name">收件人名稱</label>
+                                            <label for="name">{{ receiveNameText }}</label>
                                             <input autocomplete="off" type="text" class="form-control"
-                                                placeholder="收件人名稱" v-model="customers.receiveName"
+                                                :placeholder="receiveNameText" v-model="customers.receiveName"
                                                 :class="{ 'is-invalid': submitted && v$.customers.receiveName.$error, }">
                                             <div v-if="submitted && v$.customers.receiveName.$error"
                                                 class="invalid-feedback">
@@ -1802,6 +1985,7 @@ export default {
 
 
                                     </div>
+
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6 col-lg-3">
                                             <label for="name">安裝方式</label>
@@ -1819,12 +2003,14 @@ export default {
                                             <div v-if="submitted && v$.customers.recycle.$error"
                                                 class="invalid-feedback"
                                                 :class="{ 'is-invalid': submitted && v$.customers.recycle.$error, }">
-                                                <span v-if="v$.customers.recycle.required.$message">{{
-            v$.customers.recycle.required.$message
-        }}</span>
+                                                <span v-if="v$.customers.recycle.required.$message">
+                                                    {{ v$.customers.recycle.required.$message }}
+                                                </span>
                                             </div>
                                         </div>
+
                                     </div>
+
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <label for="name">備註</label>
@@ -2163,7 +2349,7 @@ export default {
                 <a href="javascript:;" class="btn btn-success" @click="customers.status = 1; handleSubmit()"
                     v-if="SubView == 2">保存並審核</a>
                 <a href="javascript:;" class="btn btn-warning" @click="customers.status = 0; handleSubmit()"
-                    v-if="SubView == 3 && customers.status == 1">反審核</a>
+                    v-if="SubView == 3 && customers.status == 1">設為未審核</a>
                 <a href="javascript:;" class="btn btn-success" @click="ExcelOut" v-if="SubView == 3">匯出</a>
                 <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0; GetData()"
                     v-if="SubView != 0">返回</a>

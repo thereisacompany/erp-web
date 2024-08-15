@@ -97,7 +97,7 @@ export default {
             LogList: [],
 
             IsGetDataing: false,
-            pageSize: 30,
+            pageSize: 50,
             totalRows: 0,
             currentPage: 1,
             maxPage: 10,
@@ -675,12 +675,22 @@ export default {
             let APIUrl = `/depotHead/addDepotHeadAndDetail`;
             server.post(APIUrl, data1)
                 .then((res) => {
-                    if (res != null && res.data != null && res.data.code == 200) {
-                        this.showModal = false;
-                        this.$nextTick(() => {
+                    // if (res != null && res.data != null && res.data.code == 200) {
+                    //     this.showModal = false;
+                    //     this.$nextTick(() => {
+                    //         this.SubView = 0;
+                    //         this.GetData()
+                    //     });
+                    // }
+                    // this.IsGetDataing = false;
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            this.showModal = false;
                             this.SubView = 0;
-                            this.GetData()
-                        });
+                            this.$nextTick(() => { this.GetData() });
+                        } else {
+                            alert(res.data.data.message)
+                        }
                     }
                     this.IsGetDataing = false;
                 }).catch(function (error) {
@@ -695,12 +705,22 @@ export default {
             let APIUrl = `/depotHead/updateDepotHeadAndDetail`;
             server.put(APIUrl, data1)
                 .then((res) => {
-                    if (res != null && res.data != null && res.data.code == 200) {
-                        this.showModal = false;
-                        this.$nextTick(() => {
+                    // if (res != null && res.data != null && res.data.code == 200) {
+                    //     this.showModal = false;
+                    //     this.$nextTick(() => {
+                    //         this.SubView = 0;
+                    //         this.GetData()
+                    //     });
+                    // }
+                    // this.IsGetDataing = false;
+                    if (res != null && res.data != null) {
+                        if (res.data.code == 200) {
+                            this.showModal = false;
                             this.SubView = 0;
-                            this.GetData()
-                        });
+                            this.$nextTick(() => { this.GetData() });
+                        } else {
+                            alert(res.data.data.message)
+                        }
                     }
                     this.IsGetDataing = false;
                 }).catch(function (error) {
