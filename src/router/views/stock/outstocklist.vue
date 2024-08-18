@@ -1472,6 +1472,57 @@ export default {
 
       this.driver.filelist = filteredArray;
     },
+    // 批次匯出揀貨單
+    handleExportPicking() {
+      let NumberList = this.customersData
+        .filter((x) => x.chk == true)
+        .map((y) => y.number);
+      let subIdList = this.customersData
+        .filter((x) => x.chk == true)
+        .map((y) => y.subId);
+      //console.log(NumberList)
+
+      if (NumberList == null || NumberList.length == 0) {
+        alert("請至少選擇一個單據!");
+        return;
+      }
+
+      let numberStr = `numbers=` + NumberList.join(",");
+      let subIds = `subIds=` + subIdList.join(",");
+      console.log("numberStr", numberStr);
+      console.log("subIds", subIds);
+      if (this.IsGetDataing == true) return;
+      this.IsGetDataing = true;
+      //let data1 = { number, type, isRecycle, brand }
+      //let APIUrl = `/depotHead/export?number=${number}&type=${type}&isRecycle=${isRecycle}&brand=${brand}`;
+      let APIUrl = `/depotHead/exportPicking?${numberStr}&${subIds}`;
+
+      //console.log("APIUrl", APIUrl)
+      server
+        .get(APIUrl, { responseType: "blob" })
+        .then((res) => {
+          // console.log("res", res)
+          if (res != null && res.data != null) {
+            console.log("批次匯出揀貨單", res);
+            // console.log(123123)
+            var fileURL = window.URL.createObjectURL(new Blob([res.data]));
+            var fileLink = document.createElement("a");
+            fileLink.href = fileURL;
+            fileLink.setAttribute(
+              "download",
+              `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.zip`
+            );
+            document.body.appendChild(fileLink);
+            fileLink.click();
+          }
+          this.IsGetDataing = false;
+        })
+        .catch(function (error) {
+          console.log("error", error);
+          this.IsGetDataing = false;
+          return;
+        });
+    },
   },
 };
 </script>
@@ -1677,6 +1728,13 @@ export default {
                     @click="BatchExcelOut"
                   >
                     批次匯出
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-success btn-rounded mb-2 me-2"
+                    @click="handleExportPicking"
+                  >
+                    匯出揀貨單
                   </button>
                   <input
                     ref="fileexcelin"
