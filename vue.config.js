@@ -17,10 +17,19 @@ module.exports = {
             },
         }
     },
-    configureWebpack: {
-        // 設置模式為 development
-        mode: 'development',
-        // 設定 source map 為 'eval-source-map' 以利於調試
-        devtool: 'eval-source-map',
-    },
+    configureWebpack: () => {
+        if (process.env.NODE_ENV === 'production') {
+            // 生产环境
+            return {
+                mode: 'production',
+                devtool: 'source-map', // 生产环境建议使用 source-map
+            };
+        } else {
+            // 开发环境
+            return {
+                mode: 'development',
+                devtool: 'eval-source-map', // 开发环境使用 eval-source-map 方便调试
+            };
+        }
+    }
 }

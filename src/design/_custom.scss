@@ -293,3 +293,7 @@ table tbody tr:nth-child(even) {
   background-color: #556ee6;
   color: #fff !important;
 }
+
+.logo.router-link-active {
+  background-color: transparent;
+}

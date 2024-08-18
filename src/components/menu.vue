@@ -52,7 +52,13 @@ export default defineComponent({
 
     // 判斷active狀態
     function isActive(subMenu) {
-      const currentRouter = window.location.pathname.split("/dev")[1];
+      let currentRouter = "";
+      if (process.env.NODE_ENV === "development") {
+        currentRouter = window.location.pathname.split("/dev")[1];
+      } else {
+        currentRouter = window.location.pathname;
+      }
+
       if (currentRouter === subMenu.url) activeMenuId.value = subMenu.id;
       return currentRouter === subMenu.url;
     }
@@ -117,6 +123,8 @@ export default defineComponent({
           setData();
         });
       }
+      console.log("process.env.NODE_ENV", process.env.NODE_ENV);
+      // process.env.
     });
 
     return {

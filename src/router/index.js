@@ -3,11 +3,20 @@ import store from '@/state/store'
 import routes from './routes'
 
 // 为每个路由添加 '/dev' 前缀
+
 const prefixedRoutes = routes.map(route => {
-    return {
-        ...route,
-        path: `/dev${route.path}`
+    if (process.env.NODE_ENV === "development") {
+        return {
+            ...route,
+            path: `/dev${route.path}`
+        }
+    } else {
+        return {
+            ...route,
+            path: route.path
+        }
     }
+
 })
 
 const router = createRouter({
@@ -32,9 +41,12 @@ const router = createRouter({
 // 使用全局导航守卫来确保导航请求使用 '/dev' 前缀
 router.beforeEach((to, from, next) => {
     // 确保所有路径都使用 '/dev' 前缀
-    if (!to.path.startsWith('/dev')) {
-        return next(`/dev${to.fullPath}`)
+    if (process.env.NODE_ENV === "development") {
+        if (!to.path.startsWith('/dev')) {
+            return next(`/dev${to.fullPath}`)
+        }
     }
+
 
     console.log("routeTo=", to)
     console.log("process.env.VUE_APP_DEFAULT_AUTH=", process.env.VUE_APP_DEFAULT_AUTH)
@@ -60,15 +72,15 @@ router.beforeEach((to, from, next) => {
         // redirect to login.
         return redirectToLogin()
     } else {
-        const publicPages = ['/dev/login', '/dev/register', '/dev/forgot-password', '/dev/car/login', '/dev/car/home', '/dev/car/profile'];
+        const publicPages = ['/login', '/register', '/forgot-password', '/car/login', '/car/home', '/car/profile'];
         const authpage = !publicPages.includes(to.path);
         const loggeduser = localStorage.getItem('user');
         console.log("authpage, loggeduser=", authpage, loggeduser)
         if (authpage && !loggeduser) {
-            if (to.path.startsWith('/dev/car')) {
-                return next('/dev/car/login');
+            if (to.path.startsWith('/car')) {
+                return next('/car/login');
             } else {
-                return next('/dev/login');
+                return next('/login');
             }
         }
 
