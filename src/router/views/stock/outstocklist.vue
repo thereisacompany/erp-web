@@ -1504,14 +1504,21 @@ export default {
           // console.log("res", res)
           if (res != null && res.data != null) {
             // console.log(123123)
-            var fileURL = window.URL.createObjectURL(new Blob([res.data]));
+            var fileURL = window.URL.createObjectURL(
+              new Blob([res.data], {
+                type: "application/octet-stream",
+              })
+            );
             // console.log("fileURL", fileURL);
             var fileLink = document.createElement("a");
             fileLink.href = fileURL;
-            fileLink.setAttribute(
-              "download",
-              `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
-            );
+            fileLink.download = `${dayjs().format(
+              "YYYYMMDDHHmmss"
+            )}配送單-揀貨總表`;
+            // fileLink.setAttribute(
+            //   "download",
+            //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
+            // );
             document.body.appendChild(fileLink);
             fileLink.click();
           }
