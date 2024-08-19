@@ -5,7 +5,7 @@ import routes from './routes'
 // 为每个路由添加 '/dev' 前缀
 
 const prefixedRoutes = routes.map(route => {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.VUE_APP_ENV === "development") {
         return {
             ...route,
             path: `/dev${route.path}`
@@ -41,7 +41,7 @@ const router = createRouter({
 // 使用全局导航守卫来确保导航请求使用 '/dev' 前缀
 router.beforeEach((to, from, next) => {
     // 确保所有路径都使用 '/dev' 前缀
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.VUE_APP_ENV === "development") {
         if (!to.path.startsWith('/dev')) {
             return next(`/dev${to.fullPath}`)
         }

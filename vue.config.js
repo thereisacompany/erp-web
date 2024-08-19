@@ -18,7 +18,7 @@ module.exports = {
         }
     },
     configureWebpack: () => {
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.VUE_APP_ENV === 'production') {
             // 生产环境
             return {
                 mode: 'production',

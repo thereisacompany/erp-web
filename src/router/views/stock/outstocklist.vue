@@ -1503,14 +1503,14 @@ export default {
         .then((res) => {
           // console.log("res", res)
           if (res != null && res.data != null) {
-            console.log("批次匯出揀貨單", res);
             // console.log(123123)
             var fileURL = window.URL.createObjectURL(new Blob([res.data]));
+            // console.log("fileURL", fileURL);
             var fileLink = document.createElement("a");
             fileLink.href = fileURL;
             fileLink.setAttribute(
               "download",
-              `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.zip`
+              `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
             );
             document.body.appendChild(fileLink);
             fileLink.click();
