@@ -1514,7 +1514,7 @@ export default {
             fileLink.href = fileURL;
             fileLink.download = `${dayjs().format(
               "YYYYMMDDHHmmss"
-            )}配送單-揀貨總表`;
+            )}配送單-揀貨總表.xlsx`;
             // fileLink.setAttribute(
             //   "download",
             //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
