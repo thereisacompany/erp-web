@@ -1,11 +1,27 @@
 import { createWebHistory, createRouter } from "vue-router";
-
 import store from '@/state/store'
 import routes from './routes'
 
+// 为每个路由添加 '/dev' 前缀
+
+const prefixedRoutes = routes.map(route => {
+    if (process.env.VUE_APP_ENV === "development") {
+        return {
+            ...route,
+            path: `/dev${route.path}`
+        }
+    } else {
+        return {
+            ...route,
+            path: route.path
+        }
+    }
+
+})
+
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
-    routes,
+    routes: prefixedRoutes,
     // Use the HTML5 history API (i.e. normal-looking routes)
     // instead of routes with hashes (e.g. example.com/#/about).
     // This may require some server configuration in production:
@@ -22,14 +38,22 @@ const router = createRouter({
     },
 })
 
-// Before each route evaluates...
-router.beforeEach((routeTo, routeFrom, next) => {
-    console.log("routeTo=", routeTo)
+// 使用全局导航守卫来确保导航请求使用 '/dev' 前缀
+router.beforeEach((to, from, next) => {
+    // 确保所有路径都使用 '/dev' 前缀
+    if (process.env.VUE_APP_ENV === "development") {
+        if (!to.path.startsWith('/dev')) {
+            return next(`/dev${to.fullPath}`)
+        }
+    }
+
+
+    console.log("routeTo=", to)
     console.log("process.env.VUE_APP_DEFAULT_AUTH=", process.env.VUE_APP_DEFAULT_AUTH)
+
     if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-        // Check if auth is required on this route
-        // (including nested routes).
-        const authRequired = routeTo.matched.some((route) => route.meta.authRequired)
+        // Check if auth is required on this route (including nested routes).
+        const authRequired = to.matched.some((route) => route.meta.authRequired)
 
         // If auth isn't required for the route, just continue.
         if (!authRequired) return next()
@@ -46,21 +70,14 @@ router.beforeEach((routeTo, routeFrom, next) => {
 
         // If auth is required and the user is NOT currently logged in,
         // redirect to login.
-        redirectToLogin()
-
-        // eslint-disable-next-line no-unused-vars
-        // eslint-disable-next-line no-inner-declarations
-        function redirectToLogin() {
-            // Pass the original route to the login component
-            next({ name: 'login', query: { redirectFrom: routeTo.fullPath } })
-        }
+        return redirectToLogin()
     } else {
         const publicPages = ['/login', '/register', '/forgot-password', '/car/login', '/car/home', '/car/profile'];
-        const authpage = !publicPages.includes(routeTo.path);
+        const authpage = !publicPages.includes(to.path);
         const loggeduser = localStorage.getItem('user');
-        console.log("authpage,loggeduser=", authpage, loggeduser)
+        console.log("authpage, loggeduser=", authpage, loggeduser)
         if (authpage && !loggeduser) {
-            if (String(routeTo.path).indexOf("/car") == 0) {
+            if (to.path.startsWith('/car')) {
                 return next('/car/login');
             } else {
                 return next('/login');
@@ -68,6 +85,12 @@ router.beforeEach((routeTo, routeFrom, next) => {
         }
 
         next();
+    }
+
+    // eslint-disable-next-line no-inner-declarations
+    function redirectToLogin() {
+        // Pass the original route to the login component
+        next({ name: 'login', query: { redirectFrom: to.fullPath } })
     }
 })
 

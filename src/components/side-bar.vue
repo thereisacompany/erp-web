@@ -1,14 +1,14 @@
 <script>
-import { SimpleBar } from "simplebar-vue3"
+import { SimpleBar } from "simplebar-vue3";
 
-import SideNav from "./side-nav";
+// import Menu from "./side-nav";
 import { layoutComputed } from "@/state/helpers";
-
+import Menu from "./menu.vue";
 /**
  * Sidebar component
  */
 export default {
-  components: { SimpleBar, SideNav },
+  components: { SimpleBar, Menu },
   props: {
     isCondensed: {
       type: Boolean,
@@ -37,10 +37,12 @@ export default {
     onRoutechange() {
       setTimeout(() => {
         if (document.getElementsByClassName("mm-active").length > 0) {
-          const currentPosition = document.getElementsByClassName("mm-active")[0].offsetTop;
+          const currentPosition =
+            document.getElementsByClassName("mm-active")[0].offsetTop;
           if (currentPosition > 500)
             if (this.$refs.isSimplebar)
-              this.$refs.isSimplebar.value.getScrollElement().scrollTop = currentPosition + 300;
+              this.$refs.isSimplebar.value.getScrollElement().scrollTop =
+                currentPosition + 300;
         }
       }, 300);
     },
@@ -111,7 +113,7 @@ export default {
             case "scrollable":
               document.body.setAttribute("data-layout-scrollable", "true");
               document.body.removeAttribute("data-layout-mode");
-              document.body.removeAttribute("data-layout-size")
+              document.body.removeAttribute("data-layout-size");
               break;
             default:
               document.body.setAttribute("data-layout-mode", "fluid");
@@ -127,13 +129,18 @@ export default {
 <template>
   <!-- ========== Left Sidebar Start ========== -->
   <div class="vertical-menu">
-    <SimpleBar v-if="!isCondensed" :settings="settings" class="h-100" ref="currentMenu" id="my-element">
-      <SideNav />
+    <SimpleBar
+      v-if="!isCondensed"
+      :settings="settings"
+      class="h-100"
+      ref="currentMenu"
+      id="my-element"
+    >
+      <Menu />
     </SimpleBar>
     <SimpleBar v-else class="h-100">
-      <SideNav />
+      <Menu />
     </SimpleBar>
-
   </div>
   <!-- Left Sidebar End -->
 </template>

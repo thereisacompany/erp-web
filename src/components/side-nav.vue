@@ -1,6 +1,5 @@
 <script>
 import MetisMenu from "metismenujs/dist/metismenujs";
-
 import { menuItems } from "./menu";
 
 /**
@@ -14,41 +13,41 @@ export default {
     };
   },
   mounted: function () {
-
-
-
-    let user_authList = localStorage.getItem('user_authList')
+    let user_authList = localStorage.getItem("user_authList");
     //console.log("user_authList", user_authList)
-    if (user_authList && String(user_authList) != "null" && String(user_authList) != "undefined" && String(user_authList) != "") {
-      let MyAuth = String(JSON.parse(user_authList)).split(',');
-      let filteredArray = []
-      menuItems.forEach(item => {
+    if (
+      user_authList &&
+      String(user_authList) != "null" &&
+      String(user_authList) != "undefined" &&
+      String(user_authList) != ""
+    ) {
+      let MyAuth = String(JSON.parse(user_authList)).split(",");
+      let filteredArray = [];
+      menuItems.forEach((item) => {
         if (MyAuth.indexOf(String(item.id)) != -1) {
-          filteredArray.push(item)
+          filteredArray.push(item);
         } else {
           //第二層
-          let NewItem = JSON.parse(JSON.stringify(item))
+          let NewItem = JSON.parse(JSON.stringify(item));
           if (item.subItems) {
             let sublist = [];
-            item.subItems.forEach(item2 => {
+            item.subItems.forEach((item2) => {
               if (MyAuth.indexOf(String(item2.id)) != -1) {
-                sublist.push(item2)
-
+                sublist.push(item2);
               }
-            })
+            });
             if (sublist.length != 0) {
-              NewItem.subItems = sublist
-              filteredArray.push(NewItem)
+              NewItem.subItems = sublist;
+              filteredArray.push(NewItem);
             }
           }
         }
-      })
+      });
 
-      this.menuItems = filteredArray
+      this.menuItems = filteredArray;
       this.initMenu();
       //return;
     }
-
 
     // this.getCurrentInfo((info) => {
     //   //info.authlist = "10001,11003"
@@ -86,7 +85,6 @@ export default {
 
     //   localStorage.setItem('user_authList', JSON.stringify(this.menuItems))
     // });
-
   },
   methods: {
     /**
@@ -118,7 +116,6 @@ export default {
 
     // },
     initMenu() {
-
       if (document.getElementById("side-menu")) new MetisMenu("#side-menu");
       var links = document.getElementsByClassName("side-nav-link-ref");
       var matchingMenuItem = null;
@@ -174,7 +171,6 @@ export default {
         }
       }
     },
-
   },
 };
 </script>
@@ -191,30 +187,63 @@ export default {
           {{ $t(item.label) }}
         </li>
         <li v-if="!item.isTitle && !item.isLayout" :key="item.id">
-          <a v-if="hasItems(item)" href="javascript:void(0);" class="is-parent"
-            :class="{ 'has-arrow': !item.badge, 'has-dropdown': item.badge }">
+          <a
+            v-if="hasItems(item)"
+            href="javascript:void(0);"
+            class="is-parent"
+            :class="{ 'has-arrow': !item.badge, 'has-dropdown': item.badge }"
+          >
             <i :class="`bx ${item.icon}`" v-if="item.icon"></i>
             <span>{{ $t(item.label) }}</span>
-            <span :class="`badge rounded-pill bg-${item.badge.variant} float-end`" v-if="item.badge">{{
-              $t(item.badge.text) }}</span>
+            <span
+              :class="`badge rounded-pill bg-${item.badge.variant} float-end`"
+              v-if="item.badge"
+              >{{ $t(item.badge.text) }}</span
+            >
           </a>
 
-          <router-link :to="item.link" v-if="!hasItems(item)" class="side-nav-link-ref">
+          <router-link
+            :to="item.link"
+            v-if="!hasItems(item)"
+            class="side-nav-link-ref"
+          >
             <i :class="`bx ${item.icon}`" v-if="item.icon"></i>
             <span>{{ $t(item.label) }}</span>
-            <span :class="`badge rounded-pill bg-${item.badge.variant} float-end`" v-if="item.badge">{{
-              $t(item.badge.text) }}</span>
+            <span
+              :class="`badge rounded-pill bg-${item.badge.variant} float-end`"
+              v-if="item.badge"
+              >{{ $t(item.badge.text) }}</span
+            >
           </router-link>
 
           <ul v-if="hasItems(item)" class="sub-menu" aria-expanded="false">
             <li v-for="(subitem, index) of item.subItems" :key="index">
-              <router-link :to="subitem.link" v-if="!hasItems(subitem)" class="side-nav-link-ref">{{ $t(subitem.label)
-              }}</router-link>
-              <a v-if="hasItems(subitem)" class="side-nav-link-a-ref has-arrow" href="javascript:void(0);">{{
-                $t(subitem.label) }}</a>
-              <ul v-if="hasItems(subitem)" class="sub-menu mm-collapse" aria-expanded="false">
-                <li v-for="(subSubitem, index) of subitem.subItems" :key="index">
-                  <router-link :to="subSubitem.link" class="side-nav-link-ref">{{ $t(subSubitem.label) }}</router-link>
+              <router-link
+                :to="subitem.link"
+                v-if="!hasItems(subitem)"
+                class="side-nav-link-ref"
+                >{{ $t(subitem.label) }}</router-link
+              >
+              <a
+                v-if="hasItems(subitem)"
+                class="side-nav-link-a-ref has-arrow"
+                href="javascript:void(0);"
+                >{{ $t(subitem.label) }}</a
+              >
+              <ul
+                v-if="hasItems(subitem)"
+                class="sub-menu mm-collapse"
+                aria-expanded="false"
+              >
+                <li
+                  v-for="(subSubitem, index) of subitem.subItems"
+                  :key="index"
+                >
+                  <router-link
+                    :to="subSubitem.link"
+                    class="side-nav-link-ref"
+                    >{{ $t(subSubitem.label) }}</router-link
+                  >
                 </li>
               </ul>
             </li>
