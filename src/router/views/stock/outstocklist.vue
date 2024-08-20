@@ -1924,7 +1924,17 @@ export default {
           <div class="col-lg-62">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title mb-4">{{ EditOneTitle }}</h4>
+                <div class="card-title mb-4" style="display: flex; gap: 8px">
+                  <h5>{{ EditOneTitle }}</h5>
+                  <span style="color: #f46a6a">
+                    {{
+                      this.customers.subType == "門市取貨"
+                        ? `(不入庫不扣公司庫存,單純取貨待通知配送)`
+                        : `(1.當天門市取貨當天直接派送 2.門市取貨後待配送時間使用 3.不扣公司庫存)`
+                    }}</span
+                  >
+                </div>
+
                 <b-form>
                   <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3">

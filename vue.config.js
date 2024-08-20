@@ -11,7 +11,7 @@ module.exports = {
         port: 8080,
         proxy: {
             '/jshERP-boot': {
-                target: 'http://34.80.85.84:10000',
+                target: 'http://34.80.85.84:9999',
                 ws: false,
                 changeOrigin: true
             },
