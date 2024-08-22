@@ -6,7 +6,7 @@ import BootstrapVue3 from 'bootstrap-vue-3';
 import VueApexCharts from "vue3-apexcharts";
 import vClickOutside from "click-outside-vue3";
 import { registerScrollSpy } from 'vue3-scroll-spy';
-import { Table, Column, Footer } from 'vxe-table';
+import { Table, Column } from 'vxe-table';
 import 'vxe-table/lib/style.css';
 import VxeUI from 'vxe-pc-ui';
 import 'vxe-pc-ui/lib/style.css';
@@ -54,5 +54,4 @@ createApp(App)
     .use(VxeUI)
     .use(Table)
     .use(Column)
-    .use(Footer)
     .mount('#app')

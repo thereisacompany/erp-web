@@ -4,24 +4,11 @@ import routes from './routes'
 
 // 为每个路由添加 '/dev' 前缀
 
-const prefixedRoutes = routes.map(route => {
-    if (process.env.VUE_APP_ENV === "development") {
-        return {
-            ...route,
-            path: `/dev${route.path}`
-        }
-    } else {
-        return {
-            ...route,
-            path: route.path
-        }
-    }
 
-})
 
 const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL),
-    routes: prefixedRoutes,
+    history: createWebHistory(),
+    routes: routes,
     // Use the HTML5 history API (i.e. normal-looking routes)
     // instead of routes with hashes (e.g. example.com/#/about).
     // This may require some server configuration in production:
@@ -40,16 +27,17 @@ const router = createRouter({
 
 // 使用全局导航守卫来确保导航请求使用 '/dev' 前缀
 router.beforeEach((to, from, next) => {
+
     // 确保所有路径都使用 '/dev' 前缀
-    if (process.env.VUE_APP_ENV === "development") {
-        if (!to.path.startsWith('/dev')) {
-            return next(`/dev${to.fullPath}`)
-        }
-    }
+    // if (process.env.VUE_APP_ENV === "development") {
+    //     if (!to.path.startsWith('/dev')) {
+    //         return next(`/dev${to.fullPath}`)
+    //     }
+    // }
 
 
-    console.log("routeTo=", to)
-    console.log("process.env.VUE_APP_DEFAULT_AUTH=", process.env.VUE_APP_DEFAULT_AUTH)
+    // console.log("routeTo=", to)
+    // console.log("process.env.VUE_APP_DEFAULT_AUTH=", process.env.VUE_APP_DEFAULT_AUTH)
 
     if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
         // Check if auth is required on this route (including nested routes).
@@ -92,6 +80,7 @@ router.beforeEach((to, from, next) => {
         // Pass the original route to the login component
         next({ name: 'login', query: { redirectFrom: to.fullPath } })
     }
+
 })
 
 export default router
