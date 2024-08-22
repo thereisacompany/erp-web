@@ -316,120 +316,137 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
-        this.customers.extrasArrival = dayjs(
-          this.customers.extrasArrival
-        ).isValid()
-          ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
-          : null;
-        if (
-          this.customers.id == null ||
-          this.customers.id == 0 ||
-          this.customers.id == 0
-        ) {
-          let aObj = JSON.parse(JSON.stringify(this.customers));
-          let bObj = JSON.parse(JSON.stringify(this.customersItem));
+        // 判斷快速派發是否有值
+        if (this.SubView == 2) {
+          if (
+            this.driver.driverId !== null &&
+            this.driver.assignDate !== "Invalid Date" &&
+            this.driver.assignUser !== null
+          ) {
+            this.AssignDriver();
+          } else if (
+            (this.driver.driverId !== null && this.driver.driverId !== "") ||
+            this.driver.assignDate !== "Invalid Date" ||
+            this.driver.assignUser !== null
+          ) {
+            alert("請填寫完成並指派司機");
+          } else {
+            //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
+            this.customers.extrasArrival = dayjs(
+              this.customers.extrasArrival
+            ).isValid()
+              ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
+              : null;
+            if (
+              this.customers.id == null ||
+              this.customers.id == 0 ||
+              this.customers.id == 0
+            ) {
+              let aObj = JSON.parse(JSON.stringify(this.customers));
+              let bObj = JSON.parse(JSON.stringify(this.customersItem));
 
-          aObj.number = aObj.defaultNumber;
-          aObj.fileName = this.filelist.join(",");
-          aObj.operTime = `${aObj.date2} ${aObj.time2}`;
-          aObj.totalPrice = this.customersItemAllPrice;
-          aObj.type = "出庫";
-          //aObj.subType = '配送單';
-          delete aObj.id;
-          delete aObj.date2;
-          delete aObj.time2;
+              aObj.number = aObj.defaultNumber;
+              aObj.fileName = this.filelist.join(",");
+              aObj.operTime = `${aObj.date2} ${aObj.time2}`;
+              aObj.totalPrice = this.customersItemAllPrice;
+              aObj.type = "出庫";
+              //aObj.subType = '配送單';
+              delete aObj.id;
+              delete aObj.date2;
+              delete aObj.time2;
 
-          let errMsg = "";
-          if (bObj.length == 0) {
-            errMsg += "請至少新增一筆商品\n";
-          }
-          if (errMsg == "") {
-            if (this.IsPickup1 == true) {
-              for (let i = 0; i < bObj.length; i++) {
-                let b1 = bObj[i];
-                if (b1.depotId == null || b1.depotId == "") {
-                  errMsg += `#${i + 1} 請選擇倉庫別\n`;
-                }
-                if (b1.barCode == null || b1.barCode == "") {
-                  errMsg += `#${i + 1} 請選擇商品\n`;
+              let errMsg = "";
+              if (bObj.length == 0) {
+                errMsg += "請至少新增一筆商品\n";
+              }
+              if (errMsg == "") {
+                if (this.IsPickup1 == true) {
+                  for (let i = 0; i < bObj.length; i++) {
+                    let b1 = bObj[i];
+                    if (b1.depotId == null || b1.depotId == "") {
+                      errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                    }
+                    if (b1.barCode == null || b1.barCode == "") {
+                      errMsg += `#${i + 1} 請選擇商品\n`;
+                    }
+                  }
+                } else {
+                  for (let i = 0; i < bObj.length; i++) {
+                    let b1 = bObj[i];
+                    if (b1.materialName == null || b1.materialName == "") {
+                      errMsg += `#${i + 1} 輸入商品名稱\n`;
+                    }
+                    b1.operNumber = b1.operNumber || 1;
+                  }
                 }
               }
-            } else {
-              for (let i = 0; i < bObj.length; i++) {
-                let b1 = bObj[i];
-                if (b1.materialName == null || b1.materialName == "") {
-                  errMsg += `#${i + 1} 輸入商品名稱\n`;
-                }
-                b1.operNumber = b1.operNumber || 1;
+              if (errMsg != "") {
+                alert(errMsg);
+                return;
               }
+
+              this.AddData({
+                info: JSON.stringify(aObj),
+                rows: JSON.stringify(bObj),
+              });
+            } else if (this.customers.id > 0) {
+              let aObj = JSON.parse(JSON.stringify(this.customers));
+              let bObj = JSON.parse(JSON.stringify(this.customersItem));
+
+              aObj.number = aObj.defaultNumber;
+              aObj.fileName = this.filelist.join(",");
+              aObj.operTime = `${aObj.date2} ${aObj.time2}`;
+              aObj.totalPrice = this.customersItemAllPrice;
+
+              //delete aObj.id;
+              delete aObj.date2;
+              delete aObj.time2;
+
+              let errMsg = "";
+
+              if (bObj.length == 0) {
+                errMsg += "請至少新增一筆商品\n";
+              }
+
+              if (errMsg == "") {
+                if (this.IsPickup1 == true) {
+                  for (let i = 0; i < bObj.length; i++) {
+                    let b1 = bObj[i];
+                    if (b1.depotId == null || b1.depotId == "") {
+                      errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                    }
+                    if (b1.barCode == null || b1.barCode == "") {
+                      errMsg += `#${i + 1} 請選擇商品\n`;
+                    }
+                  }
+                } else {
+                  for (let i = 0; i < bObj.length; i++) {
+                    let b1 = bObj[i];
+                    if (b1.materialName == null || b1.materialName == "") {
+                      errMsg += `#${i + 1} 輸入商品名稱\n`;
+                    }
+                    b1.operNumber = b1.operNumber || 1;
+                  }
+                }
+              }
+              if (errMsg != "") {
+                alert(errMsg);
+                this.UpdData({
+                  info: JSON.stringify(aObj),
+                  rows: JSON.stringify(bObj),
+                });
+                return;
+              }
+              this.UpdData({
+                info: JSON.stringify(aObj),
+                rows: JSON.stringify(bObj),
+              });
             }
           }
-          if (errMsg != "") {
-            alert(errMsg);
-            return;
-          }
 
-          this.AddData({
-            info: JSON.stringify(aObj),
-            rows: JSON.stringify(bObj),
-          });
-        } else if (this.customers.id > 0) {
-          let aObj = JSON.parse(JSON.stringify(this.customers));
-          let bObj = JSON.parse(JSON.stringify(this.customersItem));
-
-          aObj.number = aObj.defaultNumber;
-          aObj.fileName = this.filelist.join(",");
-          aObj.operTime = `${aObj.date2} ${aObj.time2}`;
-          aObj.totalPrice = this.customersItemAllPrice;
-
-          //delete aObj.id;
-          delete aObj.date2;
-          delete aObj.time2;
-
-          let errMsg = "";
-
-          if (bObj.length == 0) {
-            errMsg += "請至少新增一筆商品\n";
-          }
-
-          if (errMsg == "") {
-            if (this.IsPickup1 == true) {
-              for (let i = 0; i < bObj.length; i++) {
-                let b1 = bObj[i];
-                if (b1.depotId == null || b1.depotId == "") {
-                  errMsg += `#${i + 1} 請選擇倉庫別\n`;
-                }
-                if (b1.barCode == null || b1.barCode == "") {
-                  errMsg += `#${i + 1} 請選擇商品\n`;
-                }
-              }
-            } else {
-              for (let i = 0; i < bObj.length; i++) {
-                let b1 = bObj[i];
-                if (b1.materialName == null || b1.materialName == "") {
-                  errMsg += `#${i + 1} 輸入商品名稱\n`;
-                }
-                b1.operNumber = b1.operNumber || 1;
-              }
-            }
-          }
-          if (errMsg != "") {
-            alert(errMsg);
-            this.UpdData({
-              info: JSON.stringify(aObj),
-              rows: JSON.stringify(bObj),
-            });
-            return;
-          }
-          this.UpdData({
-            info: JSON.stringify(aObj),
-            rows: JSON.stringify(bObj),
-          });
+          this.submitted = false;
         }
       }
-
-      this.submitted = false;
     },
     AssignDriver() {
       // 新增api -> 司機派發功能 put
@@ -460,7 +477,11 @@ export default {
 
       if (data2.driverId == null || data2.driverId == "")
         errMsg += "請選擇指派司機\n";
-      if (data2.assignDate == null || data2.assignDate == "")
+      if (
+        data2.assignDate == null ||
+        data2.assignDate == "" ||
+        data2.assignDate == ""
+      )
         errMsg += "請選擇指派日期\n";
       if (data2.assignUser == null || data2.assignUser == "")
         errMsg += "請選擇派發人員\n";
@@ -471,8 +492,9 @@ export default {
       }
 
       data2.assignDate = dayjs(data2.assignDate).format("YYYY-MM-DD");
+      console.log("assignDate", data2.assignDate);
       this.IsGetDataing = true;
-
+      console.log("data2", data2);
       let APIUrl = `/depotHead/delivery/assign`;
       server
         .put(APIUrl, data2)
@@ -1204,7 +1226,7 @@ export default {
             res.data.data != null
           ) {
             let jshdata = res.data.data;
-            //console.log("driverinfo", jshdata)
+            console.log("jshdata", jshdata);
             this.driver.driverId = jshdata.driverId;
             this.driver.carNumber = jshdata.carNumber;
             this.driver.assignDate = dayjs(jshdata.takeDate).format(
@@ -1219,6 +1241,8 @@ export default {
             if (this.driver.filePath != null && this.driver.filePath != "") {
               this.driver.filelist = String(this.driver.filePath).split(",");
             }
+          } else {
+            alert(res.data.data);
           }
         })
         .catch(function (error) {
@@ -1354,9 +1378,11 @@ export default {
       server
         .post(APIUrl, formData)
         .then((res) => {
+          console.log("res", res);
           if (res != null && res.data != null && res.data.code == 200) {
             //let jshdata = res.data;
             let dataMsg = res.data.data;
+            console.log("dataMsg", dataMsg);
             //console.log(jshdata.data)
             //callback(jshdata.data)
             // {    "code": 200,
@@ -1364,6 +1390,7 @@ export default {
             alert(common.replaceAll(dataMsg, "'", ""));
             this.GetData();
           } else if (res != null && res.data != null && res.data.code != 200) {
+            console.log("else if", res.data.data);
             alert(res.data.data);
           }
         })
@@ -1747,7 +1774,7 @@ export default {
                     ref="fileexcelin"
                     type="file"
                     class="d-none"
-                    accept=".xls"
+                    accept=".xls,.xlsx"
                     v-on:change="ExcelIn()"
                   />
                 </div>
@@ -1875,19 +1902,19 @@ export default {
                       <div class="btn-group btn-group-sm">
                         <a
                           class="btn btn-info"
-                          href="javascript:;"
+                          href="#"
                           @click="EditShow(SubItem)"
                           >查看</a
                         >
                         <a
                           class="btn btn-secondary"
-                          href="javascript:;"
+                          href="#"
                           @click="EditOne(SubItem)"
                           >編輯</a
                         >
                         <a
                           class="btn btn-success"
-                          href="javascript:;"
+                          href="#"
                           v-if="SubItem.status == 1"
                           @click="EditDriver(SubItem)"
                           >派發司機</a
@@ -2137,7 +2164,7 @@ export default {
                               <td>
                                 <div class="button-items">
                                   <a
-                                    href="javascript:;"
+                                    href="#"
                                     class="btn btn-sm btn-danger"
                                     v-if="SubView == 1 || SubView == 2"
                                     @click="DeleteRow1(SubItem)"
@@ -2149,7 +2176,7 @@ export default {
                           </tbody>
                         </table>
                         <a
-                          href="javascript:;"
+                          href="#"
                           class="btn btn-sm btn-success"
                           v-if="SubView == 1 || SubView == 2"
                           @click="NewRow1()"
@@ -2373,14 +2400,11 @@ export default {
                             max-width: 100px;
                           "
                           v-else
-                          href="javascript:;"
+                          href="#"
                           @click="ShowImage(f1)"
                           >{{ f1.split("/").pop() }}</a
                         >
-                        <a
-                          href="javascript:;"
-                          class="text-danger"
-                          @click="DeleteFile1(f1)"
+                        <a href="#" class="text-danger" @click="DeleteFile1(f1)"
                           >&nbsp;<i class="bx bx-x"></i
                         ></a>
                       </div>
@@ -2491,20 +2515,20 @@ export default {
                     <label class="form-label" for="message">&nbsp;</label><br />
                     <div class="btn-group">
                       <a
-                        href="javascript:;"
+                        href="#"
                         class="btn btn-danger btn-block"
                         v-if="driver.status == 0"
                         @click="AssignDriver()"
                         >快速派發</a
                       >
                       <a
-                        href="javascript:;"
+                        href="#"
                         class="btn btn-light btn-block"
                         v-if="driver.status != 0"
                         >已指派</a
                       >
                       <a
-                        href="javascript:;"
+                        href="#"
                         class="btn btn-success btn-block"
                         v-if="driver.status != 0"
                         @click="ReAssignDriver()"
@@ -2698,7 +2722,7 @@ export default {
                           v-model="r1.feedback"
                         ></textarea>
                         <a
-                          href="javascript:;"
+                          href="#"
                           class="btn btn-primary"
                           @click="SendFeedback(r1)"
                           >客服回覆保存</a
@@ -2744,14 +2768,11 @@ export default {
                             max-width: 100px;
                           "
                           v-else
-                          href="javascript:;"
+                          href="#"
                           @click="ShowImage(f1)"
                           >{{ f1.split("/").pop() }}</a
                         >
-                        <a
-                          href="javascript:;"
-                          class="text-danger"
-                          @click="DeleteFile2(f1)"
+                        <a href="#" class="text-danger" @click="DeleteFile2(f1)"
                           >&nbsp;<i class="bx bx-x"></i
                         ></a>
                       </div>
@@ -2800,21 +2821,21 @@ export default {
     <div>
       <div class="button-items">
         <a
-          href="javascript:;"
+          href="#"
           class="btn btn-primary"
           @click="handleSubmit"
           v-if="SubView == 1"
           >新增</a
         >
         <a
-          href="javascript:;"
+          href="#"
           class="btn btn-primary"
           @click="handleSubmit"
           v-if="SubView == 2"
           >保存</a
         >
         <a
-          href="javascript:;"
+          href="#"
           class="btn btn-success"
           @click="
             customers.status = 1;
@@ -2824,7 +2845,7 @@ export default {
           >保存並審核</a
         >
         <a
-          href="javascript:;"
+          href="#"
           class="btn btn-warning"
           @click="
             customers.status = 0;
@@ -2834,14 +2855,14 @@ export default {
           >反審核</a
         >
         <a
-          href="javascript:;"
+          href="#"
           class="btn btn-success"
           @click="ExcelOut"
           v-if="SubView == 3"
           >匯出</a
         >
         <a
-          href="javascript:;"
+          href="#"
           class="btn btn-secondary"
           @click="
             SubView = 0;

@@ -294,6 +294,11 @@ table tbody tr:nth-child(even) {
   color: #fff !important;
 }
 
+.router-link-active.logo {
+  background-color: transparent;
+  color: #fff !important;
+}
+
 .title-description {
   color: red;
   font-size: 12px;

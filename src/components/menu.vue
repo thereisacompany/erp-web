@@ -1,12 +1,16 @@
 <template>
   <div class="menu__wrapper">
     <ul>
-      <li v-for="menu in menuLists" :key="menu" :class="isActive(menu)">
+      <li
+        v-for="menu in menuLists"
+        :key="menu"
+        :class="isActive(menu) ? 'active' : ''"
+      >
         <div class="menu" @click="handleClickOpenSubmenu(menu)">
           <div class="menu__item">
             <div class="menu__title">
-              <i :class="`icon bx ${menu.icon}`"></i
-              ><span>{{ menu.text }}</span>
+              <i :class="`icon bx ${menu.icon}`"></i>
+              <span v-if="type == 'open'">{{ menu.text }}</span>
             </div>
             <i
               :class="
@@ -14,7 +18,7 @@
                   ? `arrow-icon mdi mdi-chevron-down`
                   : `arrow-icon mdi mdi-chevron-up`
               "
-              v-if="menu.children"
+              v-if="menu.children && type == 'open'"
             ></i>
           </div>
         </div>
@@ -27,7 +31,7 @@
             :class="subMenu.isActive ? 'active' : ''"
             @click="handleClickMenuItem(subMenu)"
           >
-            <span>{{ subMenu.text }}</span>
+            <span v-if="type == 'open'">{{ subMenu.text }}</span>
           </li>
         </ul>
       </li>
@@ -40,6 +44,9 @@ import { server } from "@/api";
 // import { menuItems } from "./menu.js";
 
 export default defineComponent({
+  props: {
+    type: String,
+  },
   setup() {
     const menuLists = ref();
     const activeMenuId = ref();
@@ -60,7 +67,12 @@ export default defineComponent({
       }
 
       if (currentRouter === subMenu.url) activeMenuId.value = subMenu.id;
-      return currentRouter === subMenu.url;
+
+      if (subMenu.url == "/dashboard/analysis" && currentRouter == "/") {
+        return true;
+      } else {
+        return currentRouter === subMenu.url;
+      }
     }
 
     // 尋找對應的icon

@@ -7,7 +7,7 @@ import routes from './routes'
 
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(process.env.VUE_APP_BASE_URL),
     routes: routes,
     // Use the HTML5 history API (i.e. normal-looking routes)
     // instead of routes with hashes (e.g. example.com/#/about).

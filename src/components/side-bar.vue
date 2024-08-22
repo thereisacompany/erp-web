@@ -136,10 +136,10 @@ export default {
       ref="currentMenu"
       id="my-element"
     >
-      <Menu />
+      <Menu :type="'open'" />
     </SimpleBar>
     <SimpleBar v-else class="h-100">
-      <Menu />
+      <Menu :type="'close'" />
     </SimpleBar>
   </div>
   <!-- Left Sidebar End -->
