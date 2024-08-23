@@ -315,3 +315,21 @@ table tbody tr:nth-child(even) {
     border-radius: 4px;
   }
 }
+
+.search-recode-text {
+  padding: 10px;
+  font-size: 16px;
+  color: #495057;
+}
+
+.search-recode-table {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .table {
+    width: 380px;
+    border-collapse: collapse;
+    border: 1px solid #e5e5e5;
+  }
+}
