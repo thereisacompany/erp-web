@@ -1578,7 +1578,6 @@ export default {
     },
     // 查詢記錄
     handleSearchRecode() {
-      console.log("查詢記錄", this.customers.id);
       const headerId = this.customers.id;
       const APIUrl = `/depotHead/getDeliveryAgreedData?headerId=${headerId}`;
       server.get(APIUrl).then((res) => {
@@ -2622,7 +2621,7 @@ export default {
                               聯絡中
                             </div>
                             <button @click="handleSearchRecode">
-                              查詢記錄
+                              查詢約配紀錄
                             </button>
                           </label>
                           <div class="input-group">
@@ -2954,7 +2953,7 @@ export default {
     </b-modal>
     <a-modal
       v-model:open="openRecodeModel"
-      title="查詢記錄"
+      title="查詢約配紀錄"
       :footer="false"
       :destroyOnClose="true"
       :maskClosable="true"

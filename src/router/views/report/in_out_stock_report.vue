@@ -264,6 +264,12 @@ export default {
       //     endDateTime = "";
       //   }
 
+      if (this.activeKey == 0) {
+        this.beginDate = dayjs().format("YYYY-MM-DD"); //預設起始日期為當日
+      } else {
+        this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期為第一日
+      }
+
       if (common.IsDate(this.beginDate)) {
         beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
           "YYYY-MM-DD"
@@ -319,7 +325,9 @@ export default {
     },
     // 切換tab後重新預設查詢日期
     changeTab() {
-      this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期
+      console.log("activeKey", this.activeKey);
+
+      this.GetData();
     },
   },
 };
