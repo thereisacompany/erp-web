@@ -303,3 +303,15 @@ table tbody tr:nth-child(even) {
   color: red;
   font-size: 12px;
 }
+
+.in-contact {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  button {
+    border: 1px solid #495057;
+    border-radius: 4px;
+  }
+}

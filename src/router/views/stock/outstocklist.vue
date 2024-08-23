@@ -198,9 +198,9 @@ export default {
       // this.GetCounterList();//儲位別
       this.GetMaxFileSize();
       this.GetData();
+      console.log("subIds", this.subIds);
     });
   },
-
   watch: {
     chkAll: {
       immediate: true,
@@ -1557,6 +1557,11 @@ export default {
           return;
         });
     },
+    // 查詢記錄
+    handleSearchRecode(RowItem) {
+      console.log("查詢記錄", RowItem);
+      //   /depotHead/getDeliveryAgreedData?headerId=22 Get
+    },
   },
 };
 </script>
@@ -2579,15 +2584,20 @@ export default {
                       </div>
                       <div class="col-lg-3">
                         <div class="mb-3">
-                          <label class="form-label" for="subject"
-                            ><input
-                              class="form-check-input"
-                              :checked="driver.status >= 3"
-                              type="checkbox"
-                              id="formCheck1"
-                            />
-                            聯絡中</label
-                          >
+                          <label class="form-label in-contact" for="subject">
+                            <div>
+                              <input
+                                class="form-check-input"
+                                :checked="driver.status >= 3"
+                                type="checkbox"
+                                id="formCheck1"
+                              />
+                              聯絡中
+                            </div>
+                            <button @click="handleSearchRecode(customersItem)">
+                              查詢記錄
+                            </button>
+                          </label>
                           <div class="input-group">
                             <span class="input-group-text"
                               ><i class="mdi mdi-calendar"></i
