@@ -9,7 +9,7 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-
+import { Modal } from "ant-design-vue";
 /**
  * Customers component
  */
@@ -18,7 +18,7 @@ export default {
     title: "配送單",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader },
+  components: { Layout, PageHeader, AModal: Modal },
   data() {
     return {
       selectedTab: 0,
@@ -131,6 +131,25 @@ export default {
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
+      openRecodeModel: false,
+      searchRecode: [],
+      recodeColumns: [
+        {
+          name: "#",
+          key: "index",
+          render: (text, record, index) => index + 1,
+        },
+        {
+          title: "日期",
+          key: "datetime",
+          dataIndex: "datetime",
+        },
+        {
+          title: "修改者",
+          key: "name",
+          dataIndex: "name",
+        },
+      ],
     };
   },
   computed: {
@@ -200,7 +219,6 @@ export default {
       this.GetData();
     });
   },
-
   watch: {
     chkAll: {
       immediate: true,
@@ -1282,6 +1300,7 @@ export default {
                 : Math.ceil(this.totalRows / this.pageSize);
           }
           this.IsGetDataing = false;
+          console.log("this.customersData", this.customersData);
           for (let i = 0; i < this.customersData.length; i++) {
             this.customersData[i].chk = this.chkAll;
           }
@@ -1556,6 +1575,19 @@ export default {
           this.IsGetDataing = false;
           return;
         });
+    },
+    // 查詢記錄
+    handleSearchRecode() {
+      console.log("查詢記錄", this.customers.id);
+      const headerId = this.customers.id;
+      const APIUrl = `/depotHead/getDeliveryAgreedData?headerId=${headerId}`;
+      server.get(APIUrl).then((res) => {
+        console.log("res", res.data.data);
+
+        this.searchRecode = res.data.data;
+
+        this.openRecodeModel = true;
+      });
     },
   },
 };
@@ -2579,15 +2611,20 @@ export default {
                       </div>
                       <div class="col-lg-3">
                         <div class="mb-3">
-                          <label class="form-label" for="subject"
-                            ><input
-                              class="form-check-input"
-                              :checked="driver.status >= 3"
-                              type="checkbox"
-                              id="formCheck1"
-                            />
-                            聯絡中</label
-                          >
+                          <label class="form-label in-contact" for="subject">
+                            <div>
+                              <input
+                                class="form-check-input"
+                                :checked="driver.status >= 3"
+                                type="checkbox"
+                                id="formCheck1"
+                              />
+                              聯絡中
+                            </div>
+                            <button @click="handleSearchRecode">
+                              查詢記錄
+                            </button>
+                          </label>
                           <div class="input-group">
                             <span class="input-group-text"
                               ><i class="mdi mdi-calendar"></i
@@ -2915,7 +2952,42 @@ export default {
         </div>
       </form>
     </b-modal>
-
+    <a-modal
+      v-model:open="openRecodeModel"
+      title="查詢記錄"
+      :footer="false"
+      :destroyOnClose="true"
+      :maskClosable="true"
+    >
+      <span class="search-recode-text">{{
+        searchRecode.length == 0 ? "查無資料" : ""
+      }}</span>
+      <div
+        class="search-recode-table"
+        v-if="searchRecode && searchRecode.length > 0"
+      >
+        <table class="table">
+          <thead>
+            <tr>
+              <th
+                scope="col"
+                v-for="(col, index) in recodeColumns"
+                :key="index"
+              >
+                {{ col.title }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in searchRecode" :key="index">
+              <td style="width: 50px">{{ index + 1 }}</td>
+              <td>{{ item.datetime }}</td>
+              <td>{{ item.name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </a-modal>
     <!-- end row -->
   </Layout>
 </template>
