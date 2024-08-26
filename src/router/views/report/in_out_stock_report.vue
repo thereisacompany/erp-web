@@ -254,21 +254,6 @@ export default {
       APIParameter += `&findOrganId=${this.organId}&materialParam=${this.materialParam}&depotIds=${this.depotId}`;
       let beginDateTime = "";
       let endDateTime = "";
-      //   if (this.activeKey == 0) {
-      //     this.beginDate = dayjs();
-      //     this.endDate = dayjs();
-      //     beginDateTime = "00:00:00";
-      //     endDateTime = "23:59:59";
-      //   } else {
-      //     beginDateTime = "";
-      //     endDateTime = "";
-      //   }
-
-      if (this.activeKey == 0) {
-        this.beginDate = dayjs().format("YYYY-MM-DD"); //預設起始日期為當日
-      } else {
-        this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期為第一日
-      }
 
       if (common.IsDate(this.beginDate)) {
         beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
@@ -326,7 +311,11 @@ export default {
     // 切換tab後重新預設查詢日期
     changeTab() {
       console.log("activeKey", this.activeKey);
-
+      if (this.activeKey == 0) {
+        this.beginDate = dayjs().format("YYYY-MM-DD"); //預設起始日期為當日
+      } else {
+        this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期為第一日
+      }
       this.GetData();
     },
   },
