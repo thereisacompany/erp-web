@@ -277,7 +277,13 @@ export default {
           endDateTime += ` 23:59:59`;
         }
       }
-      APIParameter += beginDateTime + endDateTime;
+
+      if (this.activeKey == 0) {
+        APIParameter += endDateTime;
+      } else {
+        APIParameter += beginDateTime + endDateTime;
+      }
+      console.log("activeKey", this.activeKey);
       console.log("APIParameter", APIParameter);
       server
         .get(APIUrl + APIParameter)
@@ -493,10 +499,9 @@ export default {
                     <th>名稱</th>
                     <th>規格</th>
                     <th>型號</th>
-                    <th class="text-center">在途中</th>
-
-                    <th class="text-center">入庫數量</th>
-                    <th class="text-center">出庫數量</th>
+                    <th class="text-center" v-if="activeKey == 1">在途中</th>
+                    <th class="text-center" v-if="activeKey == 1">入庫數量</th>
+                    <th class="text-center" v-if="activeKey == 1">出庫數量</th>
                     <th class="text-center">結存數量</th>
                   </tr>
                 </thead>
@@ -533,11 +538,15 @@ export default {
                         {{ SubItem.materialModel }}
                       </td>
 
-                      <td class="text-center">
+                      <td class="text-center" v-if="activeKey == 1">
                         {{ SubItem.defectiveSum }}
                       </td>
-                      <td class="text-center">{{ SubItem.inSum }}</td>
-                      <td class="text-center">{{ SubItem.outSum }}</td>
+                      <td class="text-center" v-if="activeKey == 1">
+                        {{ SubItem.inSum }}
+                      </td>
+                      <td class="text-center" v-if="activeKey == 1">
+                        {{ SubItem.outSum }}
+                      </td>
                       <td class="text-center">
                         <a href="javascript:;" @click="GetSubStock(SubItem)">
                           {{ SubItem.thisSum }}</a
@@ -594,16 +603,19 @@ export default {
                     </td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
+                      v-if="activeKey == 1"
                     >
                       &nbsp;
                     </td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
+                      v-if="activeKey == 1"
                     >
                       &nbsp;
                     </td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
+                      v-if="activeKey == 1"
                     >
                       &nbsp;
                     </td>
