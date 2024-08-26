@@ -603,13 +603,11 @@ export default {
                     </td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
-                      v-if="activeKey == 1"
                     >
                       &nbsp;
                     </td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
-                      v-if="activeKey == 1"
                     >
                       &nbsp;
                     </td>
@@ -621,8 +619,12 @@ export default {
                     </td>
 
                     <td class="text-center">總計:</td>
-                    <td class="text-center">{{ totalIn }}</td>
-                    <td class="text-center">{{ totalOut }}</td>
+                    <td class="text-center" v-if="activeKey == 1">
+                      {{ totalIn }}
+                    </td>
+                    <td class="text-center" v-if="activeKey == 1">
+                      {{ totalOut }}
+                    </td>
                     <td class="text-center">{{ totalThis }}</td>
                   </tr>
                 </tfoot>
