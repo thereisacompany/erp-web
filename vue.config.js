@@ -7,11 +7,12 @@ module.exports = {
             enableInSFC: false
         }
     },
+    publicPath: process.env.VUE_APP_ENV === 'production' ? '/' : '/dev',
     devServer: {
         port: 8080,
         proxy: {
             '/jshERP-boot': {
-                target: 'http://34.80.85.84:10000',
+                target: process.env.VUE_APP_ENV === 'production' ? 'http://34.80.85.84:9999' : 'http://34.80.85.84:10000',
                 ws: false,
                 changeOrigin: true
             },
