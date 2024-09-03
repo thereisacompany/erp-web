@@ -210,4 +210,13 @@ export default [
         },
         component: require("./views/home/home").default,
     },
+    // 首頁
+    {
+        path: "/dashboard/analysis",
+        name: "home",
+        meta: {
+            authRequired: true,
+        },
+        component: require("./views/home/home").default,
+    },
 ];

@@ -60,12 +60,7 @@ export default defineComponent({
     // 判斷active狀態
     function isActive(subMenu) {
       let currentRouter = "";
-      if (process.env.VUE_APP_ENV === "development") {
-        currentRouter = window.location.pathname.split("/dev")[1];
-      } else {
-        currentRouter = window.location.pathname;
-      }
-
+      currentRouter = window.location.pathname;
       if (currentRouter === subMenu.url) activeMenuId.value = subMenu.id;
 
       if (subMenu.url == "/dashboard/analysis" && currentRouter == "/") {
