@@ -330,10 +330,12 @@ export default {
     handleSubmit(e) {
       this.submitted = true;
       // stop here if form is invalid
+      console.log("this.SubView", this.SubView);
       this.v$.$touch();
       if (this.v$.$invalid) {
         return;
       } else {
+        console.log("handleSubmit else");
         // 判斷快速派發是否有值
         if (this.SubView == 2) {
           if (
@@ -342,128 +344,130 @@ export default {
             this.driver.assignUser !== null
           ) {
             this.AssignDriver();
+            return;
           } else if (
             (this.driver.driverId !== null && this.driver.driverId !== "") ||
             this.driver.assignDate !== "Invalid Date" ||
             this.driver.assignUser !== null
           ) {
             alert("請填寫完成並指派司機");
-          } else {
-            //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
-            this.customers.extrasArrival = dayjs(
-              this.customers.extrasArrival
-            ).isValid()
-              ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
-              : null;
-            if (
-              this.customers.id == null ||
-              this.customers.id == 0 ||
-              this.customers.id == 0
-            ) {
-              let aObj = JSON.parse(JSON.stringify(this.customers));
-              let bObj = JSON.parse(JSON.stringify(this.customersItem));
+            return;
+          }
+        }
 
-              aObj.number = aObj.defaultNumber;
-              aObj.fileName = this.filelist.join(",");
-              aObj.operTime = `${aObj.date2} ${aObj.time2}`;
-              aObj.totalPrice = this.customersItemAllPrice;
-              aObj.type = "出庫";
-              //aObj.subType = '配送單';
-              delete aObj.id;
-              delete aObj.date2;
-              delete aObj.time2;
+        //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
+        this.customers.extrasArrival = dayjs(
+          this.customers.extrasArrival
+        ).isValid()
+          ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
+          : null;
+        if (
+          this.customers.id == null ||
+          this.customers.id == 0 ||
+          this.customers.id == 0
+        ) {
+          let aObj = JSON.parse(JSON.stringify(this.customers));
+          let bObj = JSON.parse(JSON.stringify(this.customersItem));
 
-              let errMsg = "";
-              if (bObj.length == 0) {
-                errMsg += "請至少新增一筆商品\n";
-              }
-              if (errMsg == "") {
-                if (this.IsPickup1 == true) {
-                  for (let i = 0; i < bObj.length; i++) {
-                    let b1 = bObj[i];
-                    if (b1.depotId == null || b1.depotId == "") {
-                      errMsg += `#${i + 1} 請選擇倉庫別\n`;
-                    }
-                    if (b1.barCode == null || b1.barCode == "") {
-                      errMsg += `#${i + 1} 請選擇商品\n`;
-                    }
-                  }
-                } else {
-                  for (let i = 0; i < bObj.length; i++) {
-                    let b1 = bObj[i];
-                    if (b1.materialName == null || b1.materialName == "") {
-                      errMsg += `#${i + 1} 輸入商品名稱\n`;
-                    }
-                    b1.operNumber = b1.operNumber || 1;
-                  }
+          aObj.number = aObj.defaultNumber;
+          aObj.fileName = this.filelist.join(",");
+          aObj.operTime = `${aObj.date2} ${aObj.time2}`;
+          aObj.totalPrice = this.customersItemAllPrice;
+          aObj.type = "出庫";
+          //aObj.subType = '配送單';
+          delete aObj.id;
+          delete aObj.date2;
+          delete aObj.time2;
+
+          let errMsg = "";
+          if (bObj.length == 0) {
+            errMsg += "請至少新增一筆商品\n";
+          }
+          if (errMsg == "") {
+            if (this.IsPickup1 == true) {
+              for (let i = 0; i < bObj.length; i++) {
+                let b1 = bObj[i];
+                if (b1.depotId == null || b1.depotId == "") {
+                  errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                }
+                if (b1.barCode == null || b1.barCode == "") {
+                  errMsg += `#${i + 1} 請選擇商品\n`;
                 }
               }
-              if (errMsg != "") {
-                alert(errMsg);
-                return;
-              }
-
-              this.AddData({
-                info: JSON.stringify(aObj),
-                rows: JSON.stringify(bObj),
-              });
-            } else if (this.customers.id > 0) {
-              let aObj = JSON.parse(JSON.stringify(this.customers));
-              let bObj = JSON.parse(JSON.stringify(this.customersItem));
-
-              aObj.number = aObj.defaultNumber;
-              aObj.fileName = this.filelist.join(",");
-              aObj.operTime = `${aObj.date2} ${aObj.time2}`;
-              aObj.totalPrice = this.customersItemAllPrice;
-
-              //delete aObj.id;
-              delete aObj.date2;
-              delete aObj.time2;
-
-              let errMsg = "";
-
-              if (bObj.length == 0) {
-                errMsg += "請至少新增一筆商品\n";
-              }
-
-              if (errMsg == "") {
-                if (this.IsPickup1 == true) {
-                  for (let i = 0; i < bObj.length; i++) {
-                    let b1 = bObj[i];
-                    if (b1.depotId == null || b1.depotId == "") {
-                      errMsg += `#${i + 1} 請選擇倉庫別\n`;
-                    }
-                    if (b1.barCode == null || b1.barCode == "") {
-                      errMsg += `#${i + 1} 請選擇商品\n`;
-                    }
-                  }
-                } else {
-                  for (let i = 0; i < bObj.length; i++) {
-                    let b1 = bObj[i];
-                    if (b1.materialName == null || b1.materialName == "") {
-                      errMsg += `#${i + 1} 輸入商品名稱\n`;
-                    }
-                    b1.operNumber = b1.operNumber || 1;
-                  }
+            } else {
+              for (let i = 0; i < bObj.length; i++) {
+                let b1 = bObj[i];
+                if (b1.materialName == null || b1.materialName == "") {
+                  errMsg += `#${i + 1} 輸入商品名稱\n`;
                 }
+                b1.operNumber = b1.operNumber || 1;
               }
-              if (errMsg != "") {
-                alert(errMsg);
-                this.UpdData({
-                  info: JSON.stringify(aObj),
-                  rows: JSON.stringify(bObj),
-                });
-                return;
-              }
-              this.UpdData({
-                info: JSON.stringify(aObj),
-                rows: JSON.stringify(bObj),
-              });
             }
           }
+          if (errMsg != "") {
+            alert(errMsg);
+            return;
+          }
 
-          this.submitted = false;
+          this.AddData({
+            info: JSON.stringify(aObj),
+            rows: JSON.stringify(bObj),
+          });
+        } else if (this.customers.id > 0) {
+          let aObj = JSON.parse(JSON.stringify(this.customers));
+          let bObj = JSON.parse(JSON.stringify(this.customersItem));
+
+          aObj.number = aObj.defaultNumber;
+          aObj.fileName = this.filelist.join(",");
+          aObj.operTime = `${aObj.date2} ${aObj.time2}`;
+          aObj.totalPrice = this.customersItemAllPrice;
+
+          //delete aObj.id;
+          delete aObj.date2;
+          delete aObj.time2;
+
+          let errMsg = "";
+
+          if (bObj.length == 0) {
+            errMsg += "請至少新增一筆商品\n";
+          }
+
+          if (errMsg == "") {
+            if (this.IsPickup1 == true) {
+              for (let i = 0; i < bObj.length; i++) {
+                let b1 = bObj[i];
+                if (b1.depotId == null || b1.depotId == "") {
+                  errMsg += `#${i + 1} 請選擇倉庫別\n`;
+                }
+                if (b1.barCode == null || b1.barCode == "") {
+                  errMsg += `#${i + 1} 請選擇商品\n`;
+                }
+              }
+            } else {
+              for (let i = 0; i < bObj.length; i++) {
+                let b1 = bObj[i];
+                if (b1.materialName == null || b1.materialName == "") {
+                  errMsg += `#${i + 1} 輸入商品名稱\n`;
+                }
+                b1.operNumber = b1.operNumber || 1;
+              }
+            }
+          }
+          if (errMsg != "") {
+            alert(errMsg);
+            this.UpdData({
+              info: JSON.stringify(aObj),
+              rows: JSON.stringify(bObj),
+            });
+            return;
+          }
+          this.UpdData({
+            info: JSON.stringify(aObj),
+            rows: JSON.stringify(bObj),
+          });
         }
+
+        this.submitted = false;
       }
     },
     AssignDriver() {
@@ -510,9 +514,7 @@ export default {
       }
 
       data2.assignDate = dayjs(data2.assignDate).format("YYYY-MM-DD");
-      console.log("assignDate", data2.assignDate);
       this.IsGetDataing = true;
-      console.log("data2", data2);
       let APIUrl = `/depotHead/delivery/assign`;
       server
         .put(APIUrl, data2)
@@ -1244,7 +1246,6 @@ export default {
             res.data.data != null
           ) {
             let jshdata = res.data.data;
-            console.log("jshdata", jshdata);
             this.driver.driverId = jshdata.driverId;
             this.driver.carNumber = jshdata.carNumber;
             this.driver.assignDate = dayjs(jshdata.takeDate).format(
@@ -1293,6 +1294,7 @@ export default {
           ) {
             let jshdata = res.data.data;
             this.customersData = JSON.parse(JSON.stringify(jshdata.rows));
+            console.log("this.customersData", this.customersData);
             this.totalRows = JSON.parse(JSON.stringify(jshdata.total));
             this.maxPage =
               Math.ceil(this.totalRows / this.pageSize) == 0
@@ -1300,7 +1302,7 @@ export default {
                 : Math.ceil(this.totalRows / this.pageSize);
           }
           this.IsGetDataing = false;
-          console.log("this.customersData", this.customersData);
+          // console.log("this.customersData", this.customersData);
           for (let i = 0; i < this.customersData.length; i++) {
             this.customersData[i].chk = this.chkAll;
           }
@@ -1966,7 +1968,7 @@ export default {
       </div>
     </div>
     <b-tabs
-      content-class="p-3 text-muted"
+      content-class="py-3 text-muted"
       v-if="SubView != 0"
       v-model="selectedTab"
     >
@@ -2068,24 +2070,24 @@ export default {
                   </div>
                   <div class="row">
                     <div class="col-sm-12">
-                      <div class="table-responsive">
+                      <div class="table-responsive detail-table">
                         <table
                           class="table table-centered table-bordered table-nowrap align-middle"
                         >
                           <thead>
                             <tr>
-                              <th width="1%">#</th>
-                              <th width="10%">倉庫</th>
-                              <th width="10%">品號</th>
+                              <th width="5%">#</th>
+                              <th width="20%">倉庫</th>
+                              <th width="20%">品號</th>
                               <th width="15%">商品</th>
-                              <th width="5%">類別</th>
-                              <th width="5%">規格</th>
-                              <th width="5%">型號</th>
-                              <th width="5%">庫存</th>
+                              <th width="10%">類別</th>
+                              <th width="8%">規格</th>
+                              <th width="8%">型號</th>
+                              <th width="8%">庫存</th>
                               <th width="10%">儲位</th>
-                              <th width="5%">數量</th>
-                              <th width="10%">備註</th>
-                              <th width="1%">操作</th>
+                              <th width="15%">數量</th>
+                              <th width="15%">備註</th>
+                              <th width="10%">操作</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -2220,7 +2222,7 @@ export default {
                   </div>
 
                   <div class="row">
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">主商品到貨日</label>
                       <input
                         autocomplete="off"
@@ -2230,7 +2232,7 @@ export default {
                         v-model="customers.mainArrival"
                       />
                     </div>
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">贈品到貨日</label>
                       <input
                         autocomplete="off"
@@ -2240,7 +2242,7 @@ export default {
                         v-model="customers.extrasArrival"
                       />
                     </div>
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">約配日</label>
                       <input
                         autocomplete="off"
@@ -2250,7 +2252,7 @@ export default {
                         v-model="customers.agreedDelivery"
                       />
                     </div>
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">配達日</label>
                       <input
                         autocomplete="off"
@@ -2262,7 +2264,7 @@ export default {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">收件人名稱</label>
                       <input
                         autocomplete="off"
@@ -2288,7 +2290,7 @@ export default {
                       </div>
                     </div>
 
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">手機</label>
                       <input
                         autocomplete="off"
@@ -2311,7 +2313,7 @@ export default {
                         }}</span>
                       </div>
                     </div>
-                    <div class="col-sm-12 col-md-4 col-lg-3">
+                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">地址</label>
                       <input
                         autocomplete="off"
@@ -2335,7 +2337,7 @@ export default {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="col-sm-12 col-md-6 col-lg-3 my-1">
                       <label for="name">安裝方式</label>
                       <input
                         autocomplete="off"
@@ -2344,7 +2346,7 @@ export default {
                         v-model="customers.install"
                       />
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-3">
+                    <div class="col-sm-12 col-md-6 col-lg-3 my-1">
                       <label for="name">舊機回收(是/否)</label>
                       <select
                         class="form-select"
@@ -2373,7 +2375,7 @@ export default {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 my-1">
                       <label for="name">備註</label>
                       <input
                         autocomplete="off"
@@ -2385,7 +2387,10 @@ export default {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-sm-12" v-if="SubView == 1 || SubView == 2">
+                    <div
+                      class="col-sm-12 my-1"
+                      v-if="SubView == 1 || SubView == 2"
+                    >
                       <b-button variant="light" class="w-sm">
                         <i
                           class="mdi mdi-upload d-block font-size-16"
@@ -2406,7 +2411,7 @@ export default {
                         v-on:change="handleFileUpload()"
                       />
                     </div>
-                    <div class="col-sm-12 mt-1">
+                    <div class="col-sm-12 mt-1 my-1">
                       <label for="name" v-if="SubView == 3">上傳檔案</label>
                       <div
                         v-for="(f1, fidx) in filelist"
@@ -2992,3 +2997,18 @@ export default {
     <!-- end row -->
   </Layout>
 </template>
+
+<style>
+.detail-table > .table {
+  width: 100%;
+  table-layout: fixed;
+  margin-top: 15px;
+  overflow-x: auto;
+  border: 1px solid red;
+}
+
+.detail-table > .table th,
+td {
+  padding: 0.5rem;
+}
+</style>
