@@ -254,15 +254,6 @@ export default {
       APIParameter += `&findOrganId=${this.organId}&materialParam=${this.materialParam}&depotIds=${this.depotId}`;
       let beginDateTime = "";
       let endDateTime = "";
-      //   if (this.activeKey == 0) {
-      //     this.beginDate = dayjs();
-      //     this.endDate = dayjs();
-      //     beginDateTime = "00:00:00";
-      //     endDateTime = "23:59:59";
-      //   } else {
-      //     beginDateTime = "";
-      //     endDateTime = "";
-      //   }
 
       if (common.IsDate(this.beginDate)) {
         beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
@@ -286,7 +277,13 @@ export default {
           endDateTime += ` 23:59:59`;
         }
       }
-      APIParameter += beginDateTime + endDateTime;
+
+      if (this.activeKey == 0) {
+        APIParameter += endDateTime;
+      } else {
+        APIParameter += beginDateTime + endDateTime;
+      }
+      console.log("activeKey", this.activeKey);
       console.log("APIParameter", APIParameter);
       server
         .get(APIUrl + APIParameter)
@@ -319,7 +316,13 @@ export default {
     },
     // 切換tab後重新預設查詢日期
     changeTab() {
-      this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期
+      console.log("activeKey", this.activeKey);
+      if (this.activeKey == 0) {
+        this.beginDate = dayjs().format("YYYY-MM-DD"); //預設起始日期為當日
+      } else {
+        this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期為第一日
+      }
+      this.GetData();
     },
   },
 };
@@ -496,10 +499,9 @@ export default {
                     <th>名稱</th>
                     <th>規格</th>
                     <th>型號</th>
-                    <th class="text-center">在途中</th>
-
-                    <th class="text-center">入庫數量</th>
-                    <th class="text-center">出庫數量</th>
+                    <th class="text-center" v-if="activeKey == 1">在途中</th>
+                    <th class="text-center" v-if="activeKey == 1">入庫數量</th>
+                    <th class="text-center" v-if="activeKey == 1">出庫數量</th>
                     <th class="text-center">結存數量</th>
                   </tr>
                 </thead>
@@ -536,11 +538,15 @@ export default {
                         {{ SubItem.materialModel }}
                       </td>
 
-                      <td class="text-center">
+                      <td class="text-center" v-if="activeKey == 1">
                         {{ SubItem.defectiveSum }}
                       </td>
-                      <td class="text-center">{{ SubItem.inSum }}</td>
-                      <td class="text-center">{{ SubItem.outSum }}</td>
+                      <td class="text-center" v-if="activeKey == 1">
+                        {{ SubItem.inSum }}
+                      </td>
+                      <td class="text-center" v-if="activeKey == 1">
+                        {{ SubItem.outSum }}
+                      </td>
                       <td class="text-center">
                         <a href="javascript:;" @click="GetSubStock(SubItem)">
                           {{ SubItem.thisSum }}</a
@@ -607,13 +613,18 @@ export default {
                     </td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
+                      v-if="activeKey == 1"
                     >
                       &nbsp;
                     </td>
 
                     <td class="text-center">總計:</td>
-                    <td class="text-center">{{ totalIn }}</td>
-                    <td class="text-center">{{ totalOut }}</td>
+                    <td class="text-center" v-if="activeKey == 1">
+                      {{ totalIn }}
+                    </td>
+                    <td class="text-center" v-if="activeKey == 1">
+                      {{ totalOut }}
+                    </td>
                     <td class="text-center">{{ totalThis }}</td>
                   </tr>
                 </tfoot>

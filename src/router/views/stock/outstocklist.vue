@@ -1578,7 +1578,6 @@ export default {
     },
     // 查詢記錄
     handleSearchRecode() {
-      console.log("查詢記錄", this.customers.id);
       const headerId = this.customers.id;
       const APIUrl = `/depotHead/getDeliveryAgreedData?headerId=${headerId}`;
       server.get(APIUrl).then((res) => {
@@ -1989,7 +1988,9 @@ export default {
                     {{
                       this.customers.subType == "門市取貨"
                         ? `(不入庫不扣公司庫存,單純取貨待通知配送)`
-                        : `(1.當天門市取貨當天直接派送 2.門市取貨後待配送時間使用 3.不扣公司庫存)`
+                        : this.customers.subType == "門市取貨派送"
+                        ? `(1.當天門市取貨當天直接派送 2.門市取貨後待配送時間使用 3.不扣公司庫存)`
+                        : ""
                     }}</span
                   >
                 </div>
@@ -2622,7 +2623,7 @@ export default {
                               聯絡中
                             </div>
                             <button @click="handleSearchRecode">
-                              查詢記錄
+                              查詢約配紀錄
                             </button>
                           </label>
                           <div class="input-group">
@@ -2954,7 +2955,7 @@ export default {
     </b-modal>
     <a-modal
       v-model:open="openRecodeModel"
-      title="查詢記錄"
+      title="查詢約配紀錄"
       :footer="false"
       :destroyOnClose="true"
       :maskClosable="true"
