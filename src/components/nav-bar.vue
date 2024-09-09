@@ -9,7 +9,7 @@ import { authComputed } from "@/state/helpers";
 export default {
   data() {
     return {
-      loginName: 'User88',
+      loginName: "User88",
       lang: "en",
       text: null,
       flag: null,
@@ -40,12 +40,12 @@ export default {
           language: "ar",
           title: "Arabic",
         },
-      ]
+      ],
     };
   },
 
   mounted() {
-    let user = localStorage.getItem('user')
+    let user = localStorage.getItem("user");
     //console.log("user", user)
     if (user) {
       let loginName = JSON.parse(user).loginName;
@@ -53,7 +53,6 @@ export default {
         this.loginName = loginName;
       }
     }
-
   },
   methods: {
     toggleMenu() {
@@ -116,7 +115,12 @@ export default {
               <img src="@/assets/images/logo.svg" alt height="22" />
             </span>
             <span class="logo-lg">
-              <img src="@/assets/images/logo-dark.png" alt height="17" />
+              <img
+                src="../assets/images/logo.png"
+                alt
+                height="50"
+                width="150"
+              />
             </span>
           </router-link>
 
@@ -125,20 +129,34 @@ export default {
               <img src="@/assets/images/logo-light.svg" alt height="22" />
             </span>
             <span class="logo-lg">
-              <img src="../assets/images/logo.png" alt height="50" />
+              <img
+                src="../assets/images/logo.png"
+                alt
+                height="50"
+                width="150"
+              />
             </span>
           </router-link>
         </div>
 
-        <button id="vertical-menu-btn" type="button" class="btn btn-sm px-3 font-size-16 header-item" @click="toggleMenu">
+        <button
+          id="vertical-menu-btn"
+          type="button"
+          class="btn btn-sm px-3 font-size-16 header-item"
+          @click="toggleMenu"
+        >
           <i class="fa fa-fw fa-bars"></i>
         </button>
-
       </div>
 
       <div class="d-flex">
-        <b-dropdown class="d-inline-block d-lg-none ms-2" variant="black" menu-class="dropdown-menu-lg p-0"
-          toggle-class="header-item noti-icon" right>
+        <b-dropdown
+          class="d-inline-block d-lg-none ms-2"
+          variant="black"
+          menu-class="dropdown-menu-lg p-0"
+          toggle-class="header-item noti-icon"
+          right
+        >
           <template v-slot:button-content>
             <i class="mdi mdi-magnify"></i>
           </template>
@@ -146,7 +164,12 @@ export default {
           <form class="p-3">
             <div class="form-group m-0">
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username" />
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search ..."
+                  aria-label="Recipient's username"
+                />
                 <div class="input-group-append">
                   <button class="btn btn-primary" type="submit">
                     <i class="mdi mdi-magnify"></i>
@@ -157,18 +180,28 @@ export default {
           </form>
         </b-dropdown>
 
-
-
         <div class="dropdown d-none d-lg-inline-block ms-1">
-          <button type="button" class="btn header-item noti-icon" @click="initFullScreen">
+          <button
+            type="button"
+            class="btn header-item noti-icon"
+            @click="initFullScreen"
+          >
             <i class="bx bx-fullscreen"></i>
           </button>
         </div>
 
-        <b-dropdown right variant="black" toggle-class="header-item" menu-class="dropdown-menu-end">
+        <b-dropdown
+          right
+          variant="black"
+          toggle-class="header-item"
+          menu-class="dropdown-menu-end"
+        >
           <template v-slot:button-content>
-            <img class="rounded-circle header-profile-user" src="@/assets/images/users/avatar-1.jpg"
-              alt="Header Avatar" />
+            <img
+              class="rounded-circle header-profile-user"
+              src="@/assets/images/users/avatar-1.jpg"
+              alt="Header Avatar"
+            />
             <span class="d-none d-xl-inline-block ms-1">
               <div v-if="currentUser">
                 {{ currentUser.displayName }}
@@ -189,11 +222,12 @@ export default {
 
           <b-dropdown-divider></b-dropdown-divider>
           <router-link to="/logout" class="dropdown-item text-danger">
-            <i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>
+            <i
+              class="bx bx-power-off font-size-16 align-middle me-1 text-danger"
+            ></i>
             {{ $t("navbar.dropdown.henry.list.logout") }}
           </router-link>
         </b-dropdown>
-
       </div>
     </div>
   </header>
