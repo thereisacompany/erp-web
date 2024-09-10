@@ -61,13 +61,15 @@ router.beforeEach((to, from, next) => {
     return redirectToLogin()
   } else {
 
-    const publicPages = ['/login', '/register', '/forgot-password', '/car/login', '/car/home', '/car/profile'];
+    const publicPages = ['/login', '/register', '/forgot-password'];
     const authpage = !publicPages.includes(to.path);
     const loggeduser = localStorage.getItem('user');
     console.log("authpage, loggeduser=", authpage, loggeduser)
     console.log('to.path', to.path)
     if (authpage && !loggeduser) {
       return next('/login');
+    } else if (to.path == '/') {
+      return next('/dashboard/analysis');
     }
 
     next();

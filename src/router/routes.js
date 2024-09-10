@@ -26,7 +26,7 @@ export default [
     // 結算帳號管理
     // { path: "/user/accountlist", name: "accountlist", meta: { authRequired: true, }, component: require("./views/user/accountlist").default },
     // 修改密碼
-    // { path: "/user/changepassword", name: "changepassword", meta: { authRequired: true, }, component: require("./views/user/changepassword").default },
+    { path: "/user/changepassword", name: "changepassword", meta: { authRequired: true, }, component: require("./views/user/changepassword").default },
 
     // ------倉庫管理-------
     { path: "/depot", name: "depotlist", meta: { authRequired: true, }, component: require("./views/stock/depotlist").default },
