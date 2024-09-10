@@ -2056,7 +2056,7 @@ progress {
 }
 
 .table > :not(caption) > * > * {
-  padding: 0.5rem 0.5rem;
+  padding: 0.5rem 0.5rem !important;
   background-color: var(--bs-table-bg);
   background-image: -webkit-gradient(
     linear,
