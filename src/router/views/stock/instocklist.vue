@@ -918,6 +918,7 @@ export default {
                   >
                     <option
                       :value="u1.id"
+                      :disabled="!u1.enabled"
                       selected
                       v-for="u1 in supplierlist"
                       :key="'customers_organId' + u1.id"

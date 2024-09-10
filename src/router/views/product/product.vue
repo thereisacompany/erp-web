@@ -7,7 +7,6 @@ import Swal from "sweetalert2";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 
-
 export default {
   components: { Layout, PageHeader },
   data() {
@@ -25,9 +24,9 @@ export default {
         },
       ],
       supplierlist: [],
-      categoryId: '',
-      organId: '',
-      materialParam: '',
+      categoryId: "",
+      organId: "",
+      materialParam: "",
       IsGetDataing: false,
       pageSize: 30,
       totalRows: 0,
@@ -42,15 +41,15 @@ export default {
         // unit:"",//單位
         categoryId: "", //類別id
         enabled: true,
-        length: '',
-        width: '',
-        high: '',
-        base: '',
-        volume: '',
-        number: '',
-        barcode: '',
-        counter: '',
-        organId: '',
+        length: "",
+        width: "",
+        high: "",
+        base: "",
+        volume: "",
+        number: "",
+        barcode: "",
+        counter: "",
+        organId: "",
       },
       modelInfo: {
         title: "",
@@ -60,7 +59,7 @@ export default {
       lists: [],
       categoryList: [],
       categoryActiveTitle: "",
-      categoryTitle: '',
+      categoryTitle: "",
       categoryActiveIsShow1: false,
       categoryActiveIsShow2: false,
       submitted: false,
@@ -71,15 +70,16 @@ export default {
     //   this.GetData();
     // }, 2000);
     //this.GetSupplierList();
-    server.GetSupplierList((rows) => { this.supplierlist = rows })
+    server.GetSupplierList((rows) => {
+      this.supplierlist = rows;
+    });
     this.$nextTick(() => {
       this.handleGetMaterialCategoryTree();
       this.GetData();
       //console.log(common.PadLeftZero(123, 5));
-    })
+    });
   },
   setup() {
-
     return { v$: useVuelidate() };
   },
   validations: {
@@ -89,16 +89,27 @@ export default {
     formData: {
       name: {
         required: helpers.withMessage("請輸入品名", required),
-      }
+      },
     },
   },
   methods: {
     formatOrganName(SubItem) {
       if (SubItem == null) return "";
-      return common.PadLeftZero(SubItem.organId || '', 3) + ' ' + (SubItem.organName || '');
+      return (
+        common.PadLeftZero(SubItem.organId || "", 3) +
+        " " +
+        (SubItem.organName || "")
+      );
     },
     calVolume() {
-      this.formData.volume = Math.round((this.formData.length ? this.formData.length : 0) * (this.formData.width ? this.formData.width : 0) * (this.formData.high ? this.formData.high : 0) / 27826 * 10) / 10;
+      this.formData.volume =
+        Math.round(
+          (((this.formData.length ? this.formData.length : 0) *
+            (this.formData.width ? this.formData.width : 0) *
+            (this.formData.high ? this.formData.high : 0)) /
+            27826) *
+            10
+        ) / 10;
     },
     async handleGetMaterialCategoryTree() {
       //取得分類列表
@@ -198,7 +209,10 @@ export default {
             this.lists = [];
             this.lists = res.data.data.rows;
             this.totalRows = res.data.data.total;
-            this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
+            this.maxPage =
+              Math.ceil(this.totalRows / this.pageSize) == 0
+                ? 1
+                : Math.ceil(this.totalRows / this.pageSize);
           }
         })
         .catch(function (error) {
@@ -210,8 +224,8 @@ export default {
       this.v$.$touch();
       if (this.v$.$invalid) {
         //console.log("this.v$.$invalid", this.v$.$invalid, this.categoryActiveTitle)
-        this.categoryActiveIsShow1 = false
-        this.categoryActiveIsShow2 = false
+        this.categoryActiveIsShow1 = false;
+        this.categoryActiveIsShow2 = false;
         return;
       }
       this.submitted = false;
@@ -226,9 +240,6 @@ export default {
       }
     },
     handleAdd() {
-
-
-
       let APIUrl = "/material/add";
       //console.log("handleAdd");
       server
@@ -243,7 +254,6 @@ export default {
         .catch(function (error) {
           console.log("error", error);
         });
-
     },
     handleUpdate() {
       let APIUrl = "/material/update";
@@ -282,14 +292,12 @@ export default {
         });
     },
     handelCategorySelect(data) {
-
       this.categoryActiveTitle = data.title;
       this.formData.categoryId = data.id;
       this.categoryActiveIsShow1 = false;
       this.categoryActiveIsShow2 = false;
     },
     handelCategorySelectForQuery(data) {
-
       this.categoryTitle = data.title;
       this.categoryId = data.id;
       this.categoryActiveIsShow1 = false;
@@ -315,23 +323,22 @@ export default {
     handlePageChange(value) {
       // currentPage:1,
       // maxPage:10,
-      if (value === 'prev') {
+      if (value === "prev") {
         this.currentPage--;
         if (this.currentPage === 1) {
-          this.currentPage = 1
+          this.currentPage = 1;
         }
       }
-      if (value === 'next') {
+      if (value === "next") {
         this.currentPage++;
         if (this.currentPage === this.maxPage) {
-          this.currentPage = this.maxPage
+          this.currentPage = this.maxPage;
         }
       }
-      this.GetData()
-    }
+      this.GetData();
+    },
   },
   watch: {
-
     categoryTitle() {
       //console.log("watch categoryTitle", newVal)
       this.GetData();
@@ -356,23 +363,43 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-
                     <div class="selectDropDownBox">
-                      <div class="mainTitle" @click="categoryActiveIsShow1 = !categoryActiveIsShow1"
-                        style="min-width:200px">
-                        {{ categoryTitle == '' ? '全部類別' : categoryTitle }}&nbsp;
-                        <i class="icon dripicons-arrow-thin-down" v-show="categoryTitle == ''"></i>
-                        <i class="icon mdi mdi-close" v-show="categoryTitle != ''"
-                          @click="categoryTitle = ''; categoryId = ''; categoryActiveIsShow1 = true"></i>
+                      <div
+                        class="mainTitle"
+                        @click="categoryActiveIsShow1 = !categoryActiveIsShow1"
+                        style="min-width: 200px"
+                      >
+                        {{
+                          categoryTitle == "" ? "全部類別" : categoryTitle
+                        }}&nbsp;
+                        <i
+                          class="icon dripicons-arrow-thin-down"
+                          v-show="categoryTitle == ''"
+                        ></i>
+                        <i
+                          class="icon mdi mdi-close"
+                          v-show="categoryTitle != ''"
+                          @click="
+                            categoryTitle = '';
+                            categoryId = '';
+                            categoryActiveIsShow1 = true;
+                          "
+                        ></i>
                       </div>
                       <div class="dropDownList" v-show="categoryActiveIsShow1">
                         <dl>
-                          <template v-for="(item, index) in categoryList" :key="index">
+                          <template
+                            v-for="(item, index) in categoryList"
+                            :key="index"
+                          >
                             <dt @click="handelCategorySelectForQuery(item)">
                               {{ item.title }}
                             </dt>
-                            <dd v-for="(child, childIndex) in item.children" :key="childIndex"
-                              @click="handelCategorySelectForQuery(child)">
+                            <dd
+                              v-for="(child, childIndex) in item.children"
+                              :key="childIndex"
+                              @click="handelCategorySelectForQuery(child)"
+                            >
                               {{ child.title }}
                             </dd>
                           </template>
@@ -383,30 +410,54 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <select class="form-select" v-model="organId">
-                    <option :value="u1.id" selected v-for="u1 in [{ id: '', idname: '全部客戶' }, ...supplierlist]"
-                      :key="'organId' + u1.id">
+                    <option
+                      :value="u1.id"
+                      selected
+                      v-for="u1 in [
+                        { id: '', idname: '全部客戶' },
+                        ...supplierlist,
+                      ]"
+                      :key="'organId' + u1.id"
+                    >
                       {{ u1.idname }}
                     </option>
                   </select>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input autocomplete="off" type="text" class="form-control" placeholder="關鍵字(名稱/規格/型號)"
-                      v-model="materialParam" @keyup.enter="GetData()" />
+                    <input
+                      autocomplete="off"
+                      type="text"
+                      class="form-control"
+                      placeholder="關鍵字(名稱/規格/型號)"
+                      v-model="materialParam"
+                      @keyup.enter="GetData()"
+                    />
                   </div>
                 </div>
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <b-button variant="primary" @click="GetData()">
-                      <i :class="IsGetDataing ? 'bx bx-loader bx-spin font-size-16 align-middle me-2' : ''"></i> 查詢
+                      <i
+                        :class="
+                          IsGetDataing
+                            ? 'bx bx-loader bx-spin font-size-16 align-middle me-2'
+                            : ''
+                        "
+                      ></i>
+                      查詢
                     </b-button>
                   </div>
                 </div>
               </div>
               <div class="col-sm-4">
                 <div class="text-sm-end">
-                  <button type="button" class="btn btn-success btn-rounded mb-2 me-2" @click="EditOne({ type: 'add' })">
+                  <button
+                    type="button"
+                    class="btn btn-success btn-rounded mb-2 me-2"
+                    @click="EditOne({ type: 'add' })"
+                  >
                     <i class="mdi mdi-plus me-1"></i> 新增商品
                   </button>
                 </div>
@@ -438,118 +489,222 @@ export default {
                 <tbody>
                   <tr v-for="(item, index) in lists" :key="index">
                     <td>{{ index + 1 }}</td>
-                    <td style="white-space: break-spaces">{{ formatOrganName(item) }}</td>
+                    <td style="white-space: break-spaces">
+                      {{ formatOrganName(item) }}
+                    </td>
                     <td style="white-space: break-spaces">{{ item.number }}</td>
                     <td style="white-space: break-spaces">{{ item.name }}</td>
-                    <td style="white-space: break-spaces">{{ item.standard }}</td>
+                    <td style="white-space: break-spaces">
+                      {{ item.standard }}
+                    </td>
                     <td style="white-space: break-spaces">{{ item.model }}</td>
 
                     <td>{{ item.length }}</td>
                     <td>{{ item.width }}</td>
                     <td>{{ item.high }}</td>
                     <td>{{ item.volume }}</td>
-                    <td style="white-space: break-spaces">{{ item.categoryName }}</td>
-                    <td style="white-space: break-spaces">{{ item.counter }}</td>
+                    <td style="white-space: break-spaces">
+                      {{ item.categoryName }}
+                    </td>
+                    <td style="white-space: break-spaces">
+                      {{ item.counter }}
+                    </td>
 
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <span class="btn btn-success" v-if="item.enabled == true">啟用</span>
-                        <span class="btn btn-danger" v-if="item.enabled == false">停用</span>
+                        <span
+                          class="btn btn-success"
+                          v-if="item.enabled == true"
+                          >啟用</span
+                        >
+                        <span
+                          class="btn btn-danger"
+                          v-if="item.enabled == false"
+                          >停用</span
+                        >
                       </div>
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <a class="btn btn-secondary" href="javascript:;"
-                          @click="EditOne({ type: 'edit', data: item })">編輯</a>
-                        <a class="btn btn-danger" href="javascript:;" @click="confirmDelete(item)">刪除</a>
+                        <a
+                          class="btn btn-secondary"
+                          href="javascript:;"
+                          @click="EditOne({ type: 'edit', data: item })"
+                          >編輯</a
+                        >
+                        <a
+                          class="btn btn-danger"
+                          href="javascript:;"
+                          @click="confirmDelete(item)"
+                          >刪除</a
+                        >
                       </div>
-
-
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
-            <b-modal size="xl" v-model="showModal" :title="modelInfo.title" title-class="text-black font-18"
-              body-class="p-3" hide-footer>
+            <TablePager
+              v-model:currentPage="currentPage"
+              v-model:maxPage="maxPage"
+              :CallGetData="GetData"
+            />
+            <b-modal
+              size="xl"
+              v-model="showModal"
+              :title="modelInfo.title"
+              title-class="text-black font-18"
+              body-class="p-3"
+              hide-footer
+            >
               <div class="row">
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="name">品名</label>
-                  <input autocomplete="off" id="name" type="text" v-model="formData.name" class="form-control"
-                    :class="{ 'is-invalid': submitted && v$.formData.$error, }" />
-                  <div v-if="submitted && v$.formData.name.$error" class="invalid-feedback">
+                  <input
+                    autocomplete="off"
+                    id="name"
+                    type="text"
+                    v-model="formData.name"
+                    class="form-control"
+                    :class="{ 'is-invalid': submitted && v$.formData.$error }"
+                  />
+                  <div
+                    v-if="submitted && v$.formData.name.$error"
+                    class="invalid-feedback"
+                  >
                     <span v-if="v$.formData.name.required.$message">{{
-      v$.formData.name.required.$message
-    }}</span>
+                      v$.formData.name.required.$message
+                    }}</span>
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="standard">規格</label>
-                  <input autocomplete="off" id="standard" type="text" v-model="formData.standard"
-                    class="form-control" />
+                  <input
+                    autocomplete="off"
+                    id="standard"
+                    type="text"
+                    v-model="formData.standard"
+                    class="form-control"
+                  />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="model">型號</label>
-                  <input autocomplete="off" id="model" type="text" v-model="formData.model" class="form-control" />
+                  <input
+                    autocomplete="off"
+                    id="model"
+                    type="text"
+                    v-model="formData.model"
+                    class="form-control"
+                  />
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="model">類別</label>
                   <div class="selectDropDownBox">
-                    <div class="mainTitle" @click="categoryActiveIsShow2 = !categoryActiveIsShow2"
-                      :class="{ 'is-invalid': submitted && v$.categoryActiveTitle.$error, }">
+                    <div
+                      class="mainTitle"
+                      @click="categoryActiveIsShow2 = !categoryActiveIsShow2"
+                      :class="{
+                        'is-invalid':
+                          submitted && v$.categoryActiveTitle.$error,
+                      }"
+                    >
                       {{ categoryActiveTitle }}
-                      <i class="icon dripicons-arrow-thin-down" v-show="categoryActiveTitle == ''"></i>
-                      <i class="icon mdi mdi-close" v-show="categoryActiveTitle != ''"
-                        @click="categoryActiveTitle = ''"></i>
+                      <i
+                        class="icon dripicons-arrow-thin-down"
+                        v-show="categoryActiveTitle == ''"
+                      ></i>
+                      <i
+                        class="icon mdi mdi-close"
+                        v-show="categoryActiveTitle != ''"
+                        @click="categoryActiveTitle = ''"
+                      ></i>
                     </div>
                     <div class="dropDownList" v-show="categoryActiveIsShow2">
                       <dl>
-                        <template v-for="(item, index) in categoryList" :key="index">
+                        <template
+                          v-for="(item, index) in categoryList"
+                          :key="index"
+                        >
                           <dt @click="handelCategorySelect(item)">
                             {{ item.title }}
                           </dt>
-                          <dd v-for="(child, childIndex) in item.children" :key="childIndex"
-                            @click="handelCategorySelect(child)">
+                          <dd
+                            v-for="(child, childIndex) in item.children"
+                            :key="childIndex"
+                            @click="handelCategorySelect(child)"
+                          >
                             {{ child.title }}
                           </dd>
                         </template>
                       </dl>
                     </div>
-                    <div v-if="submitted && v$.categoryActiveTitle.$error" class="invalid-feedback">
+                    <div
+                      v-if="submitted && v$.categoryActiveTitle.$error"
+                      class="invalid-feedback"
+                    >
                       <span v-if="v$.categoryActiveTitle.required.$message">{{
-      v$.categoryActiveTitle.required.$message
-    }}</span>
+                        v$.categoryActiveTitle.required.$message
+                      }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="length">長(cm)</label>
-                  <input autocomplete="off" id="length" type="text" v-model="formData.length" class="form-control"
-                    @change="calVolume()" />
+                  <input
+                    autocomplete="off"
+                    id="length"
+                    type="text"
+                    v-model="formData.length"
+                    class="form-control"
+                    @change="calVolume()"
+                  />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="width">寬(cm)</label>
-                  <input autocomplete="off" id="width" type="text" v-model="formData.width" class="form-control"
-                    @change="calVolume()" />
+                  <input
+                    autocomplete="off"
+                    id="width"
+                    type="text"
+                    v-model="formData.width"
+                    class="form-control"
+                    @change="calVolume()"
+                  />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="high">高(cm)</label>
-                  <input autocomplete="off" id="high" type="text" v-model="formData.high" class="form-control"
-                    @change="calVolume()" />
+                  <input
+                    autocomplete="off"
+                    id="high"
+                    type="text"
+                    v-model="formData.high"
+                    class="form-control"
+                    @change="calVolume()"
+                  />
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="volume">材積=(長*寬*高)/27826</label>
-                  <input autocomplete="off" id="volume" type="text" v-model="formData.volume" class="form-control" />
+                  <input
+                    autocomplete="off"
+                    id="volume"
+                    type="text"
+                    v-model="formData.volume"
+                    class="form-control"
+                  />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="model">品號</label>
-                  <input autocomplete="off" id="model" type="text" v-model="formData.number" class="form-control"
-                    readonly="readonly" placeholder="系統自動產生/或需要手動可告知修改" />
+                  <input
+                    autocomplete="off"
+                    id="model"
+                    type="text"
+                    v-model="formData.number"
+                    class="form-control"
+                    readonly="readonly"
+                    placeholder="系統自動產生/或需要手動可告知修改"
+                  />
                 </div>
-
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="enabled">狀態</label>
@@ -559,21 +714,30 @@ export default {
                   </select>
                 </div>
 
-
                 <div class="col-sm-12 col-md-4 col-lg-3">
-
                   <label for="name">客戶</label>
                   <select class="form-select" v-model="formData.organId">
-                    <option :value="u1.id" selected v-for="u1 in supplierlist" :key="'formData_organId' + u1.id">
+                    <option
+                      :value="u1.id"
+                      selected
+                      v-for="u1 in supplierlist"
+                      :key="'formData_organId' + u1.id"
+                      :disabled="!u1.enabled"
+                    >
                       {{ u1.idname }}
                     </option>
                   </select>
-
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="counter">儲位</label>
-                  <input autocomplete="off" id="counter" type="text" v-model="formData.counter" class="form-control" />
+                  <input
+                    autocomplete="off"
+                    id="counter"
+                    type="text"
+                    v-model="formData.counter"
+                    class="form-control"
+                  />
                 </div>
               </div>
 
@@ -581,8 +745,13 @@ export default {
                 <b-button variant="light" @click="showModal = false">
                   關閉
                 </b-button>
-                <b-button type="submit" variant="success" class="ms-1" @click="handleSubmit(modelInfo.type)">{{
-                  modelInfo.submitName }}</b-button>
+                <b-button
+                  type="submit"
+                  variant="success"
+                  class="ms-1"
+                  @click="handleSubmit(modelInfo.type)"
+                  >{{ modelInfo.submitName }}</b-button
+                >
               </div>
             </b-modal>
           </div>

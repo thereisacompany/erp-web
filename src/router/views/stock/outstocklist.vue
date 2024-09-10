@@ -2030,6 +2030,7 @@ export default {
                           :value="u1.id"
                           selected
                           v-for="u1 in supplierlist"
+                          :disabled="!u1.enabled"
                           :key="'customers_organId' + u1.id"
                         >
                           {{ u1.idname }}
