@@ -2253,7 +2253,7 @@ export default {
                         v-model="customers.agreedDelivery"
                       />
                     </div>
-                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
+                    <!-- <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">配達日</label>
                       <input
                         autocomplete="off"
@@ -2262,7 +2262,7 @@ export default {
                         placeholder="配達日"
                         v-model="customers.delivered"
                       />
-                    </div>
+                    </div> -->
                   </div>
                   <div class="row">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
