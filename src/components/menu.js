@@ -7,7 +7,7 @@ export const menuItems = [{
 },
 {
     id: 11001,
-    label: "人事管理",
+    label: "公司資料管理",
     icon: "bxs-user-detail",
     key: "/systemA",
     subItems: [
