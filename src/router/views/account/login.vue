@@ -3,6 +3,7 @@
 import { server } from "@/api";
 import md5 from "md5";
 import VConsole from "vconsole";
+import { version } from "../../../../package.json";
 
 import Layout from "../../layouts/auth";
 import {
@@ -44,6 +45,7 @@ export default {
       authError: null,
       tryingToLogIn: false,
       isAuthError: false,
+      version,
     };
   },
   validations: {
@@ -180,8 +182,12 @@ export default {
               </div>
             </div>
           </div>
+
           <div class="card-body pt-0">
-            <div>
+            <span class="w-100 px-2 pt-2 d-block text-end"
+              >v.{{ version }}</span
+            >
+            <!-- <div>
               <router-link to="/">
                 <div class="avatar-md profile-user-wid mb-4">
                   <span class="avatar-title rounded-circle bg-light">
@@ -189,7 +195,7 @@ export default {
                   </span>
                 </div>
               </router-link>
-            </div>
+            </div> -->
             <b-alert
               v-model="isAuthError"
               variant="danger"
