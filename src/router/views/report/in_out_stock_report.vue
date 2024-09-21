@@ -177,19 +177,19 @@ export default {
       //organId=6&MNumber=0000013&beginDateTime&endDateTime=2024-04-04 23:59:59
       let APIParameter = `?organId=${this.organId}&MNumber=${SubItem.materialNumber}&depotId=${this.depotId}`;
 
-      let beginDateTime = "";
+      // let beginDateTime = "";
       let endDateTime = "";
 
-      if (common.IsDate(this.beginDate)) {
-        beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
-          "YYYY-MM-DD"
-        )}`;
-        if (common.IsTime(this.beginTime + ":00")) {
-          beginDateTime += ` ${this.beginTime + ":00"}`;
-        } else {
-          beginDateTime += ` 00:00:00`;
-        }
-      }
+      // if (common.IsDate(this.beginDate)) {
+      //   beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
+      //     "YYYY-MM-DD"
+      //   )}`;
+      //   if (common.IsTime(this.beginTime + ":00")) {
+      //     beginDateTime += ` ${this.beginTime + ":00"}`;
+      //   } else {
+      //     beginDateTime += ` 00:00:00`;
+      //   }
+      // }
       if (common.IsDate(this.endDate)) {
         endDateTime += `&endDateTime=${dayjs(this.endDate).format(
           "YYYY-MM-DD"
@@ -200,7 +200,7 @@ export default {
           endDateTime += ` 23:59:59`;
         }
       }
-      APIParameter += beginDateTime + endDateTime;
+      APIParameter += endDateTime;
       server
         .get(APIUrl + APIParameter)
         .then((res) => {

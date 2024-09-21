@@ -1549,26 +1549,38 @@ export default {
       server
         .get(APIUrl, { responseType: "blob" })
         .then((res) => {
-          // console.log("res", res)
-          if (res != null && res.data != null) {
-            // console.log(123123)
-            var fileURL = window.URL.createObjectURL(
-              new Blob([res.data], {
-                type: "application/octet-stream",
-              })
-            );
-            // console.log("fileURL", fileURL);
-            var fileLink = document.createElement("a");
-            fileLink.href = fileURL;
-            fileLink.download = `${dayjs().format(
-              "YYYYMMDDHHmmss"
-            )}配送單-揀貨總表.xlsx`;
-            // fileLink.setAttribute(
-            //   "download",
-            //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
-            // );
-            document.body.appendChild(fileLink);
-            fileLink.click();
+          // console.log("Content-Type", res.headers["content-type"]);
+          if (res.headers["content-type"] == "application/json;charset=UTF-8") {
+            const reader = new FileReader();
+            reader.readAsText(res.data, "utf-8");
+            reader.onload = () => {
+              // console.log("result", reader.result);
+              const data = JSON.parse(reader.result);
+              // console.log("data", data);
+              alert(data.data.message);
+            };
+          } else {
+            // console.log("res", res)
+            if (res != null && res.data != null) {
+              // console.log(123123)
+              var fileURL = window.URL.createObjectURL(
+                new Blob([res.data], {
+                  type: "application/octet-stream",
+                })
+              );
+              // console.log("fileURL", fileURL);
+              var fileLink = document.createElement("a");
+              fileLink.href = fileURL;
+              fileLink.download = `${dayjs().format(
+                "YYYYMMDDHHmmss"
+              )}配送單-揀貨總表.xlsx`;
+              // fileLink.setAttribute(
+              //   "download",
+              //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
+              // );
+              document.body.appendChild(fileLink);
+              fileLink.click();
+            }
           }
           this.IsGetDataing = false;
         })
@@ -2030,6 +2042,7 @@ export default {
                           :value="u1.id"
                           selected
                           v-for="u1 in supplierlist"
+                          :disabled="!u1.enabled"
                           :key="'customers_organId' + u1.id"
                         >
                           {{ u1.idname }}
@@ -2252,7 +2265,7 @@ export default {
                         v-model="customers.agreedDelivery"
                       />
                     </div>
-                    <div class="col-sm-12 col-md-4 col-lg-3 my-1">
+                    <!-- <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">配達日</label>
                       <input
                         autocomplete="off"
@@ -2261,7 +2274,7 @@ export default {
                         placeholder="配達日"
                         v-model="customers.delivered"
                       />
-                    </div>
+                    </div> -->
                   </div>
                   <div class="row">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
