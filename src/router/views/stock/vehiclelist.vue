@@ -64,6 +64,7 @@ export default {
         renewalDate: "", //`renewal_date` date   '補換照日(行照)',
         licenseValid: "", //`license_valid` date   '行照有效日',
         cargoInsuranceDue: "", //`cargo_insurance_due` date   '貨物險到期日',
+        remark: "", // 備註
       },
 
       licensePlateNumber: "",
@@ -708,6 +709,21 @@ export default {
                             <option value="3">租用</option>
                           </select>
                         </div>
+                        <div class="col-sm-12 col-md-8 col-lg-8">
+                          <label for="status">備註</label>
+                          <input
+                            autocomplete="off"
+                            id="price"
+                            v-model="customers.remark"
+                            type="text"
+                            class="form-control"
+                            :class="{
+                              'is-invalid':
+                                submitted && v$.customers.remark.$error,
+                            }"
+                            placeholder="備註"
+                          />
+                        </div>
                       </div>
 
                       <div class="text-end pt-5 mt-3">
@@ -745,6 +761,7 @@ export default {
                     <th>車價</th>
                     <th>車輛狀態</th>
                     <th>歸屬</th>
+                    <th>備註</th>
                     <th>操作</th>
                   </tr>
                 </thead>
@@ -801,6 +818,9 @@ export default {
                           >租用</span
                         >
                       </div>
+                    </td>
+                    <td>
+                      <span>{{ SubItem.remark }}</span>
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
