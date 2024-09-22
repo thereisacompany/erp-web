@@ -100,6 +100,7 @@ export default {
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
+      havePermission: false,
     };
   },
   computed: {
@@ -137,6 +138,9 @@ export default {
       //this.GetCounterList();//儲位別
       this.GetMaxFileSize();
       this.GetData();
+      let user = localStorage.getItem("user");
+      console.log("帳號資訊", user);
+      this.havePermission = user.roleName.includes("管理員");
       //// console.log("this.$refs.file2", this.$refs.file2)
     });
   },
@@ -1250,7 +1254,7 @@ export default {
               customers.status = 0;
               handleSubmit();
             "
-            v-if="SubView == 3 && customers.status == 1"
+            v-if="SubView == 3 && customers.status == 1 && havePermission"
             >修改</a
           >
           <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0"

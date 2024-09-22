@@ -87,7 +87,7 @@ export default {
         server
           .post(APIUrl, jsonData)
           .then((res) => {
-            // console.log("res>>",res);
+            console.log("res>>", res);
             // console.log("res.data>>",res.data);
             if (
               res != null &&
@@ -112,6 +112,7 @@ export default {
                     UserID: jshdata.user.id,
                     token: jshdata.token,
                     loginName: jshdata.user.loginName,
+                    roleName: jshdata.roleName,
                   })
                 );
 
