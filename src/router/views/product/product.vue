@@ -6,9 +6,10 @@ import common from "@/api/common";
 import Swal from "sweetalert2";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
+import ImportFile from "../../../components/importFile.vue";
 
 export default {
-  components: { Layout, PageHeader },
+  components: { Layout, PageHeader, ImportFile },
   data() {
     return {
       showModal: false,
@@ -70,14 +71,7 @@ export default {
     //   this.GetData();
     // }, 2000);
     //this.GetSupplierList();
-    server.GetSupplierList((rows) => {
-      this.supplierlist = rows;
-    });
-    this.$nextTick(() => {
-      this.handleGetMaterialCategoryTree();
-      this.GetData();
-      //console.log(common.PadLeftZero(123, 5));
-    });
+    this.setData();
   },
   setup() {
     return { v$: useVuelidate() };
@@ -93,6 +87,16 @@ export default {
     },
   },
   methods: {
+    setData() {
+      server.GetSupplierList((rows) => {
+        this.supplierlist = rows;
+      });
+      this.$nextTick(() => {
+        this.handleGetMaterialCategoryTree();
+        this.GetData();
+        //console.log(common.PadLeftZero(123, 5));
+      });
+    },
     formatOrganName(SubItem) {
       if (SubItem == null) return "";
       return (
@@ -452,7 +456,14 @@ export default {
                 </div>
               </div>
               <div class="col-sm-4">
-                <div class="text-sm-end">
+                <div
+                  class="text-sm-end d-flex align-items-center justify-content-end"
+                >
+                  <ImportFile
+                    :buttonName="'匯入商品列表'"
+                    :apiLink="'/material/importExcel'"
+                    @importSuccess="setData"
+                  />
                   <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
