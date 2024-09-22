@@ -100,6 +100,7 @@ export default {
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
+      havePermission: false,
     };
   },
   computed: {
@@ -137,6 +138,9 @@ export default {
       //this.GetCounterList();//儲位別
       this.GetMaxFileSize();
       this.GetData();
+      let user = localStorage.getItem("user");
+      console.log("帳號資訊", user);
+      this.havePermission = user.roleName.includes("管理員");
       //// console.log("this.$refs.file2", this.$refs.file2)
     });
   },
@@ -887,7 +891,7 @@ export default {
   },
 };
 </script>
-
+// SubView: 1新增 2編輯 3查看
 <template>
   <Layout>
     <PageHeader :title="title" :items="items" />
@@ -896,6 +900,7 @@ export default {
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4">
+              SubView/{{ SubView }}
               {{
                 SubView == 1
                   ? "新增進貨單"
@@ -912,6 +917,7 @@ export default {
                     class="form-select"
                     v-model="customers.organId"
                     @change="InitEveryRowsProduct"
+                    :disabled="SubView == 2 || SubView == 3"
                     :class="{
                       'is-invalid': submitted && v$.customers.organId.$error,
                     }"
@@ -945,6 +951,7 @@ export default {
                     placeholder="單號"
                     readonly
                     v-model="customers.defaultNumber"
+                    :disabled="SubView == 2 || SubView == 3"
                   />
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-3">
@@ -955,6 +962,7 @@ export default {
                     class="form-control"
                     placeholder="日期"
                     v-model="customers.date2"
+                    :disabled="SubView == 2 || SubView == 3"
                   />
                 </div>
                 <div class="col-sm-12 col-md-6 col-lg-3">
@@ -965,6 +973,7 @@ export default {
                     class="form-control"
                     placeholder="時間"
                     v-model="customers.time2"
+                    :disabled="SubView == 2 || SubView == 3"
                   />
                 </div>
               </div>
@@ -987,10 +996,16 @@ export default {
                           <th width="5%">型號</th>
                           <th width="5%">庫存</th>
                           <th width="10%">儲位</th>
-                          <th width="5%">數量</th>
-                          <th width="5%">下單數量</th>
+                          <th width="5%">
+                            {{
+                              SubView == 2 || SubView == 3
+                                ? "實際入庫"
+                                : "進貨數量"
+                            }}
+                          </th>
+                          <th width="5%" v-if="SubView !== 1">進貨數量</th>
                           <th width="10%">備註</th>
-                          <th width="1%">操作</th>
+                          <th width="1%" v-if="SubView == 1">操作</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1000,9 +1015,11 @@ export default {
                         >
                           <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                           <td>
+                            <!-- 倉庫 -->
                             <select
                               class="form-select"
                               v-model="SubItem.depotId"
+                              :disabled="SubView == 2 || SubView == 3"
                               @change="
                                 SubItem.number = '';
                                 SubItem.name = '';
@@ -1020,11 +1037,13 @@ export default {
                             </select>
                           </td>
                           <td>
+                            <!-- 品號 -->
                             <div class="position-relative">
                               <input
                                 autocomplete="off"
                                 type="text"
-                                class="form-control"
+                                class="form-control num"
+                                :disabled="SubView == 2 || SubView == 3"
                                 :list="'datalistOptions' + cidx"
                                 @keyup="queryMaterialByRow(SubItem, cidx)"
                                 v-model="SubItem.number"
@@ -1041,27 +1060,35 @@ export default {
                               </datalist>
                             </div>
                           </td>
+                          <!-- 商品 -->
                           <td>
                             {{ SubItem.name }}
                           </td>
-
+                          <!-- 類別 -->
                           <td>{{ SubItem.categoryName }}</td>
+                          <!-- 規格 -->
                           <td>{{ SubItem.standard }}</td>
+                          <!-- 型號 -->
                           <td>{{ SubItem.model }}</td>
+                          <!-- 庫存 -->
                           <td>{{ SubItem.stock }}</td>
                           <td>
+                            <!-- 儲位 -->
                             <input
                               autocomplete="off"
                               type="text"
                               class="form-control"
+                              :disabled="SubView == 2 || SubView == 3"
                               v-model="SubItem.counterName"
                             />
                           </td>
+                          <!-- 實際入庫 -->
                           <td>
                             <input
                               autocomplete="off"
                               type="text"
                               class="form-control"
+                              :disabled="SubView == 3"
                               @change="
                                 SubItem.allPrice =
                                   SubItem.operNumber * SubItem.unitPrice
@@ -1069,21 +1096,23 @@ export default {
                               v-model="SubItem.operNumber"
                             />
                           </td>
+                          <!-- 進貨數量 -->
                           <td>{{ SubItem.orderNumber }}</td>
+                          <!-- 備註 -->
                           <td>
                             <input
                               autocomplete="off"
                               type="text"
                               class="form-control"
+                              :disabled="SubView == 2 || SubView == 3"
                               v-model="SubItem.remark"
                             />
                           </td>
-                          <td>
+                          <td v-if="SubView == 1">
                             <div class="button-items">
                               <a
                                 href="javascript:;"
                                 class="btn btn-sm btn-danger"
-                                v-if="SubView == 1 || SubView == 2"
                                 @click="DeleteRow1(SubItem)"
                                 >刪除</a
                               >
@@ -1095,7 +1124,7 @@ export default {
                     <a
                       href="javascript:;"
                       class="btn btn-sm btn-success"
-                      v-if="SubView == 1 || SubView == 2"
+                      v-if="SubView == 1"
                       @click="NewRow1()"
                       >新增一列商品資料</a
                     >
@@ -1112,12 +1141,13 @@ export default {
                     class="form-control mx-3"
                     placeholder="備註"
                     v-model="customers.remark"
+                    :disabled="SubView == 3"
                     style="width: 60%"
                   />
                 </div>
               </div>
               <div class="row my-3">
-                <div
+                <!-- <div
                   class="col-sm-12 d-flex align-items-center"
                   v-if="SubView == 1 || SubView == 2"
                 >
@@ -1142,7 +1172,7 @@ export default {
                     multiple
                     v-on:change="handleFileUpload()"
                   />
-                </div>
+                </div> -->
                 <div class="col-sm-12 mt-1">
                   <label for="name" v-if="SubView == 3">上傳檔案</label>
                   <div
@@ -1200,13 +1230,13 @@ export default {
             v-if="SubView == 1"
             >新增</a
           >
-          <a
+          <!-- <a
             href="javascript:;"
             class="btn btn-primary"
             @click="handleSubmit"
             v-if="SubView == 2"
             >保存</a
-          >
+          > -->
           <a
             href="javascript:;"
             class="btn btn-success"
@@ -1215,7 +1245,7 @@ export default {
               handleSubmit();
             "
             v-if="SubView == 2"
-            >保存並審核</a
+            >確認數量</a
           >
           <a
             href="javascript:;"
@@ -1224,8 +1254,8 @@ export default {
               customers.status = 0;
               handleSubmit();
             "
-            v-if="SubView == 3 && customers.status == 1"
-            >反審核</a
+            v-if="SubView == 3 && customers.status == 1 && havePermission"
+            >修改</a
           >
           <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0"
             >返回</a
@@ -1424,7 +1454,7 @@ export default {
                     <th>商品資料</th>
                     <th>倉庫別</th>
                     <th>儲位</th>
-                    <th>數量</th>
+                    <th>實際入庫</th>
                     <th>下單數量</th>
 
                     <th>狀態</th>

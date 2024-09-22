@@ -118,13 +118,12 @@
             </template>
           </vxe-column>
         </vxe-table>
-
         <vxe-pager
           v-model:currentPage="currentPage"
           v-model:pageSize="pageSize"
           :total="total"
           :i18n="i18nHandler"
-          @page-change="pageChange"
+          @page-change="fetchData()"
         >
         </vxe-pager>
       </div>
@@ -234,6 +233,7 @@ export default defineComponent({
 
     // fetch api
     function fetchData(type) {
+      console.log("fetchData");
       let url = `/role/list?currentPage=${currentPage.value}&pageSize=${pageSize.value}`;
       if (searchParams.value !== null && searchParams.value !== undefined) {
         url = url + `&search=${encodeURIComponent(searchParams.value)}`;
@@ -396,6 +396,7 @@ export default defineComponent({
       deleteRole,
       i18nHandler,
       reload,
+      fetchData,
     };
   },
 });

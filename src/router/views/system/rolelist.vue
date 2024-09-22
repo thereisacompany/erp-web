@@ -7,7 +7,6 @@ import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
 
-
 import appConfig from "@/app.config";
 
 /**
@@ -40,16 +39,16 @@ export default {
       showModal: false,
       submitted: false,
       customers: {
-        id: '',
-        name: '',
-        description: '',
-        enabled: '',
-        type: ''
+        id: "",
+        name: "",
+        description: "",
+        enabled: "",
+        type: "",
       },
 
-      name: '',
-      telephone: '',
-      description: '',
+      name: "",
+      telephone: "",
+      description: "",
 
       IsGetDataing: false,
       pageSize: 30,
@@ -66,14 +65,12 @@ export default {
       name: {
         required: helpers.withMessage("請填寫角色名稱", required),
       },
-
-
     },
   },
   mounted() {
     this.$nextTick(() => {
       this.GetData();
-    })
+    });
   },
   methods: {
     /**
@@ -94,34 +91,29 @@ export default {
           this.UpdData(this.customers);
         }
       }
-      console.log("OK")
+      console.log("OK");
 
       this.submitted = false;
     },
     EditOne(RowItem) {
-      console.log("EditOne", RowItem)
-
+      console.log("EditOne", RowItem);
 
       if (RowItem.id == null || RowItem.id == 0) {
         for (let key in this.customers) {
-          this.customers[key] = '';
+          this.customers[key] = "";
         }
         this.customers.id = 0;
         this.customers.name = "";
         this.customers.description = "";
         this.customers.type = "全部數據";
         this.customers.enabled = true;
-      }
-      else {
-
+      } else {
         this.customers.id = RowItem.id;
         this.customers.name = RowItem.name;
         this.customers.description = RowItem.description;
         this.customers.enabled = RowItem.enabled;
         this.customers.type = RowItem.type;
       }
-
-
 
       this.showModal = true;
     },
@@ -133,18 +125,28 @@ export default {
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
       let queryStr = `{"name":"${this.name}"}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
-      server.get(APIUrl + APIParameter)
+      server
+        .get(APIUrl + APIParameter)
         .then((res) => {
           console.log("回傳資料成功 res=", res);
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
+          if (
+            res != null &&
+            res.data != null &&
+            res.data.code == 200 &&
+            res.data.data != null
+          ) {
             //回傳資料成功
             let jshdata = res.data.data;
             this.customersData = jshdata.rows;
             this.totalRows = jshdata.total;
-            this.maxPage = Math.ceil(this.totalRows / this.pageSize) == 0 ? 1 : Math.ceil(this.totalRows / this.pageSize);
+            this.maxPage =
+              Math.ceil(this.totalRows / this.pageSize) == 0
+                ? 1
+                : Math.ceil(this.totalRows / this.pageSize);
           }
           this.IsGetDataing = false;
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
           console.log("error", error);
           this.IsGetDataing = false;
           return;
@@ -154,16 +156,23 @@ export default {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
       let APIUrl = `/role/add`;
-      server.post(APIUrl, data1)
+      server
+        .post(APIUrl, data1)
         .then((res) => {
           console.log("回傳資料成功 res=", res);
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
-            //回傳資料成功       
+          if (
+            res != null &&
+            res.data != null &&
+            res.data.code == 200 &&
+            res.data.data != null
+          ) {
+            //回傳資料成功
             this.showModal = false;
             this.$nextTick(() => this.GetData());
           }
           this.IsGetDataing = false;
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
           console.log("error", error);
           this.IsGetDataing = false;
           return;
@@ -173,21 +182,28 @@ export default {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
       let APIUrl = `/role/update`;
-      server.put(APIUrl, data1)
+      server
+        .put(APIUrl, data1)
         .then((res) => {
           console.log("回傳資料成功 res=", res);
-          if (res != null && res.data != null && res.data.code == 200 && res.data.data != null) {
-            //回傳資料成功       
+          if (
+            res != null &&
+            res.data != null &&
+            res.data.code == 200 &&
+            res.data.data != null
+          ) {
+            //回傳資料成功
             this.showModal = false;
             this.$nextTick(() => this.GetData());
           }
           this.IsGetDataing = false;
-        }).catch(function (error) {
+        })
+        .catch(function (error) {
           console.log("error", error);
           this.IsGetDataing = false;
           return;
         });
-    }
+    },
   },
 };
 </script>
@@ -204,54 +220,103 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <input autocomplete="off" type="text" class="form-control" placeholder="角色名稱" v-model="name"
-                      @keyup.enter="GetData()" />
+                    <input
+                      autocomplete="off"
+                      type="text"
+                      class="form-control"
+                      placeholder="角色名稱"
+                      v-model="name"
+                      @keyup.enter="GetData()"
+                    />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <b-button variant="primary" @click="GetData()">
-                      <i :class="IsGetDataing ? 'bx bx-loader bx-spin font-size-16 align-middle me-2' : ''"></i> 查詢
+                      <i
+                        :class="
+                          IsGetDataing
+                            ? 'bx bx-loader bx-spin font-size-16 align-middle me-2'
+                            : ''
+                        "
+                      ></i>
+                      查詢
                     </b-button>
                   </div>
                 </div>
               </div>
               <div class="col-sm-4">
                 <div class="text-sm-end">
-                  <button type="button" class="btn btn-success btn-rounded mb-2 me-2" @click="EditOne({ id: 0 })">
+                  <button
+                    type="button"
+                    class="btn btn-success btn-rounded mb-2 me-2"
+                    @click="EditOne({ id: 0 })"
+                  >
                     <i class="mdi mdi-plus me-1"></i> 新增角色
                   </button>
-                  <b-modal v-model="showModal" :title="customers.id == 0 ? '新增角色' : '修改角色'"
-                    title-class="text-black font-18" body-class="p-3" hide-footer>
+                  <b-modal
+                    v-model="showModal"
+                    :title="customers.id == 0 ? '新增角色' : '修改角色'"
+                    title-class="text-black font-18"
+                    body-class="p-3"
+                    hide-footer
+                  >
                     <form @submit.prevent="handleSubmit">
                       <div class="row">
-                        <div class="col-sm-12 ">
+                        <div class="col-sm-12">
                           <div class="mb-3">
                             <label for="name">角色名稱</label>
-                            <input autocomplete="off" id="name" v-model="customers.name" type="text"
-                              class="form-control" :class="{ 'is-invalid': submitted && v$.customers.name.$error, }" />
-                            <div v-if="submitted && v$.customers.name.$error" class="invalid-feedback">
-                              <span v-if="v$.customers.name.required.$message">{{
-      v$.customers.name.required.$message }}</span>
+                            <input
+                              autocomplete="off"
+                              id="name"
+                              v-model="customers.name"
+                              type="text"
+                              class="form-control"
+                              :class="{
+                                'is-invalid':
+                                  submitted && v$.customers.name.$error,
+                              }"
+                            />
+                            <div
+                              v-if="submitted && v$.customers.name.$error"
+                              class="invalid-feedback"
+                            >
+                              <span
+                                v-if="v$.customers.name.required.$message"
+                                >{{ v$.customers.name.required.$message }}</span
+                              >
                             </div>
                           </div>
                         </div>
-                        <div class="col-sm-12 ">
+                        <div class="col-sm-12">
                           <div class="mb-3">
                             <label for="type">資料類型</label>
-                            <select class="form-select" v-model="customers.type">
-                              <option :value="u1" selected v-for="(u1, uidx) in ['全部數據', '個人數據']" :key="'type' + uidx">
-                                {{ u1 }}</option>
+                            <select
+                              class="form-select"
+                              v-model="customers.type"
+                            >
+                              <option
+                                :value="u1"
+                                selected
+                                v-for="(u1, uidx) in ['全部數據', '個人數據']"
+                                :key="'type' + uidx"
+                              >
+                                {{ u1 }}
+                              </option>
                             </select>
                           </div>
                         </div>
 
-
-                        <div class="col-sm-12 ">
+                        <div class="col-sm-12">
                           <div class="mb-3">
                             <label for="description">說明</label>
-                            <input autocomplete="off" id="description" v-model="customers.description" type="text"
-                              class="form-control" />
+                            <input
+                              autocomplete="off"
+                              id="description"
+                              v-model="customers.description"
+                              type="text"
+                              class="form-control"
+                            />
                           </div>
                         </div>
 
@@ -260,26 +325,41 @@ export default {
                             <label for="enabled">狀態</label>
                             <div>
                               <div class="btn-group btn-group-sm">
-                                <a href="javascript:;" class="btn btn-outline-success"
-                                  :class="customers.enabled == true ? 'active' : ''"
-                                  @click="customers.enabled = true">啟用</a>
-                                <a href="javascript:;" class="btn btn-outline-danger"
-                                  :class="customers.enabled == false ? 'active' : ''" @click="customers.enabled = false"
-                                  v-if="customers.id > 0">停用</a>
+                                <a
+                                  href="javascript:;"
+                                  class="btn btn-outline-success"
+                                  :class="
+                                    customers.enabled == true ? 'active' : ''
+                                  "
+                                  @click="customers.enabled = true"
+                                  >啟用</a
+                                >
+                                <a
+                                  href="javascript:;"
+                                  class="btn btn-outline-danger"
+                                  :class="
+                                    customers.enabled == false ? 'active' : ''
+                                  "
+                                  @click="customers.enabled = false"
+                                  v-if="customers.id > 0"
+                                  >停用</a
+                                >
                               </div>
                             </div>
-
                           </div>
                         </div>
-
-
-
                       </div>
 
                       <div class="text-end pt-5 mt-3">
-                        <b-button variant="light" @click="showModal = false">關閉</b-button>
-                        <b-button type="submit" variant="success" class="ms-1">{{ customers.id == 0 ? '新增' : '修改'
-                          }}</b-button>
+                        <b-button variant="light" @click="showModal = false"
+                          >關閉</b-button
+                        >
+                        <b-button
+                          type="submit"
+                          variant="success"
+                          class="ms-1"
+                          >{{ customers.id == 0 ? "新增" : "修改" }}</b-button
+                        >
                       </div>
                     </form>
                   </b-modal>
@@ -297,33 +377,47 @@ export default {
                     <th width="20%">說明</th>
                     <th width="5%">狀態</th>
                     <th width="5%">操作</th>
-
-
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
+                  <tr
+                    v-for="(SubItem, cidx) in customersData"
+                    :key="SubItem.id"
+                  >
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                     <td>{{ SubItem.name }}</td>
                     <td>{{ SubItem.type }}</td>
                     <td>{{ SubItem.description }}</td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <span class="btn btn-success" v-if="SubItem.enabled == true">啟用</span>
+                        <span
+                          class="btn btn-success"
+                          v-if="SubItem.enabled == true"
+                          >啟用</span
+                        >
                         <span class="btn btn-danger" v-else>停用</span>
                       </div>
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <a class="btn btn-secondary" href="javascript:;" @click="EditOne(SubItem)">編輯</a>
+                        <a
+                          class="btn btn-secondary"
+                          href="javascript:;"
+                          @click="EditOne(SubItem)"
+                          >編輯</a
+                        >
                       </div>
-
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <TablePager v-model:currentPage="currentPage" v-model:maxPage="maxPage" :CallGetData="GetData" />
+
+            <TablePager
+              v-model:currentPage="currentPage"
+              v-model:maxPage="maxPage"
+              :CallGetData="GetData"
+            />
           </div>
         </div>
       </div>
