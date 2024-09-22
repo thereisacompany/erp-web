@@ -166,6 +166,7 @@ export default {
         this.customers.renewalDate = "";
         this.customers.licenseValid = "";
         this.customers.cargoInsuranceDue = "";
+        this.customers.remark = "";
       } else {
         this.customers.id = RowItem.id;
         this.customers.licensePlateNumber = RowItem.licensePlateNumber;
@@ -189,6 +190,7 @@ export default {
         this.customers.renewalDate = RowItem.renewalDate;
         this.customers.licenseValid = RowItem.licenseValid;
         this.customers.cargoInsuranceDue = RowItem.cargoInsuranceDue;
+        this.customers.remark = RowItem.remark;
       }
 
       this.showModal = true;
