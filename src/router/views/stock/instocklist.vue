@@ -900,7 +900,6 @@ export default {
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4">
-              SubView/{{ SubView }}
               {{
                 SubView == 1
                   ? "新增進貨單"
