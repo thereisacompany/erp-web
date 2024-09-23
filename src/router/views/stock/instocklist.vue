@@ -138,10 +138,11 @@ export default {
       //this.GetCounterList();//儲位別
       this.GetMaxFileSize();
       this.GetData();
-      let user = localStorage.getItem("user");
-      console.log("帳號資訊", user);
-      this.havePermission = user.roleName.includes("管理員");
-      //// console.log("this.$refs.file2", this.$refs.file2)
+      let user = JSON.parse(localStorage.getItem("user"));
+      console.log("帳號資訊", typeof user.roleName);
+      this.havePermission = user.roleName.includes("管理者");
+      console.log("havePermission", this.havePermission);
+      // console.log("this.$refs.file2", this.$refs.file2)
     });
   },
   watch: {
@@ -1257,8 +1258,8 @@ export default {
             >修改</a
           >
           <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0"
-            >返回</a
-          >
+            >返回
+          </a>
         </div>
       </div>
     </div>
