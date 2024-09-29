@@ -2026,12 +2026,14 @@ export default {
                 <b-form>
                   <div class="row">
                     <div class="col-sm-12 col-md-6 col-lg-3">
+                      this.SubView/{{ this.SubView }}
                       <label for="name">客單編號</label>
                       <input
                         autocomplete="off"
                         type="text"
                         class="form-control"
                         v-model.trim="customers.customNumber"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-3">
@@ -2041,6 +2043,7 @@ export default {
                         type="text"
                         class="form-control"
                         v-model.trim="customers.sourceNumber"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                   </div>
@@ -2051,6 +2054,7 @@ export default {
                         class="form-select"
                         v-model="customers.organId"
                         @change="InitEveryRowsProduct"
+                        :disabled="this.SubView == 3"
                       >
                         <option
                           :value="u1.id"
@@ -2072,6 +2076,7 @@ export default {
                         placeholder="單號"
                         readonly
                         v-model="customers.defaultNumber"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-3">
@@ -2082,6 +2087,7 @@ export default {
                         class="form-control"
                         placeholder="日期"
                         v-model="customers.date2"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-3">
@@ -2092,6 +2098,7 @@ export default {
                         class="form-control"
                         placeholder="時間"
                         v-model="customers.time2"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                   </div>
@@ -2176,14 +2183,17 @@ export default {
                                 <div v-else>-</div>
                               </td>
                               <td>
-                                <div v-if="IsPickup1">{{ SubItem.name }}</div>
+                                <div v-if="IsPickup1">
+                                  {{ SubItem.name }}
+                                </div>
                                 <input
                                   autocomplete="off"
-                                  v-else
+                                  v-else-if="this.SubView !== 3"
                                   type="text"
                                   class="form-control"
                                   v-model="SubItem.materialName"
                                 />
+                                <span v-else>{{ SubItem.materialName }}</span>
                               </td>
 
                               <td>{{ SubItem.categoryName }}</td>
@@ -2209,7 +2219,9 @@ export default {
                                   @change="checkCount(SubItem)"
                                   v-model="SubItem.operNumber"
                                   :max="SubItem.stock"
+                                  v-if="this.SubView !== 3"
                                 />
+                                <span v-else>{{ SubItem.operNumber }}</span>
                               </td>
 
                               <td>
@@ -2219,7 +2231,10 @@ export default {
                                   class="form-control"
                                   placeholder="備註"
                                   v-model="SubItem.remark"
+                                  v-if="this.SubView !== 3"
                                 />
+
+                                <span v-else>{{ SubItem.operNumber }}</span>
                               </td>
 
                               <td>
@@ -2256,6 +2271,7 @@ export default {
                         class="form-control"
                         placeholder="主商品到貨日"
                         v-model="customers.mainArrival"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
@@ -2266,6 +2282,7 @@ export default {
                         class="form-control"
                         placeholder="贈品到貨日"
                         v-model="customers.extrasArrival"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
@@ -2276,6 +2293,7 @@ export default {
                         class="form-control"
                         placeholder="約配日"
                         v-model="customers.agreedDelivery"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <!-- <div class="col-sm-12 col-md-4 col-lg-3 my-1">
@@ -2302,6 +2320,7 @@ export default {
                           'is-invalid':
                             submitted && v$.customers.receiveName.$error,
                         }"
+                        :disabled="this.SubView == 3"
                       />
                       <div
                         v-if="submitted && v$.customers.receiveName.$error"
@@ -2329,6 +2348,7 @@ export default {
                           'is-invalid':
                             submitted && v$.customers.cellphone.$error,
                         }"
+                        :disabled="this.SubView == 3"
                       />
                       <div
                         v-if="submitted && v$.customers.cellphone.$error"
@@ -2351,6 +2371,7 @@ export default {
                           'is-invalid':
                             submitted && v$.customers.address.$error,
                         }"
+                        :disabled="this.SubView == 3"
                       />
                       <div
                         v-if="submitted && v$.customers.address.$error"
@@ -2370,6 +2391,7 @@ export default {
                         type="text"
                         class="form-control"
                         v-model="customers.install"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                     <div class="col-sm-12 col-md-6 col-lg-3 my-1">
@@ -2381,6 +2403,7 @@ export default {
                           'is-invalid':
                             submitted && v$.customers.recycle.$error,
                         }"
+                        :disabled="this.SubView == 3"
                       >
                         <option value="" selected>&nbsp;</option>
                         <option value="是">是</option>
@@ -2409,6 +2432,7 @@ export default {
                         class="form-control"
                         placeholder="備註"
                         v-model="customers.remark"
+                        :disabled="this.SubView == 3"
                       />
                     </div>
                   </div>
