@@ -336,6 +336,7 @@ export default {
         return;
       } else {
         console.log("handleSubmit else");
+        this.checkCount(this.customersItem);
         // 判斷快速派發是否有值
         if (this.SubView == 2) {
           if (
@@ -393,6 +394,8 @@ export default {
                 if (b1.barCode == null || b1.barCode == "") {
                   errMsg += `#${i + 1} 請選擇商品\n`;
                 }
+
+                console.log("b1", b1);
               }
             } else {
               for (let i = 0; i < bObj.length; i++) {
@@ -471,6 +474,7 @@ export default {
       }
     },
     AssignDriver() {
+      console.log("AssignDriver", this.customers.dStatus, this.driver.status);
       // 新增api -> 司機派發功能 put
       // /jshERP-boot/depotHead/delivery/assign?headerId=61&driverId=33&assignDate=2024-01-21 14:10:00&assignUser=測試用戶
       // headerId : 配送單id
@@ -716,6 +720,7 @@ export default {
       }
     },
     EditOne(RowItem) {
+      console.log("點擊編輯");
       this.selectedTab = 0;
       if (RowItem.id == 0) {
         this.SubView = 1;
@@ -1602,6 +1607,14 @@ export default {
         this.openRecodeModel = true;
       });
     },
+    checkCount(item) {
+      item.allPrice = item.operNumber * item.unitPrice;
+      console.log("item", item);
+      if (item.operNumber > item.stock) {
+        alert("數量大於庫存，請重新輸入");
+        item.operNumber = item.stock;
+      }
+    },
   },
 };
 </script>
@@ -1960,7 +1973,7 @@ export default {
                         <a
                           class="btn btn-success"
                           href="#"
-                          v-if="SubItem.status == 1"
+                          v-if="SubItem.status == 1 && SubItem.dStatus == 0"
                           @click="EditDriver(SubItem)"
                           >派發司機</a
                         >
@@ -2092,7 +2105,7 @@ export default {
                               <th width="5%">#</th>
                               <th width="20%">倉庫</th>
                               <th width="20%">品號</th>
-                              <th width="15%">商品</th>
+                              <th width="20%">商品</th>
                               <th width="10%">類別</th>
                               <th width="8%">規格</th>
                               <th width="8%">型號</th>
@@ -2185,17 +2198,16 @@ export default {
                                   v-model="SubItem.counterName"
                                 />
                               </td>
+
                               <td>
                                 <input
                                   autocomplete="off"
-                                  type="text"
+                                  type="number"
                                   class="form-control"
                                   placeholder="數量"
-                                  @change="
-                                    SubItem.allPrice =
-                                      SubItem.operNumber * SubItem.unitPrice
-                                  "
+                                  @change="checkCount(SubItem)"
                                   v-model="SubItem.operNumber"
+                                  :max="SubItem.stock"
                                 />
                               </td>
 
@@ -2581,7 +2593,7 @@ export default {
                       <a
                         href="#"
                         class="btn btn-success btn-block"
-                        v-if="driver.status != 0"
+                        v-if="driver.status != 0 && driver.status != 5"
                         @click="ReAssignDriver()"
                         >重新指派</a
                       >
@@ -2897,7 +2909,7 @@ export default {
             customers.status = 1;
             handleSubmit();
           "
-          v-if="SubView == 2"
+          v-if="SubView == 2 && customers.status == 0"
           >保存並審核</a
         >
         <a
@@ -3017,11 +3029,15 @@ export default {
   table-layout: fixed;
   margin-top: 15px;
   overflow-x: auto;
-  border: 1px solid red;
 }
 
 .detail-table > .table th,
-td {
+.detail-table > .table td {
+  white-space: normal !important;
+}
+
+.table-responsive > .table th,
+.table-responsive > .table td {
   padding: 0.5rem;
 }
 </style>
