@@ -335,14 +335,15 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        console.log("handleSubmit else");
+        console.log("this.driver.status", this.driver.status);
         this.checkCount(this.customersItem);
         // 判斷快速派發是否有值
         if (this.SubView == 2) {
           if (
             this.driver.driverId !== null &&
             this.driver.assignDate !== "Invalid Date" &&
-            this.driver.assignUser !== null
+            this.driver.assignUser !== null &&
+            this.driver.status == 0
           ) {
             this.AssignDriver();
             return;
