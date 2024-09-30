@@ -1626,7 +1626,7 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
-    <div class="row" v-show="SubView == 0">
+    <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
           <div class="card-body">
@@ -2006,7 +2006,10 @@ export default {
           <span class="d-none d-sm-inline-block">配送單基本資料</span>
         </template>
 
-        <div class="row" v-if="SubView == 1 || SubView == 2 || SubView == 3">
+        <div
+          class="row my-1"
+          v-if="SubView == 1 || SubView == 2 || SubView == 3"
+        >
           <div class="col-lg-62">
             <div class="card">
               <div class="card-body">
@@ -2024,9 +2027,8 @@ export default {
                 </div>
 
                 <b-form>
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12 col-md-6 col-lg-3">
-                      this.SubView/{{ this.SubView }}
                       <label for="name">客單編號</label>
                       <input
                         autocomplete="off"
@@ -2047,7 +2049,7 @@ export default {
                       />
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12 col-md-6 col-lg-3">
                       <label for="name">客戶</label>
                       <select
@@ -2102,7 +2104,7 @@ export default {
                       />
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12">
                       <div class="table-responsive detail-table">
                         <table
@@ -2133,7 +2135,7 @@ export default {
                                 {{ (currentPage - 1) * pageSize + cidx + 1 }}
                               </td>
                               <td>
-                                <div v-if="IsPickup1">
+                                <div v-if="IsPickup1 && this.SubView !== 3">
                                   <select
                                     class="form-select"
                                     v-model="SubItem.depotId"
@@ -2158,7 +2160,10 @@ export default {
                                 </div>
                               </td>
                               <td>
-                                <div class="position-relative" v-if="IsPickup1">
+                                <div
+                                  class="position-relative"
+                                  v-if="IsPickup1 && this.SubView !== 3"
+                                >
                                   <input
                                     autocomplete="off"
                                     type="text"
@@ -2188,9 +2193,9 @@ export default {
                                 </div>
                                 <input
                                   autocomplete="off"
-                                  v-else-if="this.SubView !== 3"
                                   type="text"
                                   class="form-control"
+                                  v-else-if="this.SubView == 1"
                                   v-model="SubItem.materialName"
                                 />
                                 <span v-else>{{ SubItem.materialName }}</span>
@@ -2262,7 +2267,7 @@ export default {
                     </div>
                   </div>
 
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">主商品到貨日</label>
                       <input
@@ -2307,7 +2312,7 @@ export default {
                       />
                     </div> -->
                   </div>
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">收件人名稱</label>
                       <input
@@ -2383,7 +2388,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12 col-md-6 col-lg-3 my-1">
                       <label for="name">安裝方式</label>
                       <input
@@ -2423,7 +2428,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row py-1">
                     <div class="col-sm-12 my-1">
                       <label for="name">備註</label>
                       <input
@@ -2436,7 +2441,7 @@ export default {
                       />
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row py-1">
                     <div
                       class="col-sm-12 my-1"
                       v-if="SubView == 1 || SubView == 2"
@@ -2511,11 +2516,11 @@ export default {
           </span>
           <span class="d-none d-sm-inline-block">司機派單及回報</span>
         </template>
-        <div class="row">
+        <div class="row py-1">
           <div class="col-12">
             <div class="card">
               <div class="card-body">
-                <div class="row">
+                <div class="row py-1">
                   <div class="col-lg-3">
                     <div class="mb-3">
                       <label class="form-label" for="subject">指派司機</label>
@@ -2636,7 +2641,7 @@ export default {
                     </div>
                   </div>
                   <div class="col-sm-12 bg-light pt-3 pb-3">
-                    <div class="row">
+                    <div class="row py-1">
                       <div class="col-lg-3">
                         <div class="mb-3">
                           <label class="form-label" for="subject">
