@@ -10,6 +10,8 @@ import common from "@/api/common";
 
 import appConfig from "@/app.config";
 import { Modal } from "ant-design-vue";
+import ImportFile from "../../../components/importFile.vue";
+
 /**
  * Customers component
  */
@@ -18,7 +20,7 @@ export default {
     title: "配送單",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader, AModal: Modal },
+  components: { Layout, PageHeader, AModal: Modal, ImportFile },
   data() {
     return {
       selectedTab: 0,
@@ -203,20 +205,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.GetUserList(); //負責人列表
-      //this.GetAccountList();//結算人帳號列表
-      //this.GetSupplierList();
-      server.GetSupplierList((rows) => {
-        this.supplierlist = rows;
-      });
-      server.GetSupplier2List("家電-司機", (rows) => {
-        this.driverlist = rows.filter((x) => x.enabled == true);
-      });
-
-      this.GetDepotList(); //倉庫別
-      // this.GetCounterList();//儲位別
-      this.GetMaxFileSize();
-      this.GetData();
+      this.setData();
     });
   },
   watch: {
@@ -248,6 +237,22 @@ export default {
     },
   },
   methods: {
+    setData() {
+      this.GetUserList(); //負責人列表
+      //this.GetAccountList();//結算人帳號列表
+      //this.GetSupplierList();
+      server.GetSupplierList((rows) => {
+        this.supplierlist = rows;
+      });
+      server.GetSupplier2List("家電-司機", (rows) => {
+        this.driverlist = rows.filter((x) => x.enabled == true);
+      });
+
+      this.GetDepotList(); //倉庫別
+      // this.GetCounterList();//儲位別
+      this.GetMaxFileSize();
+      this.GetData();
+    },
     GetDriverDay(iStatus) {
       if (this.driver == null || this.driver.deliveryStatusList == null)
         return "";
@@ -1786,7 +1791,7 @@ export default {
                 </div>
               </div>
               <div class="col-sm-4">
-                <div class="text-sm-end">
+                <div class="text-sm-end actions">
                   <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
@@ -1808,13 +1813,18 @@ export default {
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增門市取貨派送
                   </button>
-                  <button
+                  <!-- <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
-                    @click="$refs.fileexcelin.click()"
+                    @click="handleClickUpload"
                   >
                     匯入配送單
-                  </button>
+                  </button> -->
+                  <ImportFile
+                    :buttonName="'匯入配送單'"
+                    :apiLink="'depotHead/importExcel'"
+                    @importSuccess="setData"
+                  />
                   <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
@@ -3069,5 +3079,11 @@ export default {
 .table-responsive > .table th,
 .table-responsive > .table td {
   padding: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 </style>

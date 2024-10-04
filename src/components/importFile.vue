@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div style="width: auto">
     <button
       type="button"
       class="btn btn-primary btn-rounded mb-2 me-2 upload-button d-flex align-items-center gap-1"
-      @click="$refs.importFile.click()"
+      @click="handleOpenFile"
     >
       <upload-outlined></upload-outlined>
       {{ name }}
@@ -13,7 +13,7 @@
       type="file"
       class="d-none"
       accept=".xls,.xlsx"
-      v-on:change="handleUpload()"
+      @change="handleUpload"
     />
   </div>
 </template>
@@ -38,15 +38,18 @@ export default {
     // 按鈕名稱
     const name = ref(props.buttonName);
 
-    // 上傳檔案
-    async function handleUpload() {
-      console.log("importFile", importFile.value);
-      let fileList = importFile.value.files[0];
+    function handleOpenFile() {
+      importFile.value.click();
+      console.log("handleOpenFile");
+    }
 
+    // 上傳檔案
+    async function handleUpload(event) {
+      let fileList = importFile.value.files[0];
       const formData = new FormData();
       formData.append("file", fileList);
-      console.log("handleUpload formData", formData);
-      console.log("props.apiLink", props.apiLink);
+      // console.log("handleUpload formData", formData);
+      // console.log("props.apiLink", props.apiLink);
       try {
         // 自定義API請求邏輯
         server
@@ -59,6 +62,7 @@ export default {
 
               alert(common.replaceAll(dataMsg, "'", ""));
               emit("importSuccess");
+              event.target.value = "";
             } else if (
               res != null &&
               res.data != null &&
@@ -66,6 +70,7 @@ export default {
             ) {
               console.log("else if", res.data.data);
               alert(res.data.data);
+              event.target.value = "";
             }
           })
           .catch(function (error) {
@@ -83,6 +88,7 @@ export default {
       name,
       handleUpload,
       importFile,
+      handleOpenFile,
     };
   },
 };
