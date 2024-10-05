@@ -1,6 +1,5 @@
 <template>
   <div class="menu__wrapper">
-    isOpen/{{ isOpen }}
     <ul>
       <li
         v-for="menu in menuLists"

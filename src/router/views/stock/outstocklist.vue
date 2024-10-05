@@ -791,8 +791,6 @@ export default {
       server.GetLog({ content: RowItem.number }, (rows) => {
         this.LogList = rows;
       });
-
-      console.log("RowItem", RowItem, RowItem.status, RowItem.dStatus);
     },
 
     queryMaterialByRow(SubItem, cidx) {
@@ -1016,7 +1014,7 @@ export default {
         .then((res) => {
           if (res != null && res.data != null && res.status == 200) {
             let jshdata = res.data.data;
-            console.log("jshdata", jshdata);
+
             this.customers = jshdata;
             this.customers.date2 = dayjs(this.customers.operTime).format(
               "YYYY-MM-DD"
@@ -1267,6 +1265,7 @@ export default {
             res.data.data != null
           ) {
             let jshdata = res.data.data;
+            console.log("jshdata", jshdata);
             this.driver.driverId = jshdata.driverId;
             this.driver.carNumber = jshdata.carNumber;
             this.driver.assignDate = dayjs(jshdata.takeDate).format(
@@ -2970,7 +2969,11 @@ export default {
             customers.status = 0;
             handleSubmit();
           "
-          v-if="SubView == 3 && customers.status == 1 && customers.dstatus == 0"
+          v-if="
+            SubView == 3 &&
+            customers.status == 1 &&
+            (driver.status == 0 || driver.status == null)
+          "
           >修改</a
         >
         <a
