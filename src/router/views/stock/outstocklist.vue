@@ -779,6 +779,11 @@ export default {
     },
     EditShow(RowItem) {
       this.SubView = 3;
+      //   狀態1已審2未/ {{ SubItem.status }} 配送狀態/{{
+      //   formatdStatus(SubItem.dStatus)
+      // }}
+      // - {{ SubItem.dStatus }}
+
       this.GetDetailByNumber(RowItem.number);
       this.GetDetailList(RowItem.id);
       this.GetDriverInfo(RowItem.number);
@@ -786,6 +791,8 @@ export default {
       server.GetLog({ content: RowItem.number }, (rows) => {
         this.LogList = rows;
       });
+
+      console.log("RowItem", RowItem, RowItem.status, RowItem.dStatus);
     },
 
     queryMaterialByRow(SubItem, cidx) {
@@ -1009,6 +1016,7 @@ export default {
         .then((res) => {
           if (res != null && res.data != null && res.status == 200) {
             let jshdata = res.data.data;
+            console.log("jshdata", jshdata);
             this.customers = jshdata;
             this.customers.date2 = dayjs(this.customers.operTime).format(
               "YYYY-MM-DD"
@@ -1034,6 +1042,8 @@ export default {
             this.customers.delivered = dayjs(this.customers.delivered).isValid()
               ? dayjs(this.customers.delivered).format("YYYY-MM-DD")
               : null;
+
+            console.log("this.customers", this.customers);
 
             this.filelist = String(this.customers.fileName || "")
               .split(",")
@@ -1631,6 +1641,7 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
+
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
@@ -1965,7 +1976,7 @@ export default {
                     <td
                       style="white-space: break-spaces; word-break: break-all"
                     >
-                      {{ SubItem.operTimeStr }}
+                      {{ SubItem.createTime }}
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
@@ -2959,8 +2970,8 @@ export default {
             customers.status = 0;
             handleSubmit();
           "
-          v-if="SubView == 3 && customers.status == 1"
-          >反審核</a
+          v-if="SubView == 3 && customers.status == 1 && customers.dstatus == 0"
+          >修改</a
         >
         <a
           href="#"
