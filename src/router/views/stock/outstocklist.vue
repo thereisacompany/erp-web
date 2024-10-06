@@ -9,7 +9,7 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import { Modal } from "ant-design-vue";
+import { Modal, Tag } from "ant-design-vue";
 import ImportFile from "../../../components/importFile.vue";
 
 /**
@@ -20,7 +20,7 @@ export default {
     title: "配送單",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader, AModal: Modal, ImportFile },
+  components: { Layout, PageHeader, AModal: Modal, ImportFile, ATag: Tag },
   data() {
     return {
       selectedTab: 0,
@@ -341,7 +341,7 @@ export default {
         return;
       } else {
         console.log("this.driver.status", this.driver.status);
-        this.checkCount(this.customersItem);
+        // this.checkCount(this.customersItem);
         // 判斷快速派發是否有值
         if (this.SubView == 2) {
           if (
@@ -1622,6 +1622,7 @@ export default {
         this.openRecodeModel = true;
       });
     },
+    // 判斷數量是否大於庫存
     checkCount(item) {
       item.allPrice = item.operNumber * item.unitPrice;
       console.log("item", item);
@@ -2241,7 +2242,6 @@ export default {
                                   type="number"
                                   class="form-control"
                                   placeholder="數量"
-                                  @change="checkCount(SubItem)"
                                   v-model="SubItem.operNumber"
                                   :max="SubItem.stock"
                                   v-if="this.SubView !== 3"
@@ -2624,8 +2624,15 @@ export default {
                       </div>
                     </div>
                   </div>
-                  <div class="col-lg-2">
-                    <label class="form-label" for="message">&nbsp;</label><br />
+                  <div
+                    class="col-lg-2"
+                    style="
+                      display: flex;
+                      justify-content: flex-start;
+                      align-items: center;
+                    "
+                  >
+                    <!-- <label class="form-label" for="message">&nbsp;</label><br />
                     <div class="btn-group">
                       <a
                         href="#"
@@ -2647,7 +2654,10 @@ export default {
                         @click="ReAssignDriver()"
                         >重新指派</a
                       >
-                    </div>
+                    </div> -->
+                    <a-tag color="#108ee9" v-if="driver.status != 0"
+                      >已指派</a-tag
+                    >
                   </div>
                 </div>
 
@@ -2855,7 +2865,7 @@ export default {
                   <div class="col-sm-12">
                     <div class="flex-1 overflow-hidden">
                       <h5 class="text-bold mb-1" style="font-weight: bold">
-                        <i class="bx bx-folder-open"></i> 圖片及附件
+                        <i class="bx bx-folder-open"></i> 圖片影片及附件
                       </h5>
                     </div>
                   </div>
@@ -2898,7 +2908,7 @@ export default {
                   </div>
                 </div>
                 <hr />
-                <div class="row mb-2">
+                <div class="row mb-2" v-if="false">
                   <div class="col-sm-12">
                     <div class="flex-1 overflow-hidden">
                       <h5 class="text-bold mb-1" style="font-weight: bold">
@@ -2918,7 +2928,10 @@ export default {
         </div>
       </b-tab>
     </b-tabs>
-    <div class="loglist" v-if="SubView != 0 && LogList.length != 0">
+    <div
+      class="loglist"
+      v-if="SubView != 0 && LogList.length != 0 && selectedTab == 0"
+    >
       <table
         class="table table-centered table-bordered table-nowrap align-middle"
       >
@@ -2938,18 +2951,19 @@ export default {
     </div>
     <div>
       <div class="button-items">
+        <!-- 配送單基本資料 -->
         <a
           href="#"
           class="btn btn-primary"
           @click="handleSubmit"
-          v-if="SubView == 1"
+          v-if="SubView == 1 && selectedTab == 0"
           >新增</a
         >
         <a
           href="#"
           class="btn btn-primary"
           @click="handleSubmit"
-          v-if="SubView == 2"
+          v-if="SubView == 2 && selectedTab == 0"
           >保存</a
         >
         <a
@@ -2959,7 +2973,7 @@ export default {
             customers.status = 1;
             handleSubmit();
           "
-          v-if="SubView == 2 && customers.status == 0"
+          v-if="SubView == 2 && customers.status == 0 && selectedTab == 0"
           >保存並審核</a
         >
         <a
@@ -2972,7 +2986,8 @@ export default {
           v-if="
             SubView == 3 &&
             customers.status == 1 &&
-            (driver.status == 0 || driver.status == null)
+            (driver.status == 0 || driver.status == null) &&
+            selectedTab == 0
           "
           >修改</a
         >
@@ -2980,14 +2995,31 @@ export default {
           href="#"
           class="btn btn-success"
           @click="ExcelOut"
-          v-if="SubView == 3"
+          v-if="SubView == 3 && selectedTab == 0"
           >匯出</a
+        >
+
+        <!-- 司機派單及回報 -->
+        <a
+          href="#"
+          class="btn btn-danger btn-block"
+          v-if="driver.status == 0 && selectedTab == 1"
+          @click="AssignDriver()"
+          >快速派發</a
+        >
+        <a
+          href="#"
+          class="btn btn-primary btn-block"
+          v-if="driver.status != 0 && driver.status != 5 && selectedTab == 1"
+          @click="ReAssignDriver()"
+          >重新指派</a
         >
         <a
           href="#"
           class="btn btn-secondary"
           @click="
             SubView = 0;
+            selectedTab = 0;
             GetData();
           "
           v-if="SubView != 0"
