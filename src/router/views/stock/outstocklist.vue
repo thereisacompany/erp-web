@@ -129,7 +129,7 @@ export default {
       LogList: [],
 
       IsGetDataing: false,
-      pageSize: 30,
+      pageSize: 50,
       totalRows: 0,
       currentPage: 1,
       maxPage: 10,
@@ -652,6 +652,7 @@ export default {
       });
     },
     InitEveryRowsProduct() {
+      console.log("InitEveryRowsProduct");
       for (let i = 0; i < this.customersItem.length; i++) {
         let obj1 = this.customersItem[i];
         this.customersItem[i].depotId = "";
@@ -1296,13 +1297,26 @@ export default {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
       let APIUrl = `/depotHead/list`;
-      let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
+
       //{"type":"入库","subType":"采购","roleType":"全部数据","number":"111","materialParam":"222","createTimeRange":["2023-03-01T09:11:47.965Z","2023-04-20T09:11:47.965Z"],"beginTime":"2023-03-01","endTime":"2023-04-20"}
       //"beginTime":"2023-03-01","endTime":"2023-03-02"
 
       //let queryStr = `{"type":"出庫","number":"${this.number}","materialParam":"${this.materialParam}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","organId":"${this.organId}"}`;
       let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
-
+      if (
+        this.subType !== "" ||
+        this.number !== "" ||
+        this.mNumber !== "" ||
+        this.materialParam !== "" ||
+        this.organId !== "" ||
+        this.beginTime !== "" ||
+        this.endTime !== "" ||
+        this.depotId !== "" ||
+        this.queryKeyword !== ""
+      ) {
+        this.currentPage = 1;
+      }
+      let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server
         .get(APIUrl + APIParameter)
