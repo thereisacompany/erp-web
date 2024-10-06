@@ -352,14 +352,15 @@ export default {
           ) {
             this.AssignDriver();
             return;
-          } else if (
-            (this.driver.driverId !== null && this.driver.driverId !== "") ||
-            this.driver.assignDate !== "Invalid Date" ||
-            this.driver.assignUser !== null
-          ) {
-            alert("請填寫完成並指派司機");
-            return;
           }
+          // else if (
+          //   (this.driver.driverId !== null && this.driver.driverId !== "") ||
+          //   this.driver.assignDate !== "Invalid Date" ||
+          //   this.driver.assignUser !== null
+          // ) {
+          //   alert("請填寫完成並指派司機");
+          //   return;
+          // }
         }
 
         //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
