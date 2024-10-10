@@ -10,7 +10,7 @@
           <div class="menu__item">
             <div class="menu__title">
               <i :class="`icon bx ${menu.icon}`"></i>
-              <span v-if="type == 'open'">{{ menu.text }}</span>
+              <span v-if="isOpen">{{ menu.text }}</span>
             </div>
             <i
               :class="
@@ -18,12 +18,15 @@
                   ? `arrow-icon mdi mdi-chevron-down`
                   : `arrow-icon mdi mdi-chevron-up`
               "
-              v-if="menu.children && type == 'open'"
+              v-if="menu.children && isOpen"
             ></i>
           </div>
         </div>
 
-        <ul class="submenu" v-if="menu.children && activeKey.includes(menu.id)">
+        <ul
+          class="submenu"
+          v-if="menu.children && activeKey.includes(menu.id) && isOpen"
+        >
           <li
             class="submenu__title"
             v-for="subMenu in menu.children"
@@ -31,7 +34,7 @@
             :class="subMenu.isActive ? 'active' : ''"
             @click="handleClickMenuItem(subMenu)"
           >
-            <span v-if="type == 'open'">{{ subMenu.text }}</span>
+            <span v-if="isOpen">{{ subMenu.text }}</span>
           </li>
         </ul>
       </li>
@@ -47,10 +50,11 @@ export default defineComponent({
   props: {
     type: String,
   },
-  setup() {
+  setup(props) {
     const menuLists = ref();
     const activeMenuId = ref();
     const activeKey = ref([]);
+    const isOpen = ref(props.type == "open");
     // 菜單項目跳轉
     function handleClickMenuItem(menu) {
       console.log("menu", menu.url);
@@ -78,6 +82,10 @@ export default defineComponent({
 
     // 點擊開啟submenu
     function handleClickOpenSubmenu(menu) {
+      if (props.type == "close") {
+        isOpen.value = true;
+        document.body.classList.remove("vertical-collpsed");
+      }
       console.log("activeKey", activeKey.value);
       console.log("menu", menu);
       console.log("children", menu.children);
@@ -142,6 +150,7 @@ export default defineComponent({
       setData,
       handleClickOpenSubmenu,
       activeKey,
+      isOpen,
     };
   },
 });

@@ -112,29 +112,19 @@ export default {
         <div class="navbar-brand-box">
           <router-link to="/" class="logo logo-dark">
             <span class="logo-sm">
-              <img src="@/assets/images/logo.svg" alt height="22" />
+              <img src="@/assets/images/jslbear.png" alt height="22" />
             </span>
             <span class="logo-lg">
-              <img
-                src="../assets/images/logo.png"
-                alt
-                height="50"
-                width="150"
-              />
+              <img src="@/assets/images/logo.png" alt height="50" width="150" />
             </span>
           </router-link>
 
           <router-link to="/" class="logo logo-light">
             <span class="logo-sm">
-              <img src="@/assets/images/logo-light.svg" alt height="22" />
+              <img src="@/assets/images/jslbear.png" alt height="22" />
             </span>
             <span class="logo-lg">
-              <img
-                src="../assets/images/logo.png"
-                alt
-                height="50"
-                width="150"
-              />
+              <img src="@/assets/images/logo.png" alt height="50" width="150" />
             </span>
           </router-link>
         </div>

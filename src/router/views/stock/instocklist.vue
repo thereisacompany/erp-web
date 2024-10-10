@@ -283,6 +283,7 @@ export default {
                 },
               });
             } else {
+              console.log("else", this.customersData.length);
               fetchData();
             }
           }
@@ -368,6 +369,7 @@ export default {
       return NewObj1;
     },
     EditOne(RowItem) {
+      console.log("RowItem", RowItem);
       if (RowItem.id == 0) {
         this.SubView = 1;
         for (let key in this.customers) {
@@ -706,6 +708,7 @@ export default {
     },
 
     GetData() {
+      this.customersData = [];
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
       let APIUrl = `/depotHead/list`;
@@ -742,7 +745,6 @@ export default {
                 : Math.ceil(this.totalRows / this.pageSize);
           }
           this.IsGetDataing = false;
-          //// console.log("datalist:", this.customersData)
         })
         .catch(function (error) {
           console.log("error", error);
@@ -803,9 +805,9 @@ export default {
             if (res.data.code == 200) {
               this.showModal = false;
               this.SubView = 0;
-              this.$nextTick(() => {
+              setTimeout(() => {
                 this.GetData();
-              });
+              }, 500);
             } else {
               // console.log("message", res.data.data.message);
               alert(res.data.data.message);
@@ -980,6 +982,7 @@ export default {
               <div class="row">
                 <div class="col-sm-12 my-3">
                   <div class="table-responsive">
+                    <!-- SubView/{{ SubView }} -->
                     <table
                       class="table table-centered table-bordered table-nowrap align-middle"
                     >
@@ -1097,7 +1100,9 @@ export default {
                             />
                           </td>
                           <!-- 進貨數量 -->
-                          <td>{{ SubItem.orderNumber }}</td>
+                          <td v-if="SubView !== 1">
+                            {{ SubItem.orderNumber }}
+                          </td>
                           <!-- 備註 -->
                           <td>
                             <input

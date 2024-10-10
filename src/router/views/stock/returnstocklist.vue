@@ -1770,7 +1770,7 @@ export default {
             handleSubmit();
           "
           v-if="SubView == 3 && customers.status == 1"
-          >反審核</a
+          >修改</a
         >
         <a
           href="javascript:;"
