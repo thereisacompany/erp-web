@@ -2159,7 +2159,7 @@ export default {
                               <th width="10%">儲位</th>
                               <th width="15%">數量</th>
                               <th width="15%">備註</th>
-                              <th width="10%">操作</th>
+                              <th width="10%" v-if="false">操作</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -2276,13 +2276,12 @@ export default {
 
                                 <span v-else>{{ SubItem.operNumber }}</span>
                               </td>
-
-                              <td>
+                              <!-- v-if="SubView == 1 || SubView == 2" -->
+                              <td v-if="false">
                                 <div class="button-items">
                                   <a
                                     href="#"
                                     class="btn btn-sm btn-danger"
-                                    v-if="SubView == 1 || SubView == 2"
                                     @click="DeleteRow1(SubItem)"
                                     >刪除</a
                                   >
@@ -2291,10 +2290,11 @@ export default {
                             </tr>
                           </tbody>
                         </table>
+                        <!-- v-if="SubView == 1 || SubView == 2" -->
                         <a
                           href="#"
                           class="btn btn-sm btn-success"
-                          v-if="SubView == 1 || SubView == 2"
+                          v-if="false"
                           @click="NewRow1()"
                           >新增一列商品資料</a
                         >
