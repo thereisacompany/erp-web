@@ -1008,8 +1008,7 @@ export default {
                           </th>
                           <th width="5%" v-if="SubView !== 1">進貨數量</th>
                           <th width="10%">備註</th>
-                          <!-- v-if="SubView == 1" -->
-                          <th v-if="false" width="1%">操作</th>
+                          <th v-if="SubView == 1" width="1%">操作</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1114,8 +1113,7 @@ export default {
                               v-model="SubItem.remark"
                             />
                           </td>
-                          <!-- v-if="SubView == 1" -->
-                          <td v-if="false">
+                          <td v-if="SubView == 1">
                             <div class="button-items">
                               <a
                                 href="javascript:;"
@@ -1128,11 +1126,10 @@ export default {
                         </tr>
                       </tbody>
                     </table>
-                    <!-- v-if="SubView == 1" -->
                     <a
                       href="javascript:;"
                       class="btn btn-sm btn-success"
-                      v-if="false"
+                      v-if="SubView == 1"
                       @click="NewRow1()"
                       >新增一列商品資料</a
                     >
