@@ -80,7 +80,7 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
+        if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
           this.tryingToRegister = true;
           // Reset the regError if it existed.
           this.regError = null;
@@ -109,12 +109,12 @@ export default {
                 this.isRegisterError = true;
               })
           );
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "fakebackend") {
           const { email, username, password } = this.user;
           if (email && username && password) {
             this.registeruser(this.user);
           }
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "authapi") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "authapi") {
           axios
             .post("http://127.0.0.1:8000/api/register", {
               username: this.user.username,
@@ -280,12 +280,7 @@ export default {
                   <li class="list-inline-item">
                     <a
                       href="javascript: void(0);"
-                      class="
-                        social-list-item
-                        bg-primary
-                        text-white
-                        border-primary
-                      "
+                      class="social-list-item bg-primary text-white border-primary"
                     >
                       <i class="mdi mdi-facebook"></i>
                     </a>
@@ -301,12 +296,7 @@ export default {
                   <li class="list-inline-item">
                     <a
                       href="javascript: void(0);"
-                      class="
-                        social-list-item
-                        bg-danger
-                        text-white
-                        border-danger
-                      "
+                      class="social-list-item bg-danger text-white border-danger"
                     >
                       <i class="mdi mdi-google"></i>
                     </a>

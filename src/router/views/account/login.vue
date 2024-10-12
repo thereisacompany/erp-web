@@ -5,7 +5,7 @@ import md5 from "md5";
 import VConsole from "vconsole";
 import { version } from "../../../../package.json";
 
-import Layout from "../../layouts/auth";
+import Layout from "@/router/layouts/auth.vue";
 import {
   userMethods,
   authMethods,
@@ -60,6 +60,7 @@ export default {
     ...mapState("authfack", ["status"]),
 
     notification() {
+      console.log("this.$store", this.$store);
       return this.$store ? this.$store.state.notification : null;
     },
   },
@@ -75,7 +76,7 @@ export default {
       // stop here if form is invalid
       this.v$.$touch();
       // console.log("this.v$.$invalid",this.v$.$invalid)
-      // console.log("process.env.VUE_APP_DEFAULT_AUTH",process.env.VUE_APP_DEFAULT_AUTH)
+      // console.log("import.meta.env.VITE_APP_DEFAULT_AUTH",import.meta.env.VITE_APP_DEFAULT_AUTH)
       if (this.v$.$invalid) {
         return;
       } else {
@@ -152,7 +153,7 @@ export default {
     },
   },
   mounted() {
-    //console.log("this.$route.query.vConsole=", process.env.NODE_ENV)
+    //console.log("this.$route.query.vConsole=", import.meta.env.NODE_ENV)
     localStorage.removeItem("user");
     localStorage.removeItem("user_authList");
     if (this.$route.query.vConsole == "1") {
@@ -204,12 +205,12 @@ export default {
               dismissible
               >{{ authError }}</b-alert
             >
-            <div
+            <!-- <div
               v-if="notification.message"
               :class="'alert ' + notification.type"
             >
               {{ notification.message }}
-            </div>
+            </div> -->
 
             <b-form class="p-2" @submit.prevent="tryToLogIn">
               <b-form-group

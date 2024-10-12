@@ -1,6 +1,6 @@
 <script>
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import appConfig from "@/app.config";
 
 /**
@@ -9,7 +9,7 @@ import appConfig from "@/app.config";
 export default {
   page: {
     title: "Starter Page",
-    meta: [{ name: "description", content: appConfig.description }]
+    meta: [{ name: "description", content: appConfig.description }],
   },
   components: { Layout, PageHeader },
   data() {
@@ -18,15 +18,15 @@ export default {
       items: [
         {
           text: "Utility",
-          href: "/"
+          href: "/",
         },
         {
           text: "Starter Page",
-          active: true
-        }
-      ]
+          active: true,
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 <template>

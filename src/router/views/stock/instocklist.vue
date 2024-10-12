@@ -1,7 +1,7 @@
 <script>
 import { createVNode } from "vue";
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
@@ -883,7 +883,9 @@ export default {
     GetAccessFile1(UrlPath1) {
       ///systemConfig/static/
 
-      let APIUrl = `${process.env.VUE_APP_API_URL}/systemConfig/static/${UrlPath1}`;
+      let APIUrl = `${
+        import.meta.env.VITE_APP_API_URL
+      }/systemConfig/static/${UrlPath1}`;
       return APIUrl;
     },
     DeleteFile1(file1) {

@@ -13,17 +13,17 @@ export default {
   },
   mounted() {
     // eslint-disable-next-line no-unused-vars
-    axios.get(process.env.VUE_APP_URL).then((res) => {
+    axios.get(import.meta.env.VITE_APP_URL).then((res) => {
       setTimeout(() => {
-            var preloader = document.getElementsByClassName("preloader-component");
-            Array.prototype.forEach.call(preloader, function(el) {
-                el.style.display = "none";
-            });
+        var preloader = document.getElementsByClassName("preloader-component");
+        Array.prototype.forEach.call(preloader, function (el) {
+          el.style.display = "none";
+        });
 
-            var status = document.getElementsByClassName("status");
-            Array.prototype.forEach.call(status, function(el) {
-                el.style.display = "none";
-            });
+        var status = document.getElementsByClassName("status");
+        Array.prototype.forEach.call(status, function (el) {
+          el.style.display = "none";
+        });
       }, 1000);
     });
   },

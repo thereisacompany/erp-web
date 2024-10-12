@@ -1,6 +1,6 @@
 <script>
 import Layout from "../../../layouts/main";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/page-header.vue";
 import appConfig from "@/app.config";
 
 import Visitors from "./visitors";

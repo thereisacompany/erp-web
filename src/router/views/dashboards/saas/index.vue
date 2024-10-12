@@ -1,7 +1,7 @@
 <script>
 import Layout from "../../../layouts/main";
 import appConfig from "@/app.config";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/page-header.vue";
 
 import Earning from "./earning";
 import TopSelling from "./top-selling.vue";
@@ -98,7 +98,8 @@ export default {
       if (this.$refs.current.$el) {
         setTimeout(() => {
           this.$refs.current.SimpleBar.value.getScrollElement().scrollTop =
-            this.$refs.current.SimpleBar.value.getScrollElement().scrollHeight + 1500;
+            this.$refs.current.SimpleBar.value.getScrollElement().scrollHeight +
+            1500;
         }, 500);
       }
     },
@@ -224,13 +225,7 @@ export default {
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-xs me-3">
                     <span
-                      class="
-                        avatar-title
-                        rounded-circle
-                        bg-soft bg-primary
-                        text-primary
-                        font-size-18
-                      "
+                      class="avatar-title rounded-circle bg-soft bg-primary text-primary font-size-18"
                     >
                       <i class="bx bx-copy-alt"></i>
                     </span>
@@ -259,13 +254,7 @@ export default {
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-xs me-3">
                     <span
-                      class="
-                        avatar-title
-                        rounded-circle
-                        bg-soft bg-primary
-                        text-primary
-                        font-size-18
-                      "
+                      class="avatar-title rounded-circle bg-soft bg-primary text-primary font-size-18"
                     >
                       <i class="bx bx-archive-in"></i>
                     </span>
@@ -294,13 +283,7 @@ export default {
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-xs me-3">
                     <span
-                      class="
-                        avatar-title
-                        rounded-circle
-                        bg-soft bg-primary
-                        text-primary
-                        font-size-18
-                      "
+                      class="avatar-title rounded-circle bg-soft bg-primary text-primary font-size-18"
                     >
                       <i class="bx bx-purchase-tag-alt"></i>
                     </span>
@@ -1247,13 +1230,13 @@ export default {
                     }"
                   />
                   <div
-                  v-if="submitted && v$.chat.message.$error"
-                  class="invalid-feedback"
-                >
-                  <span v-if="v$.chat.message.required.$message">{{
-                    v$.chat.message.required.$message
-                  }}</span>
-                </div>
+                    v-if="submitted && v$.chat.message.$error"
+                    class="invalid-feedback"
+                  >
+                    <span v-if="v$.chat.message.required.$message">{{
+                      v$.chat.message.required.$message
+                    }}</span>
+                  </div>
                   <div class="chat-input-links">
                     <ul class="list-inline mb-0">
                       <li class="list-inline-item">

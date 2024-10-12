@@ -1,16 +1,16 @@
 <script>
-import Layout from "../../layouts/main";
+import Layout from "@/router/layouts/main.vue";
 import appConfig from "@/app.config";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/page-header.vue";
 
-import Profile from "@/components/widgets/profile";
-import Earning from "@/components/widgets/earning";
-import Stat from "@/components/widgets/stat";
-import Transaction from "@/components/widgets/transaction";
-import Emailsent from "@/components/widgets/emailsent";
-import SocialSource from "@/components/widgets/social-source";
-import Activity from "@/components/widgets/activity";
-import SellingProduct from "@/components/widgets/selling-product";
+import Profile from "@/components/widgets/profile.vue";
+import Earning from "@/components/widgets/earning.vue";
+import Stat from "@/components/widgets/stat.vue";
+import Transaction from "@/components/widgets/transaction.vue";
+import Emailsent from "@/components/widgets/emailsent.vue";
+import SocialSource from "@/components/widgets/social-source.vue";
+import Activity from "@/components/widgets/activity.vue";
+import SellingProduct from "@/components/widgets/selling-product.vue";
 
 /**
  * Dashboard Component
@@ -139,7 +139,7 @@ export default {
     };
   },
   mounted() {
-   console.log("this.$store",this.$store)  
+    console.log("this.$store", this.$store);
     setTimeout(() => {
       this.showModal = true;
     }, 1500);

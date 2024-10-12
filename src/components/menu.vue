@@ -132,14 +132,20 @@ export default defineComponent({
           pNumber: 0,
           userId: userId,
         };
-        server.post(url, params).then((res) => {
-          menuLists.value = res.data;
-          console.log("menuLists", menuLists.value);
-          setData();
-        });
+        server
+          .post(url, params)
+          .then((res) => {
+            menuLists.value = res.data;
+            console.log("menuLists", menuLists.value);
+            setData();
+          })
+          .catch((error) => {
+            console.log("error from findMenuByPNumber", error);
+            window.location = "/logout";
+          });
       }
-      // console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-      // process.env.
+      // console.log("import.meta.env.NODE_ENV", import.meta.env.NODE_ENV);
+      // import.meta.env.
     });
 
     return {

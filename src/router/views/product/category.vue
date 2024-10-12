@@ -1,6 +1,6 @@
 <script>
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import { server } from "@/api";
 import Swal from "sweetalert2";
 // import qs from "qs";
@@ -246,7 +246,11 @@ export default {
           <div class="card-body">
             <div class="row">
               <div class="col-sm-3">
-                <button type="button" class="btn btn-success btn-rounded mb-2 me-2" @click="handleOpenAddCategory()">
+                <button
+                  type="button"
+                  class="btn btn-success btn-rounded mb-2 me-2"
+                  @click="handleOpenAddCategory()"
+                >
                   <i class="mdi mdi-plus me-1"></i> 新增分類
                 </button>
               </div>
@@ -266,30 +270,58 @@ export default {
                     <td>{{ item.title }}</td>
                     <td>
                       <div>
-                        <a href="javascript:;" style="margin-right: 10px" @click="handleOpenEditCategory(item)">
+                        <a
+                          href="javascript:;"
+                          style="margin-right: 10px"
+                          @click="handleOpenEditCategory(item)"
+                        >
                           編輯
                         </a>
-                        <a v-if="item.children.length > 0" class="link" href="javascript:;"
-                          @click="item.childOpen = !item.childOpen" style="margin-right: 10px">下層</a>
-                        <a class="link" href="javascript:;" @click="confirmDelete(item)">刪除</a>
+                        <a
+                          v-if="item.children.length > 0"
+                          class="link"
+                          href="javascript:;"
+                          @click="item.childOpen = !item.childOpen"
+                          style="margin-right: 10px"
+                          >下層</a
+                        >
+                        <a
+                          class="link"
+                          href="javascript:;"
+                          @click="confirmDelete(item)"
+                          >刪除</a
+                        >
                       </div>
                     </td>
                   </tr>
                   <template v-if="item.children.length > 0 && item.childOpen">
                     <tr>
                       <td colspan="3" style="padding: 0">
-                        <table class="table table-centered table-nowrap align-middle">
-                          <tbody v-for="(child, childIndex) in item.children" :key="childIndex">
+                        <table
+                          class="table table-centered table-nowrap align-middle"
+                        >
+                          <tbody
+                            v-for="(child, childIndex) in item.children"
+                            :key="childIndex"
+                          >
                             <tr>
                               <td width="50">-</td>
                               <td>{{ child.title }}</td>
                               <td width="150">
                                 <div>
-                                  <a href="javascript:;" style="margin-right: 10px"
-                                    @click="handleOpenEditCategory(child)">
+                                  <a
+                                    href="javascript:;"
+                                    style="margin-right: 10px"
+                                    @click="handleOpenEditCategory(child)"
+                                  >
                                     編輯
                                   </a>
-                                  <a class="link" href="javascript:;" @click="confirmDelete(child)">刪除</a>
+                                  <a
+                                    class="link"
+                                    href="javascript:;"
+                                    @click="confirmDelete(child)"
+                                    >刪除</a
+                                  >
                                 </div>
                               </td>
                             </tr>
@@ -301,25 +333,47 @@ export default {
                 </tbody>
               </table>
             </div>
-            <b-modal v-model="showModal" :title="`${formModalButtonName}分類`" title-class="text-black font-18"
-              body-class="p-3" hide-footer bvModalEvent.trigger="handleCloseModal">
+            <b-modal
+              v-model="showModal"
+              :title="`${formModalButtonName}分類`"
+              title-class="text-black font-18"
+              body-class="p-3"
+              hide-footer
+              bvModalEvent.trigger="handleCloseModal"
+            >
               <form @submit.prevent="handleSubmit">
                 <div class="row">
                   <div class="col-12 mb-3">
                     <label for="title">分類名稱</label>
-                    <input autocomplete="off" id="title" type="text" v-model="formData.title" class="form-control"
-                      placeholder="分類名稱" />
+                    <input
+                      autocomplete="off"
+                      id="title"
+                      type="text"
+                      v-model="formData.title"
+                      class="form-control"
+                      placeholder="分類名稱"
+                    />
                   </div>
                   <div class="col-12 mb-3">
                     <label for="sort">排序</label>
-                    <input autocomplete="off" id="sort" type="text" v-model="formData.sort" class="form-control"
-                      placeholder="排序" />
+                    <input
+                      autocomplete="off"
+                      id="sort"
+                      type="text"
+                      v-model="formData.sort"
+                      class="form-control"
+                      placeholder="排序"
+                    />
                   </div>
                   <div class="col-12 mb-3">
                     <label>上層分類</label>
                     <select class="form-select" v-model="formData.parentId">
                       <option :value="null" selected>請選擇上層分類</option>
-                      <option :value="item.id" v-for="(item, index) in formData.children" :key="index">
+                      <option
+                        :value="item.id"
+                        v-for="(item, index) in formData.children"
+                        :key="index"
+                      >
                         {{ item.title }}
                       </option>
                     </select>

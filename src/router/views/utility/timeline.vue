@@ -3,8 +3,8 @@
 import "vue3-carousel/dist/carousel.css";
 import { Carousel, Slide } from "vue3-carousel";
 
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import appConfig from "@/app.config";
 
 /**
@@ -78,12 +78,7 @@ export default {
                       </div>
                       <div class="event-down-icon">
                         <i
-                          class="
-                            bx bx-down-arrow-circle
-                            h1
-                            text-primary
-                            down-arrow-icon
-                          "
+                          class="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"
                         ></i>
                       </div>
 
@@ -105,12 +100,7 @@ export default {
                       </div>
                       <div class="event-down-icon">
                         <i
-                          class="
-                            bx bx-down-arrow-circle
-                            h1
-                            text-primary
-                            down-arrow-icon
-                          "
+                          class="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"
                         ></i>
                       </div>
 
@@ -132,12 +122,7 @@ export default {
                       </div>
                       <div class="event-down-icon">
                         <i
-                          class="
-                            bx bx-down-arrow-circle
-                            h1
-                            text-primary
-                            down-arrow-icon
-                          "
+                          class="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"
                         ></i>
                       </div>
 
@@ -159,12 +144,7 @@ export default {
                       </div>
                       <div class="event-down-icon">
                         <i
-                          class="
-                            bx bx-down-arrow-circle
-                            h1
-                            text-primary
-                            down-arrow-icon
-                          "
+                          class="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"
                         ></i>
                       </div>
 
@@ -185,12 +165,7 @@ export default {
                       </div>
                       <div class="event-down-icon">
                         <i
-                          class="
-                            bx bx-down-arrow-circle
-                            h1
-                            text-primary
-                            down-arrow-icon
-                          "
+                          class="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"
                         ></i>
                       </div>
 
@@ -212,12 +187,7 @@ export default {
                       </div>
                       <div class="event-down-icon">
                         <i
-                          class="
-                            bx bx-down-arrow-circle
-                            h1
-                            text-primary
-                            down-arrow-icon
-                          "
+                          class="bx bx-down-arrow-circle h1 text-primary down-arrow-icon"
                         ></i>
                       </div>
 

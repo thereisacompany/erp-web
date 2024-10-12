@@ -1,36 +1,34 @@
 <script>
-import {
-    layoutComputed
-} from "@/state/helpers";
-import Vertical from "./vertical";
-import Horizontal from "./horizontal";
+import { layoutComputed } from "@/state/helpers";
+import Vertical from "./vertical.vue";
+// import Horizontal from "./horizontal.vue";
 
 export default {
-    components: {
-        Vertical,
-        Horizontal,
-    },
-    data() {
-        return {};
-    },
-    computed: {
-        ...layoutComputed,
-    },
-    methods: {},
-    mounted() {
-        // document.querySelector("html").setAttribute('dir', 'rtl');
-    }
+  components: {
+    Vertical,
+    // Horizontal,
+  },
+  data() {
+    return {};
+  },
+  computed: {
+    ...layoutComputed,
+  },
+  methods: {},
+  mounted() {
+    // document.querySelector("html").setAttribute('dir', 'rtl');
+  },
 };
 </script>
 
 <template>
-<div>
-    <Vertical v-if="layoutType === 'vertical'" :layout="layoutType">
-        <slot />
+  <div>
+    <Vertical :layout="'vertical'">
+      <slot />
     </Vertical>
 
-    <Horizontal v-if="layoutType === 'horizontal'" :layout="layoutType">
-        <slot />
-    </Horizontal>
-</div>
+    <!-- <Horizontal v-if="layoutType === 'horizontal'" :layout="layoutType">
+      <slot />
+    </Horizontal> -->
+  </div>
 </template>

@@ -149,8 +149,8 @@
 </template>
 <script>
 import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 // Modal
@@ -233,7 +233,6 @@ export default defineComponent({
 
     // fetch api
     function fetchData(type) {
-      console.log("fetchData");
       let url = `/role/list?currentPage=${currentPage.value}&pageSize=${pageSize.value}`;
       if (searchParams.value !== null && searchParams.value !== undefined) {
         url = url + `&search=${encodeURIComponent(searchParams.value)}`;

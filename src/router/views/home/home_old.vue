@@ -1,7 +1,7 @@
 <script>
-import Layout from "../../layouts/main";
+import Layout from "@/router/layouts/main.vue";
 import appConfig from "@/app.config";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/page-header.vue";
 
 import Profile from "@/components/widgets/profile";
 import Earning from "@/components/widgets/earning";
@@ -139,7 +139,7 @@ export default {
     };
   },
   mounted() {
-   console.log("this.$store",this.$store)  
+    console.log("this.$store", this.$store);
     // setTimeout(() => {
     //   this.showModal = true;
     // }, 1500);

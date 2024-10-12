@@ -1,9 +1,9 @@
 <script>
 import Layout from "../../../layouts/main";
 import appConfig from "@/app.config";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/page-header.vue";
 
-import { SimpleBar } from "simplebar-vue3"
+import { SimpleBar } from "simplebar-vue3";
 import WalletBalance from "./wallet-balance.vue";
 import Overview from "./overview.vue";
 

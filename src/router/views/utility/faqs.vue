@@ -1,6 +1,6 @@
 <script>
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import appConfig from "@/app.config";
 
 /**
@@ -9,7 +9,7 @@ import appConfig from "@/app.config";
 export default {
   page: {
     title: "FAQs",
-    meta: [{ name: "description", content: appConfig.description }]
+    meta: [{ name: "description", content: appConfig.description }],
   },
   components: { Layout, PageHeader },
   data() {
@@ -18,22 +18,27 @@ export default {
       items: [
         {
           text: "Utility",
-          href: "/"
+          href: "/",
         },
         {
           text: "FAQs",
-          active: true
-        }
-      ]
+          active: true,
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 <template>
   <Layout>
     <PageHeader :title="title" :items="items" />
     <div class="checkout-tabs">
-      <b-tabs pills vertical nav-class="p-0" nav-wrapper-class="col-xl-2 col-sm-3">
+      <b-tabs
+        pills
+        vertical
+        nav-class="p-0"
+        nav-wrapper-class="col-xl-2 col-sm-3"
+      >
         <b-tab active>
           <template v-slot:title>
             <i class="bx bx-question-mark d-block check-nav-icon mt-4 mb-2"></i>
@@ -46,57 +51,75 @@ export default {
                   <h4 class="card-title mb-5">General Questions</h4>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">What is Lorem Ipsum?</h5>
-                      <p
-                        class="text-muted"
-                      >New common language will be more simple and regular than the existing European languages. It will be as simple as occidental.</p>
+                      <p class="text-muted">
+                        New common language will be more simple and regular than
+                        the existing European languages. It will be as simple as
+                        occidental.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where does it come from?</h5>
-                      <p
-                        class="text-muted"
-                      >Everyone realizes why a new common language would be desirable one could refuse to pay expensive translators.</p>
+                      <p class="text-muted">
+                        Everyone realizes why a new common language would be
+                        desirable one could refuse to pay expensive translators.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where can I get some?</h5>
-                      <p
-                        class="text-muted"
-                      >If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages.</p>
+                      <p class="text-muted">
+                        If several languages coalesce, the grammar of the
+                        resulting language is more simple and regular than that
+                        of the individual languages.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Why do we use it?</h5>
-                      <p
-                        class="text-muted"
-                      >Their separate existence is a myth. For science, music, sport, etc, Europe uses the same vocabulary.</p>
+                      <p class="text-muted">
+                        Their separate existence is a myth. For science, music,
+                        sport, etc, Europe uses the same vocabulary.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where can I get some?</h5>
-                      <p
-                        class="text-muted"
-                      >To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental</p>
+                      <p class="text-muted">
+                        To an English person, it will seem like simplified
+                        English, as a skeptical Cambridge friend of mine told me
+                        what Occidental
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -119,57 +142,75 @@ export default {
 
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where does it come from?</h5>
-                      <p
-                        class="text-muted"
-                      >Everyone realizes why a new common language would be desirable one could refuse to pay expensive translators.</p>
+                      <p class="text-muted">
+                        Everyone realizes why a new common language would be
+                        desirable one could refuse to pay expensive translators.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where can I get some?</h5>
-                      <p
-                        class="text-muted"
-                      >To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental</p>
+                      <p class="text-muted">
+                        To an English person, it will seem like simplified
+                        English, as a skeptical Cambridge friend of mine told me
+                        what Occidental
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">What is Lorem Ipsum?</h5>
-                      <p
-                        class="text-muted"
-                      >New common language will be more simple and regular than the existing European languages. It will be as simple as occidental.</p>
+                      <p class="text-muted">
+                        New common language will be more simple and regular than
+                        the existing European languages. It will be as simple as
+                        occidental.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Why do we use it?</h5>
-                      <p
-                        class="text-muted"
-                      >Their separate existence is a myth. For science, music, sport, etc, Europe uses the same vocabulary.</p>
+                      <p class="text-muted">
+                        Their separate existence is a myth. For science, music,
+                        sport, etc, Europe uses the same vocabulary.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where can I get some?</h5>
-                      <p
-                        class="text-muted"
-                      >If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages.</p>
+                      <p class="text-muted">
+                        If several languages coalesce, the grammar of the
+                        resulting language is more simple and regular than that
+                        of the individual languages.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -192,59 +233,77 @@ export default {
 
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where can I get some?</h5>
-                      <p
-                        class="text-muted"
-                      >To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental</p>
+                      <p class="text-muted">
+                        To an English person, it will seem like simplified
+                        English, as a skeptical Cambridge friend of mine told me
+                        what Occidental
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where does it come from?</h5>
-                      <p
-                        class="text-muted"
-                      >Everyone realizes why a new common language would be desirable one could refuse to pay expensive translators.</p>
+                      <p class="text-muted">
+                        Everyone realizes why a new common language would be
+                        desirable one could refuse to pay expensive translators.
+                      </p>
                     </div>
                   </div>
 
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Why do we use it?</h5>
-                      <p
-                        class="text-muted"
-                      >Their separate existence is a myth. For science, music, sport, etc, Europe uses the same vocabulary.</p>
+                      <p class="text-muted">
+                        Their separate existence is a myth. For science, music,
+                        sport, etc, Europe uses the same vocabulary.
+                      </p>
                     </div>
                   </div>
                   <div class="faq-box d-flex mb-4">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">Where can I get some?</h5>
-                      <p
-                        class="text-muted"
-                      >If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual languages.</p>
+                      <p class="text-muted">
+                        If several languages coalesce, the grammar of the
+                        resulting language is more simple and regular than that
+                        of the individual languages.
+                      </p>
                     </div>
                   </div>
 
                   <div class="faq-box d-flex">
                     <div class="faq-icon me-3">
-                      <i class="bx bx-help-circle font-size-20 text-success"></i>
+                      <i
+                        class="bx bx-help-circle font-size-20 text-success"
+                      ></i>
                     </div>
                     <div class="flex-grow-1">
                       <h5 class="font-size-15">What is Lorem Ipsum?</h5>
-                      <p
-                        class="text-muted"
-                      >New common language will be more simple and regular than the existing European languages. It will be as simple as occidental.</p>
+                      <p class="text-muted">
+                        New common language will be more simple and regular than
+                        the existing European languages. It will be as simple as
+                        occidental.
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -54,7 +54,7 @@ export default {
       if (this.v$.$invalid) {
         return;
       } else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
+        if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
           this.tryingToReset = true;
           // Reset the authError if it existed.
           this.error = null;
@@ -73,7 +73,7 @@ export default {
                 this.isResetError = true;
               })
           );
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "authapi") {
+        } else if (import.meta.env.VITE_APP_DEFAULT_AUTH === "authapi") {
           axios
             .post("http://127.0.0.1:8000/api/password/create", {
               email: this.email,

@@ -1,10 +1,10 @@
 import axios from 'axios';
-import common from "@/api/common";
+import common from "@/api/common.js";
 const server = axios.create({
-    baseURL: process.env.VUE_APP_API_URL //http://jslerp.ddns.net:9999/jshERP-boot/
+    baseURL: import.meta.env.VITE_APP_API_URL //http://jslerp.ddns.net:9999/jshERP-boot/
 });
 
-server.interceptors.request.use(function(config) {
+server.interceptors.request.use(function (config) {
     // 在送出 request 之前可以在這裡攔截處理
     //console.log(config)
 
@@ -17,19 +17,19 @@ server.interceptors.request.use(function(config) {
     }
 
     return config;
-}, function(error) {
+}, function (error) {
     // 如果 request 出現 error
     // 可以在這裡攔截處理
     console.log(error)
     return Promise.reject(error);
 });
 
-server.interceptors.response.use(function(response) {
+server.interceptors.response.use(function (response) {
     // 回傳的 status code 在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response 做處理
     //console.log(response)
     return response;
-}, function(error) {
+}, function (error) {
     // 回傳的 status code 不在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response error 做處理
     //console.log(error);
@@ -48,7 +48,7 @@ server.interceptors.response.use(function(response) {
 
 
 
-server.GetSupplierList = function(callback) {
+server.GetSupplierList = function (callback) {
     let APIUrl = `/supplier/list`;
     let APIParameter = `?currentPage=1&pageSize=1000`;
     let queryStr = `{"type":"客戶"}`;
@@ -65,7 +65,7 @@ server.GetSupplierList = function(callback) {
                 return;
             }
             if (callback) callback(null)
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error)
             if (callback) callback(null)
             return;
@@ -73,7 +73,7 @@ server.GetSupplierList = function(callback) {
 }
 
 
-server.GetSupplier2List = function(typename, callback) {
+server.GetSupplier2List = function (typename, callback) {
     let APIUrl = `/supplier/list`;
     let APIParameter = `?currentPage=1&pageSize=1000`;
     let queryStr = `{"type":"${typename}"}`;
@@ -90,13 +90,13 @@ server.GetSupplier2List = function(typename, callback) {
                 return;
             }
             if (callback) callback(null)
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error)
             if (callback) callback(null)
             return;
         });
 }
-server.GetSupplierByID = function(id, callback) {
+server.GetSupplierByID = function (id, callback) {
     let APIUrl = `/supplier/list`;
     let APIParameter = `?currentPage=1&pageSize=1000`;
     let queryStr = `{"id":"${id}"}`;
@@ -112,13 +112,13 @@ server.GetSupplierByID = function(id, callback) {
                 return;
             }
             if (callback) callback(null)
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error)
             if (callback) callback(null)
             return;
         });
 }
-server.GetMaterialListByRow = function(wObj, callback) {
+server.GetMaterialListByRow = function (wObj, callback) {
     ////material/findBySelect?q=111&categoryId=26&depotId=19&column=createTime&order=desc&mpList=%E5%88%B6%E9%80%A0%E5%95%86,%E8%87%AA%E5%AE%9A%E4%B9%891,%E8%87%AA%E5%AE%9A%E4%B9%892,%E8%87%AA%E5%AE%9A%E4%B9%893&page=1&rows=10
 
     let APIUrl = `/material/findBySelect`;
@@ -143,12 +143,12 @@ server.GetMaterialListByRow = function(wObj, callback) {
                 return;
             }
             if (callback) callback(null)
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log("error", error);
             if (callback) callback(null)
         });
 }
-server.GetVehiclelist = function(wObj, callback) {
+server.GetVehiclelist = function (wObj, callback) {
 
 
     let APIUrl = `/vehicle/list`;
@@ -204,7 +204,7 @@ server.GetVehiclelist = function(wObj, callback) {
                 }
             }
 
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log("error", error);
             return;
         });
@@ -212,7 +212,7 @@ server.GetVehiclelist = function(wObj, callback) {
 }
 
 
-server.GetLog = function(wObj, callback) {
+server.GetLog = function (wObj, callback) {
 
     // GET /jshERP-boot/log/list?search={"content":"S20240327205"}&currentPage=1&pageSize=100
     // content 帶入單號查詢即可，currentPage、pageSize 固定帶 1跟100
@@ -229,7 +229,7 @@ server.GetLog = function(wObj, callback) {
                 if (callback) { callback(list2); }
             }
 
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log("error", error);
             return;
         });

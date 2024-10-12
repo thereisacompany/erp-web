@@ -1,6 +1,6 @@
 <script>
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import { server } from "@/api";
 import common from "@/api/common";
 import Swal from "sweetalert2";

@@ -24,33 +24,33 @@ export default {
   },
   data() {
     return {
-      languages: [
-        {
-          flag: require("@/assets/images/flags/us.jpg"),
-          language: "en",
-          title: "English",
-        },
-        {
-          flag: require("@/assets/images/flags/french.jpg"),
-          language: "fr",
-          title: "French",
-        },
-        {
-          flag: require("@/assets/images/flags/spain.jpg"),
-          language: "es",
-          title: "spanish",
-        },
-        {
-          flag: require("@/assets/images/flags/chaina.png"),
-          language: "zh",
-          title: "Chinese",
-        },
-        {
-          flag: require("@/assets/images/flags/arabic.png"),
-          language: "ar",
-          title: "Arabic",
-        },
-      ],
+      // languages: [
+      //   {
+      //     flag: require("@/assets/images/flags/us.jpg"),
+      //     language: "en",
+      //     title: "English",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/french.jpg"),
+      //     language: "fr",
+      //     title: "French",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/spain.jpg"),
+      //     language: "es",
+      //     title: "spanish",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/chaina.png"),
+      //     language: "zh",
+      //     title: "Chinese",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/arabic.png"),
+      //     language: "ar",
+      //     title: "Arabic",
+      //   },
+      // ],
     };
   },
   methods: {
@@ -448,7 +448,7 @@ export default {
             </div>
           </form>
         </b-dropdown>
-        <select v-model="$i18n.locale" class="lang-dropdown border-0">
+        <!-- <select v-model="$i18n.locale" class="lang-dropdown border-0">
           <option
             v-for="(locale, i) in languages"
             :key="`locale-${i}`"
@@ -456,7 +456,7 @@ export default {
           >
             {{ locale.title }}
           </option>
-        </select>
+        </select> -->
         <b-dropdown
           class="d-none d-lg-inline-block noti-icon"
           menu-class="dropdown-menu-lg dropdown-menu-end"

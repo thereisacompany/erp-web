@@ -45,3 +45,10 @@ export const actions = {
     commit('LOADER', loader)
   }
 }
+
+export default {
+  namespaced: true, // 命名空間
+  state,
+  mutations,
+  actions,
+};

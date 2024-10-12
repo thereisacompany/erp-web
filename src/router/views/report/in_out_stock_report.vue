@@ -1,6 +1,6 @@
 <script>
-import Layout from "../../layouts/main";
-import PageHeader from "@/components/page-header";
+import Layout from "@/router/layouts/main.vue";
+import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";

@@ -14,33 +14,33 @@ export default {
       text: null,
       flag: null,
       value: null,
-      languages: [
-        {
-          flag: require("@/assets/images/flags/us.jpg"),
-          language: "en",
-          title: "English",
-        },
-        {
-          flag: require("@/assets/images/flags/french.jpg"),
-          language: "fr",
-          title: "French",
-        },
-        {
-          flag: require("@/assets/images/flags/spain.jpg"),
-          language: "es",
-          title: "Spanish",
-        },
-        {
-          flag: require("@/assets/images/flags/chaina.png"),
-          language: "zh",
-          title: "Chinese",
-        },
-        {
-          flag: require("@/assets/images/flags/arabic.png"),
-          language: "ar",
-          title: "Arabic",
-        },
-      ],
+      // languages: [
+      //   {
+      //     flag: require("@/assets/images/flags/us.jpg"),
+      //     language: "en",
+      //     title: "English",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/french.jpg"),
+      //     language: "fr",
+      //     title: "French",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/spain.jpg"),
+      //     language: "es",
+      //     title: "Spanish",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/chaina.png"),
+      //     language: "zh",
+      //     title: "Chinese",
+      //   },
+      //   {
+      //     flag: require("@/assets/images/flags/arabic.png"),
+      //     language: "ar",
+      //     title: "Arabic",
+      //   },
+      // ],
     };
   },
 

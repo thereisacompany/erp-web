@@ -1,7 +1,7 @@
 <script>
-import Layout from "../../layouts/main";
+import Layout from "@/router/layouts/main.vue";
 import appConfig from "@/app.config";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/components/page-header.vue";
 
 /**
  * Dashboard Component
