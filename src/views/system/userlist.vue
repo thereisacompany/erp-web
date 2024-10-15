@@ -88,18 +88,18 @@ export default {
       //console.log("menuItems", menuItems)
 
       this.menuAllList = [];
-      menuItems.forEach((item) => {
-        if (item.id && !item.subItems) {
-          this.menuAllList.push(item.id);
-        }
-        if (item.subItems) {
-          item.subItems.forEach((item2) => {
-            if (item2.id && !item2.subItems) {
-              this.menuAllList.push(item2.id);
-            }
-          });
-        }
-      });
+      // menuItems.forEach((item) => {
+      //   if (item.id && !item.subItems) {
+      //     this.menuAllList.push(item.id);
+      //   }
+      //   if (item.subItems) {
+      //     item.subItems.forEach((item2) => {
+      //       if (item2.id && !item2.subItems) {
+      //         this.menuAllList.push(item2.id);
+      //       }
+      //     });
+      //   }
+      // });
       //console.log(this.menuAllList)
     });
   },

@@ -44,7 +44,6 @@
 <script>
 import { defineComponent, onMounted, ref } from "vue";
 import { server } from "@/api";
-// import { menuItems } from "./menu.js";
 
 export default defineComponent({
   props: {
