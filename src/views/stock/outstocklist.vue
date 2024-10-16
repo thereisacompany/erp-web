@@ -10,7 +10,7 @@ import common from "@/api/common";
 
 import appConfig from "@/app.config";
 import { Modal, Tag } from "ant-design-vue";
-import ImportFile from "../../../components/importFile.vue";
+import ImportFile from "@/components/importFile.vue";
 
 /**
  * Customers component

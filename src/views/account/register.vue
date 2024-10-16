@@ -6,7 +6,7 @@ import {
   authFackMethods,
   notificationMethods,
 } from "@/state/helpers";
-import Layout from "../../layouts/auth";
+import Layout from "../../router/layouts/auth.vue";
 import appConfig from "@/app.config";
 import { mapState } from "vuex";
 

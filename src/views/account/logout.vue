@@ -1,9 +1,8 @@
 <script>
-
-import router from '../../index'
+import router from "@/router/index";
 export default {
   created() {
-        router.push('/login'); 
-  }
-}
+    router.push("/login");
+  },
+};
 </script>

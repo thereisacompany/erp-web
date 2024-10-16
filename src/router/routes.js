@@ -1,5 +1,24 @@
 import store from '@/state/store';
-import Home from '@/router/views/home/home.vue'
+import Home from '@/views/home/home.vue';
+import CustomerList from '@/views/user/customerList.vue';
+import DriverList from '@/views/user/driverList.vue';
+import Vehicle from '@/views/stock/vehicleList.vue';
+import ProductManagement from '@/views/product/productManagement.vue';
+import ProductCategory from '@/views/product/productCategory.vue';
+import DepotList from '@/views/stock/depotList.vue';
+import InStockList from '@/views/stock/inStockList.vue';
+import OutStockList from '@/views/stock/outStockList.vue';
+import MoveStockList from '@/views/stock/moveStockList.vue';
+import ReturnStockList from '@/views/stock/returnStockList.vue';
+import InOutStockReport from '@/views/report/inOutStockReport.vue';
+import DriverStockReport from '@/views/report/driverStockReport.vue';
+import UserList from '@/views/system/userList.vue';
+import Role from '@/views/system/role.vue';
+import ChangePassword from '@/views/user/changePassword.vue';
+import Login from '@/views/account/login.vue';
+import Logout from '@/views/account/logout.vue';
+import ErrorPage from '@/views/utility/404.vue';
+
 // 路由定義
 const routes = [
 	{
@@ -20,15 +39,8 @@ const routes = [
 		meta: { authRequired: true },
 		component: Home,
 	},
-	// 預設dashboard
-	{
-		path: '/dashboard',
-		name: 'dashboard',
-		meta: { authRequired: true },
-		component: () => import('@/router/views/dashboards/default.vue'),
-	},
 	// 供應商管理
-	// { path: "/user/vendorlist", name: "vendorlist", meta: { authRequired: true }, component: () => import('@/router/views/user/vendorlist') },
+	// { path: "/user/vendorlist", name: "vendorlist", meta: { authRequired: true }, component: () => import('@/views/user/vendorlist') },
 	// 公司資料管理
 	{
 		path: '/system',
@@ -40,21 +52,21 @@ const routes = [
 				path: 'customer',
 				name: 'customerList',
 				meta: { authRequired: true },
-				component: () => import('@/views/user/customerList.vue')
+				component: CustomerList
 			},
 			// 人事管理
 			{
 				path: 'member',
 				name: 'driverList',
 				meta: { authRequired: true },
-				component: () => import('@/views/user/driverList.vue'),
+				component: DriverList,
 			},
 			// 車輛管理
 			{
 				path: 'vehicle',
 				name: 'vehicleList',
 				meta: { authRequired: true },
-				component: () => import('@/views/stock/vehicleList.vue'),
+				component: Vehicle,
 			},
 		]
 	},
@@ -69,14 +81,14 @@ const routes = [
 				path: 'material',
 				name: 'customerList',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/product/product.vue'),
+				component: ProductManagement,
 			},
 			// 商品類別
 			{
 				path: 'material_category',
 				name: 'productCategory',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/product/category.vue'),
+				component: ProductCategory,
 			},
 		]
 	},
@@ -91,35 +103,35 @@ const routes = [
 				path: 'depot',
 				name: 'depot',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/stock/depotlist.vue'),
+				component: DepotList,
 			},
 			// 進貨單
 			{
 				path: 'stock_in',
 				name: 'inStockList',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/stock/instocklist.vue'),
+				component: InStockList,
 			},
 			// 配送單
 			{
 				path: 'stock_out',
 				name: 'outStockList',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/stock/outstocklist.vue'),
+				component: OutStockList,
 			},
 			// 移倉管理
 			{
 				path: 'move',
 				name: 'move',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/stock/movestocklist.vue'),
+				component: MoveStockList,
 			},
 			// 退貨單
 			{
 				path: 'stock_back',
 				name: 'returnStockList',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/stock/returnstocklist.vue'),
+				component: ReturnStockList,
 			},
 		]
 	},
@@ -134,14 +146,14 @@ const routes = [
 				path: 'in_out_stock',
 				name: 'inOutStockReport',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/report/in_out_stock_report.vue'),
+				component: InOutStockReport,
 			},
 			// 司機配送統計表
 			{
 				path: 'driver_out',
 				name: 'driverStockReport',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/report/driver_stock_report.vue'),
+				component: DriverStockReport,
 			},
 		]
 	},
@@ -156,59 +168,29 @@ const routes = [
 				path: 'user',
 				name: 'userList',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/system/userlist.vue'),
+				component: UserList,
 			},
 			// 角色管理
 			{
 				path: 'role',
 				name: 'role',
 				meta: { authRequired: true },
-				component: () => import('@/router/views/system/rolelist.vue'),
+				component: Role,
 			},
 		]
 	},
 	// 修改密碼
 	{
 		path: '/user/changepassword',
-		name: 'changepassword',
+		name: 'changePassword',
 		meta: { authRequired: true },
-		component: () => import('@/router/views/user/changepassword.vue'),
+		component: ChangePassword,
 	},
 	// 登入
 	{
 		path: '/login',
 		name: 'login',
-		component: () => import('@/router/views/account/login.vue'),
-		meta: {
-			beforeResolve(routeTo, routeFrom, next) {
-				if (store.getters['auth/loggedIn']) {
-					next({ name: 'home' });
-				} else {
-					next();
-				}
-			},
-		},
-	},
-	// 註冊
-	{
-		path: '/register',
-		name: 'Register',
-		component: () => import('@/router/views/account/register.vue'),
-		meta: {
-			beforeResolve(routeTo, routeFrom, next) {
-				if (store.getters['auth/loggedIn']) {
-					next({ name: 'home' });
-				} else {
-					next();
-				}
-			},
-		},
-	},
-	// 忘記密碼
-	{
-		path: '/forgot-password',
-		name: 'Forgot password',
-		component: () => import('@/router/views/account/forgot-password.vue'),
+		component: Login,
 		meta: {
 			beforeResolve(routeTo, routeFrom, next) {
 				if (store.getters['auth/loggedIn']) {
@@ -223,7 +205,7 @@ const routes = [
 	{
 		path: '/logout',
 		name: 'logout',
-		component: () => import('@/router/views/account/logout.vue'),
+		component: Logout,
 		meta: {
 			beforeResolve(routeTo, routeFrom, next) {
 				store.dispatch('auth/logOut');
@@ -235,7 +217,7 @@ const routes = [
 	{
 		path: '/404',
 		name: '404',
-		component: () => import('@/router/views/utility/404.vue'),
+		component: ErrorPage,
 	},
 ];
 

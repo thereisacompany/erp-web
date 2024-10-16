@@ -3,7 +3,7 @@
 import { server } from "@/api";
 import md5 from "md5";
 import VConsole from "vconsole";
-import { version } from "../../../../package.json";
+import { version } from "../../../package.json";
 
 import Layout from "@/router/layouts/auth.vue";
 import {
