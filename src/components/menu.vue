@@ -162,6 +162,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .menu__wrapper {
+  margin-top: 15px;
   ul {
     margin: 0;
     padding: 0;
@@ -182,7 +183,7 @@ export default defineComponent({
         justify-content: space-between;
         width: 100%;
         height: 40px;
-        margin: 5px 0;
+        margin: 8px 0;
 
         &:hover {
           background-color: #3449b1;
@@ -190,7 +191,7 @@ export default defineComponent({
 
         &__item {
           width: 100%;
-          padding: 0 30px;
+          padding: 0 16px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -198,15 +199,16 @@ export default defineComponent({
 
         &__title {
           display: flex;
+          gap: 4px;
 
           .icon {
             margin-right: 8px;
-            font-size: 18px;
+            font-size: 22px;
             color: #fff;
           }
 
           span {
-            font-size: 15px;
+            font-size: 16px;
             color: #fff;
           }
         }

@@ -12,7 +12,7 @@ import MoveStockList from '@/views/stock/moveStockList.vue';
 import ReturnStockList from '@/views/stock/returnStockList.vue';
 import InOutStockReport from '@/views/report/inOutStockReport.vue';
 import DriverStockReport from '@/views/report/driverStockReport.vue';
-import UserList from '@/views/system/userList.vue';
+import User from '@/views/system/user.vue';
 import Role from '@/views/system/role.vue';
 import ChangePassword from '@/views/user/changePassword.vue';
 import Login from '@/views/account/login.vue';
@@ -168,7 +168,7 @@ const routes = [
 				path: 'user',
 				name: 'userList',
 				meta: { authRequired: true },
-				component: UserList,
+				component: User,
 			},
 			// 角色管理
 			{
