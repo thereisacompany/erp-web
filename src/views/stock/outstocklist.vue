@@ -9,8 +9,9 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import { Modal, Tag } from "ant-design-vue";
+import { Modal, Tag, Tooltip } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
+import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
 /**
  * Customers component
@@ -20,7 +21,15 @@ export default {
     title: "配送單",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader, AModal: Modal, ImportFile, ATag: Tag },
+  components: {
+    Layout,
+    PageHeader,
+    AModal: Modal,
+    ImportFile,
+    ATag: Tag,
+    InfoCircleOutlined,
+    ATooltip: Tooltip,
+  },
   data() {
     return {
       selectedTab: 0,
@@ -1667,7 +1676,17 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <label for="name">關鍵字搜尋</label>
+                    <div style="display: flex; align-items: center; gap: 5px">
+                      <label for="name">關鍵字搜尋</label>
+                      <a-tooltip>
+                        <template #title
+                          >例如：單號、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                        >
+                        <InfoCircleOutlined
+                          style="color: #556ee6; margin-bottom: 0.5rem"
+                        />
+                      </a-tooltip>
+                    </div>
                     <input
                       autocomplete="off"
                       type="text"
@@ -2891,7 +2910,11 @@ export default {
                       <div
                         v-for="(f1, fidx) in driver.filelist"
                         :key="'driver-filelist-' + fidx"
-                        style="display: inline-block; word-break: break-all"
+                        style="
+                          display: inline-block;
+                          word-break: break-all;
+                          margin: 10px;
+                        "
                       >
                         <img
                           v-if="CheckIsImage(f1)"
@@ -2917,9 +2940,9 @@ export default {
                           @click="ShowImage(f1)"
                           >{{ f1.split("/").pop() }}</a
                         >
-                        <a href="#" class="text-danger" @click="DeleteFile2(f1)"
+                        <!-- <a href="#" class="text-danger" @click="DeleteFile2(f1)"
                           >&nbsp;<i class="bx bx-x"></i
-                        ></a>
+                        ></a> -->
                       </div>
                     </div>
                   </div>

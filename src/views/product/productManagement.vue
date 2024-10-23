@@ -499,7 +499,7 @@ export default {
                 </thead>
                 <tbody>
                   <tr v-for="(item, index) in lists" :key="index">
-                    <td>{{ index + 1 }}</td>
+                    <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
                     <td style="white-space: break-spaces">
                       {{ formatOrganName(item) }}
                     </td>
