@@ -1,222 +1,226 @@
-import store from "@/state/store";
+import store from '@/state/store';
+import Home from '@/views/home/home.vue';
+import CustomerList from '@/views/user/customerList.vue';
+import DriverList from '@/views/user/driverList.vue';
+import Vehicle from '@/views/stock/vehicleList.vue';
+import ProductManagement from '@/views/product/productManagement.vue';
+import ProductCategory from '@/views/product/productCategory.vue';
+import DepotList from '@/views/stock/depotList.vue';
+import InStockList from '@/views/stock/inStockList.vue';
+import OutStockList from '@/views/stock/outStockList.vue';
+import MoveStockList from '@/views/stock/moveStockList.vue';
+import ReturnStockList from '@/views/stock/returnStockList.vue';
+import InOutStockReport from '@/views/report/inOutStockReport.vue';
+import DriverStockReport from '@/views/report/driverStockReport.vue';
+import UserList from '@/views/system/userList.vue';
+import Role from '@/views/system/role.vue';
+import ChangePassword from '@/views/user/changePassword.vue';
+import Login from '@/views/account/login.vue';
+import Logout from '@/views/account/logout.vue';
+import ErrorPage from '@/views/utility/404.vue';
 
-export default [
-    // 首頁
-    {
-        path: "/dashboard/analysis",
-        name: "home",
-        meta: {
-            authRequired: true,
-        },
-        component: require("./views/home/home").default,
-    },
-    // 供應商管理
-    // { path: "/user/vendorlist", name: "vendorlist", meta: { authRequired: true, }, component: require("./views/user/vendorlist").default },
-    // 人事管理
-    { path: "/systemA", name: "driverlist", meta: { authRequired: true, }, component: require("./views/user/driverlist").default },
-    // 客戶管理
-    { path: "/system/customer", name: "customerlist", meta: { authRequired: true, }, component: require("./views/user/customerlist").default },
-    // 人事管理
-    { path: "/system/member", name: "driverlist", meta: { authRequired: true, }, component: require("./views/user/driverlist").default },
-    // 車輛管理
-    { path: "/system/vehicle", name: "vehiclelist", meta: { authRequired: true, }, component: require("./views/stock/vehiclelist").default },
-
-    // 會員管理
-    // { path: "/user/memberlist", name: "memberlist", meta: { authRequired: true, }, component: require("./views/user/memberlist").default },
-    // 結算帳號管理
-    // { path: "/user/accountlist", name: "accountlist", meta: { authRequired: true, }, component: require("./views/user/accountlist").default },
-    // 修改密碼
-    { path: "/user/changepassword", name: "changepassword", meta: { authRequired: true, }, component: require("./views/user/changepassword").default },
-
-    // ------倉庫管理-------
-    { path: "/depot", name: "depotlist", meta: { authRequired: true, }, component: require("./views/stock/depotlist").default },
-    // 倉庫別管理
-    { path: "/depot/depot", name: "depotlist", meta: { authRequired: true, }, component: require("./views/stock/depotlist").default },
-    // 進貨單
-    { path: "/depot/stock_in", name: "instocklist", meta: { authRequired: true, }, component: require("./views/stock/instocklist").default },
-    // 配送單列表
-    { path: "/depot/stock_out", name: "outstocklist", meta: { authRequired: true, }, component: require("./views/stock/outstocklist").default },
-    // 退貨單列表
-    { path: "/depot/stock_back", name: "returnstocklist", meta: { authRequired: true, }, component: require("./views/stock/returnstocklist").default },
-    // 移倉管理
-    { path: "/depot/move", name: "movestocklist", meta: { authRequired: true, }, component: require("./views/stock/movestocklist").default },
-    //---------------------
-
-    // ------報表查詢------
-    { path: "/report", name: "in_out_stock_report", meta: { authRequired: true, }, component: require("./views/report/in_out_stock_report").default },
-    // 進銷存統計
-    { path: "/report/in_out_stock", name: "in_out_stock_report", meta: { authRequired: true, }, component: require("./views/report/in_out_stock_report").default },
-    // 司機配送統計表
-    { path: "/report/driver_out", name: "driver_stock_report", meta: { authRequired: true, }, component: require("./views/report/driver_stock_report").default },
-    //--------------------
-
-    //-------系統管理-------
-    { path: "/system", name: "userlist", meta: { authRequired: true, }, component: require("./views/system/userlist").default },
-    // 用戶管理
-    { path: "/system/user", name: "userlist", meta: { authRequired: true, }, component: require("./views/system/userlist").default },
-    // { path: "/system/rolelist", name: "rolelist", meta: { authRequired: true, }, component: require("./views/system/rolelist").default },
-    // 角色管理
-    { path: "/system/role", name: "role", meta: { authRequired: true, }, component: require("./views/system/role").default },
-    //--------------------
-
-    // -------商品管理-------
-    {
-        path: "/material",
-        name: "Product",
-        meta: {
-            authRequired: true,
-        },
-        component: require("./views/product/product").default
-    },
-    // 商品管理
-    {
-        path: "/material/material",
-        name: "Product",
-        meta: {
-            authRequired: true,
-        },
-        component: require("./views/product/product").default
-    },
-    // 商品類別
-    {
-        path: "/material/material_category",
-        name: "ProductCategory",
-        meta: {
-            authRequired: true,
-        },
-        component: require("./views/product/category").default
-    },
-    //--------------------
-
-    // 預設dashboard
-    {
-        path: "/dashboard",
-        name: "dashboard",
-        meta: {
-            authRequired: true,
-        },
-        component: () =>
-            import("./views/dashboards/default"),
-    },
-    // 登入
-    {
-        path: "/login",
-        name: "login",
-        component: () =>
-            import("./views/account/login"),
-        meta: {
-            beforeResolve(routeTo, routeFrom, next) {
-                // If the user is already logged in
-                if (store.getters["auth/loggedIn"]) {
-                    // Redirect to the home page instead
-                    next({ name: "home" });
-                } else {
-                    // Continue to the login page
-                    next();
-                }
-            },
-        },
-    },
-    // 註冊
-    {
-        path: "/register",
-        name: "Register",
-        component: () =>
-            import("./views/account/register"),
-        meta: {
-
-            beforeResolve(routeTo, routeFrom, next) {
-                // If the user is already logged in
-                if (store.getters["auth/loggedIn"]) {
-                    // Redirect to the home page instead
-                    next({ name: "home" });
-                } else {
-                    // Continue to the login page
-                    next();
-                }
-            },
-        },
-    },
-    // 忘記密碼
-    {
-        path: "/forgot-password",
-        name: "Forgot password",
-        component: () =>
-            import("./views/account/forgot-password"),
-        meta: {
-            beforeResolve(routeTo, routeFrom, next) {
-                // If the user is already logged in
-                if (store.getters["auth/loggedIn"]) {
-                    // Redirect to the home page instead
-                    next({ name: "home" });
-                } else {
-                    // Continue to the login page
-                    next();
-                }
-            },
-        },
-    },
-    // 登出
-    {
-        path: "/logout",
-        name: "logout",
-        component: () =>
-            import("./views/account/logout"),
-        meta: {
-            authRequired: true,
-            beforeResolve(routeTo, routeFrom, next) {
-                if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-                    store.dispatch("auth/logOut");
-                } else {
-                    store.dispatch("authfack/logout");
-                }
-                const authRequiredOnPreviousRoute = routeFrom.matched.some((route) =>
-                    route.push("/login")
-                );
-                // Navigate back to previous page, or home as a fallback
-                next(
-                    authRequiredOnPreviousRoute ? { name: "home" } : { ...routeFrom }
-                );
-            },
-        },
-    },
-    // {
-    //     path: "/dashboard/analysis",
-    //     name: "home",
-    //     meta: {
-    //         authRequired: true,
-    //     },
-    //     component: require("./views/home/home").default,
-    // },
-    // Error
-    {
-        path: "/404",
-        name: "404",
-        component: require("./views/utility/404").default,
-    },
-    // Redirect any unmatched routes to the 404 page. This may
-    // require some server configuration to work in production:
-    // https://router.vuejs.org/en/essentials/history-mode.html#example-server-configurations
-    // {
-    //   path: "*",
-    //   redirect: "404",
-    // },
-    // 首頁
-    {
-        path: "/",
-        name: "home",
-        meta: {
-            authRequired: true,
-        },
-        component: require("./views/home/home").default,
-    },
-    // 首頁
-    {
-        path: "/dashboard/analysis",
-        name: "home",
-        meta: {
-            authRequired: true,
-        },
-        component: require("./views/home/home").default,
-    },
+// 路由定義
+const routes = [
+	{
+		path: '/',
+		redirect: '/dashboard/analysis',
+	},
+	// 預設頁面
+	{
+		path: '/',
+		name: 'home',
+		meta: { authRequired: true },
+		component: Home,
+	},
+	// 首頁
+	{
+		path: '/dashboard/analysis',
+		name: 'home',
+		meta: { authRequired: true },
+		component: Home,
+	},
+	// 供應商管理
+	// { path: "/user/vendorlist", name: "vendorlist", meta: { authRequired: true }, component: () => import('@/views/user/vendorlist') },
+	// 公司資料管理
+	{
+		path: '/system',
+		name: 'driverList',
+		meta: { authRequired: true },
+		children: [
+			// 客戶管理
+			{
+				path: 'customer',
+				name: 'customerList',
+				meta: { authRequired: true },
+				component: CustomerList
+			},
+			// 人事管理
+			{
+				path: 'member',
+				name: 'driverList',
+				meta: { authRequired: true },
+				component: DriverList,
+			},
+			// 車輛管理
+			{
+				path: 'vehicle',
+				name: 'vehicleList',
+				meta: { authRequired: true },
+				component: Vehicle,
+			},
+		]
+	},
+	// 商品管理
+	{
+		path: '/material',
+		name: 'product',
+		meta: { authRequired: true },
+		children: [
+			// 商品管理
+			{
+				path: 'material',
+				name: 'customerList',
+				meta: { authRequired: true },
+				component: ProductManagement,
+			},
+			// 商品類別
+			{
+				path: 'material_category',
+				name: 'productCategory',
+				meta: { authRequired: true },
+				component: ProductCategory,
+			},
+		]
+	},
+	// 倉庫管理
+	{
+		path: '/depot',
+		name: 'depotList',
+		meta: { authRequired: true },
+		children: [
+			// 倉庫別管理
+			{
+				path: 'depot',
+				name: 'depot',
+				meta: { authRequired: true },
+				component: DepotList,
+			},
+			// 進貨單
+			{
+				path: 'stock_in',
+				name: 'inStockList',
+				meta: { authRequired: true },
+				component: InStockList,
+			},
+			// 配送單
+			{
+				path: 'stock_out',
+				name: 'outStockList',
+				meta: { authRequired: true },
+				component: OutStockList,
+			},
+			// 移倉管理
+			{
+				path: 'move',
+				name: 'move',
+				meta: { authRequired: true },
+				component: MoveStockList,
+			},
+			// 退貨單
+			{
+				path: 'stock_back',
+				name: 'returnStockList',
+				meta: { authRequired: true },
+				component: ReturnStockList,
+			},
+		]
+	},
+	// 報表查詢
+	{
+		path: '/report',
+		name: 'inOutStockReport',
+		meta: { authRequired: true },
+		children: [
+			// 進銷存統計
+			{
+				path: 'in_out_stock',
+				name: 'inOutStockReport',
+				meta: { authRequired: true },
+				component: InOutStockReport,
+			},
+			// 司機配送統計表
+			{
+				path: 'driver_out',
+				name: 'driverStockReport',
+				meta: { authRequired: true },
+				component: DriverStockReport,
+			},
+		]
+	},
+	// 系統管理
+	{
+		path: '/system',
+		name: 'userList',
+		meta: { authRequired: true },
+		children: [
+			// 用戶管理
+			{
+				path: 'user',
+				name: 'userList',
+				meta: { authRequired: true },
+				component: UserList,
+			},
+			// 角色管理
+			{
+				path: 'role',
+				name: 'role',
+				meta: { authRequired: true },
+				component: Role,
+			},
+		]
+	},
+	// 修改密碼
+	{
+		path: '/user/changepassword',
+		name: 'changePassword',
+		meta: { authRequired: true },
+		component: ChangePassword,
+	},
+	// 登入
+	{
+		path: '/login',
+		name: 'login',
+		component: Login,
+		meta: {
+			beforeResolve(routeTo, routeFrom, next) {
+				if (store.getters['auth/loggedIn']) {
+					next({ name: 'home' });
+				} else {
+					next();
+				}
+			},
+		},
+	},
+	// 登出
+	{
+		path: '/logout',
+		name: 'logout',
+		component: Logout,
+		meta: {
+			beforeResolve(routeTo, routeFrom, next) {
+				store.dispatch('auth/logOut');
+				next(routeFrom);
+			}, authRequired: true
+		},
+	},
+	// 404 頁面
+	{
+		path: '/404',
+		name: '404',
+		component: ErrorPage,
+	},
 ];
+
+export default routes;
+
+

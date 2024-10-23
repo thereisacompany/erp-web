@@ -1,8 +1,9 @@
+/** @format */
 
 //
 // Select 2
 //
-@import "~@vueform/multiselect/themes/default.css";
+@import "@vueform/multiselect/themes/default.css";
 
 // set width of select
 .custom-multiselect {
@@ -31,7 +32,7 @@
 .multiselect__placeholder {
   padding-top: 0 !important;
   margin-bottom: 0 !important;
-  color: $gray-400 !important
+  color: $gray-400 !important;
 }
 
 .multiselect__input {
@@ -79,20 +80,16 @@
   color: $input-color !important;
 }
 
-
 .multiselect__option--highlight,
 .multiselect__option--highlight:after {
   background: $primary !important;
   color: $white !important;
 }
 
-
 // templating-select
 
-.img-flag{
+.img-flag {
   margin-right: 7px;
   height: 15px;
   width: 18px;
 }
-
-

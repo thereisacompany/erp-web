@@ -1,23 +1,30 @@
 import axios from "axios";
 
 export const state = {
-    todos: [],
+	todos: [],
 };
 
 export const getters = {
-    todos: state => state.todos,
+	todos: state => state.todos,
 };
 
 export const mutations = {
-    setTodos(state, newValue) {
-        state.todos = newValue
-    },
+	setTodos(state, newValue) {
+		state.todos = newValue
+	},
 };
 
 export const actions = {
-    fetchTodos({ commit }) {
-        axios.get('https://jsonplaceholder.typicode.com/todos').then(res => {
-            commit('setTodos', res.data)
-        })
-    },
+	fetchTodos({ commit }) {
+		axios.get('https://jsonplaceholder.typicode.com/todos').then(res => {
+			commit('setTodos', res.data)
+		})
+	},
+};
+
+export default {
+	namespaced: true, // 命名空間
+	state,
+	mutations,
+	actions,
 };
