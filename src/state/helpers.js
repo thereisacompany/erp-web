@@ -17,7 +17,7 @@ export const layoutComputed = {
   })
 }
 
-export const userMethods = mapActions('user', ['changeUserID','changeLoginName','changeUsername','changeToken','changeTreeList','UserReset','changeUserObj'])
+export const userMethods = mapActions('user', ['changeUserID', 'changeLoginName', 'changeUsername', 'changeToken', 'changeTreeList', 'UserReset', 'changeUserObj'])
 
 export const authMethods = mapActions('auth', ['logIn', 'logOut', 'register', 'resetPassword'])
 

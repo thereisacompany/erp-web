@@ -3,11 +3,8 @@ import store from '@/state/store'
 import routes from './routes'
 
 // 为每个路由添加 '/dev' 前缀
-
-
-
 const router = createRouter({
-  history: createWebHistory(process.env.VUE_APP_BASE_URL),
+  history: createWebHistory(import.meta.env.VITE_APP_BASE_URL),
   routes: routes,
   // Use the HTML5 history API (i.e. normal-looking routes)
   // instead of routes with hashes (e.g. example.com/#/about).
@@ -27,9 +24,8 @@ const router = createRouter({
 
 // 使用全局导航守卫来确保导航请求使用 '/dev' 前缀
 router.beforeEach((to, from, next) => {
-
   // 确保所有路径都使用 '/dev' 前缀
-  // if (process.env.VUE_APP_ENV === "development") {
+  // if (import.meta.env.VITE_APP_ENV === "development") {
   //     if (!to.path.startsWith('/dev')) {
   //         return next(`/dev${to.fullPath}`)
   //     }
@@ -37,9 +33,9 @@ router.beforeEach((to, from, next) => {
 
 
   // console.log("routeTo=", to)
-  // console.log("process.env.VUE_APP_DEFAULT_AUTH=", process.env.VUE_APP_DEFAULT_AUTH)
+  // console.log("import.meta.env.VITE_APP_DEFAULT_AUTH=", import.meta.env.VITE_APP_DEFAULT_AUTH)
 
-  if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
+  if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
     // Check if auth is required on this route (including nested routes).
     const authRequired = to.matched.some((route) => route.meta.authRequired)
 
@@ -64,8 +60,8 @@ router.beforeEach((to, from, next) => {
     const publicPages = ['/login', '/register', '/forgot-password'];
     const authpage = !publicPages.includes(to.path);
     const loggeduser = localStorage.getItem('user');
-    console.log("authpage, loggeduser=", authpage, loggeduser)
-    console.log('to.path', to.path)
+    // console.log("authpage, loggeduser=", authpage, loggeduser)
+    // console.log('to.path', to.path)
     if (authpage && !loggeduser) {
       return next('/login');
     } else if (to.path == '/') {

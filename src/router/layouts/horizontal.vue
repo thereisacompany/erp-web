@@ -1,8 +1,8 @@
 <script>
-import HorizontalTopbar from "@/components/horizontal-topbar";
-import HorizontalNav from "@/components/horizontal-nav";
-import RightBar from "@/components/right-bar";
-import Footer from "@/components/footer";
+import HorizontalTopbar from "@/components/horizontal-topbar.vue";
+import HorizontalNav from "@/components/horizontal-nav.vue";
+import RightBar from "@/components/right-bar.vue";
+import Footer from "@/components/footer.vue";
 
 import { layoutComputed } from "@/state/helpers";
 
@@ -43,7 +43,7 @@ export default {
       document.getElementById("preloader").style.display = "block";
       document.getElementById("status").style.display = "block";
 
-      setTimeout(function() {
+      setTimeout(function () {
         document.getElementById("preloader").style.display = "none";
         document.getElementById("status").style.display = "none";
       }, 2500);

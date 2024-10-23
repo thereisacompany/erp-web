@@ -1,8 +1,10 @@
+/** @format */
+
 //
 // leaflet map
 //
-@import '~leaflet/dist/leaflet.css';
+@import "leaflet/dist/leaflet.css";
 
 .leaflet-container {
-    z-index: 99;
+  z-index: 99;
 }

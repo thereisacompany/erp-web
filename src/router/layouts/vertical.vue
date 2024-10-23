@@ -1,11 +1,10 @@
 <script>
 import router from "@/router";
 import { layoutComputed } from "@/state/helpers";
-
-import NavBar from "@/components/nav-bar";
-import SideBar from "@/components/side-bar";
-import RightBar from "@/components/right-bar";
-import Footer from "@/components/footer";
+import NavBar from "@/components/nav-bar.vue";
+import SideBar from "@/components/side-bar.vue";
+import RightBar from "@/components/right-bar.vue";
+import Footer from "@/components/footer.vue";
 
 /**
  * Vertical layout
@@ -14,7 +13,9 @@ export default {
   components: { NavBar, SideBar, RightBar, Footer },
   data() {
     return {
-      type: this.$store ? this.$store.state.layout.leftSidebarType : null || null,
+      type: this.$store
+        ? this.$store.state.layout.leftSidebarType
+        : null || null,
       width: this.$store ? this.$store.state.layout.layoutWidth : null || null,
       isMenuCondensed: false,
     };
@@ -88,7 +89,11 @@ export default {
     </div>
     <div id="layout-wrapper">
       <NavBar />
-      <SideBar :is-condensed="isMenuCondensed" :type="leftSidebarType" :width="layoutWidth" />
+      <SideBar
+        :is-condensed="isMenuCondensed"
+        :type="leftSidebarType"
+        :width="layoutWidth"
+      />
       <!-- ============================================================== -->
       <!-- Start Page Content here -->
       <!-- ============================================================== -->
