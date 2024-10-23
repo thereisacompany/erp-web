@@ -2910,7 +2910,11 @@ export default {
                       <div
                         v-for="(f1, fidx) in driver.filelist"
                         :key="'driver-filelist-' + fidx"
-                        style="display: inline-block; word-break: break-all"
+                        style="
+                          display: inline-block;
+                          word-break: break-all;
+                          margin: 10px;
+                        "
                       >
                         <img
                           v-if="CheckIsImage(f1)"
@@ -2936,9 +2940,9 @@ export default {
                           @click="ShowImage(f1)"
                           >{{ f1.split("/").pop() }}</a
                         >
-                        <a href="#" class="text-danger" @click="DeleteFile2(f1)"
+                        <!-- <a href="#" class="text-danger" @click="DeleteFile2(f1)"
                           >&nbsp;<i class="bx bx-x"></i
-                        ></a>
+                        ></a> -->
                       </div>
                     </div>
                   </div>
