@@ -7,9 +7,12 @@ import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { server } from "@/api";
 import common from "@/api/common";
-import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import {
+  ExclamationCircleOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons-vue";
 import appConfig from "@/app.config";
-import { Modal } from "ant-design-vue";
+import { Modal, Tooltip } from "ant-design-vue";
 
 /**
  * Customers component
@@ -19,7 +22,7 @@ export default {
     title: "進貨單",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader },
+  components: { Layout, PageHeader, InfoCircleOutlined, ATooltip: Tooltip },
   data() {
     return {
       SubView: 0,
@@ -296,6 +299,8 @@ export default {
       let obj1 = this.GetNewCustomerItemObj1();
       obj1.id = new Date().getTime() + Math.random().toString().substr(2, 7);
       obj1.orderNum = this.customersItem.length + 1;
+
+      obj1["isNewAdd"] = true;
       //this.GetMaterialListByRow(this.customers.organId, obj1.depotId, obj1.counterId, obj1.name, (rows) => { obj1.queryMaterialList = rows; this.customersItem.push(obj1); })
       let wObj = {
         organId: this.customers.organId,
@@ -991,11 +996,9 @@ export default {
                       <thead>
                         <tr>
                           <th width="1%">#</th>
-                          <th width="10%">倉庫</th>
+                          <th width="25%">倉庫</th>
                           <th width="10%">品號</th>
-
                           <th width="10%">商品</th>
-
                           <th width="5%">類別</th>
                           <th width="5%">規格</th>
                           <th width="5%">型號</th>
@@ -1010,7 +1013,9 @@ export default {
                           </th>
                           <th width="5%" v-if="SubView !== 1">進貨數量</th>
                           <th width="10%">備註</th>
-                          <th v-if="SubView == 1" width="1%">操作</th>
+                          <th v-if="SubView == 1 || SubView == 2" width="1%">
+                            操作
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1024,7 +1029,10 @@ export default {
                             <select
                               class="form-select"
                               v-model="SubItem.depotId"
-                              :disabled="SubView == 2 || SubView == 3"
+                              :disabled="
+                                (SubView == 2 && !SubItem.isNewAdd) ||
+                                SubView == 3
+                              "
                               @change="
                                 SubItem.number = '';
                                 SubItem.name = '';
@@ -1048,7 +1056,10 @@ export default {
                                 autocomplete="off"
                                 type="text"
                                 class="form-control num"
-                                :disabled="SubView == 2 || SubView == 3"
+                                :disabled="
+                                  (SubView == 2 && !SubItem.isNewAdd) ||
+                                  SubView == 3
+                                "
                                 :list="'datalistOptions' + cidx"
                                 @keyup="queryMaterialByRow(SubItem, cidx)"
                                 v-model="SubItem.number"
@@ -1066,7 +1077,7 @@ export default {
                             </div>
                           </td>
                           <!-- 商品 -->
-                          <td>
+                          <td class="product-row">
                             {{ SubItem.name }}
                           </td>
                           <!-- 類別 -->
@@ -1083,7 +1094,10 @@ export default {
                               autocomplete="off"
                               type="text"
                               class="form-control"
-                              :disabled="SubView == 2 || SubView == 3"
+                              :disabled="
+                                (SubView == 2 && !SubItem.isNewAdd) ||
+                                SubView == 3
+                              "
                               v-model="SubItem.counterName"
                             />
                           </td>
@@ -1111,11 +1125,18 @@ export default {
                               autocomplete="off"
                               type="text"
                               class="form-control"
-                              :disabled="SubView == 2 || SubView == 3"
+                              :disabled="
+                                (SubView == 2 && !SubItem.isNewAdd) ||
+                                SubView == 3
+                              "
                               v-model="SubItem.remark"
                             />
                           </td>
-                          <td v-if="SubView == 1">
+                          <td
+                            v-if="
+                              SubView == 1 || (SubView == 2 && SubItem.isNewAdd)
+                            "
+                          >
                             <div class="button-items">
                               <a
                                 href="javascript:;"
@@ -1131,7 +1152,7 @@ export default {
                     <a
                       href="javascript:;"
                       class="btn btn-sm btn-success"
-                      v-if="SubView == 1"
+                      v-if="SubView == 1 || SubView == 2"
                       @click="NewRow1()"
                       >新增一列商品資料</a
                     >
@@ -1306,7 +1327,18 @@ export default {
               <div class="col-sm-8">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <label for="name">關鍵字搜尋</label>
+                    <div style="display: flex; align-items: center; gap: 5px">
+                      <label for="name">關鍵字搜尋</label>
+                      <a-tooltip>
+                        <template #title
+                          >例如：單號、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                        >
+                        <InfoCircleOutlined
+                          style="color: #556ee6; margin-bottom: 0.5rem"
+                        />
+                      </a-tooltip>
+                    </div>
+
                     <input
                       autocomplete="off"
                       type="text"
@@ -1567,5 +1599,9 @@ export default {
 .form-control {
   padding: 4px !important;
   min-width: 60px !important;
+}
+
+.product-row {
+  white-space: break-spaces;
 }
 </style>
