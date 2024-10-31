@@ -1,3 +1,4 @@
+<!-- 用戶管理新版, 改寫完成 -->
 <template>
   <Layout>
     <PageHeader title="用戶管理">
@@ -15,64 +16,14 @@
         </div>
       </template>
     </PageHeader>
-    <!-- filter -->
-    <div class="filter">
-      <a-collapse
-        v-model:activeKey="activeKey"
-        :bordered="false"
-        expandIconPosition="end"
-        style="background: rgb(255, 255, 255)"
-      >
-        <template #expandIcon="{ isActive }">
-          <UpOutlined :rotate="isActive ? 180 : 0" style="font-size: 18px" />
-        </template>
-        <a-collapse-panel key="1" style="overflow: hidden; margin-bottom: 24px">
-          <template #header>
-            <div class="d-flex align-items-center gap-2">
-              <SearchOutlined style="font-size: 18px" />
-              <span>篩選器</span>
-            </div>
-          </template>
-          <a-form
-            ref="formRef"
-            name="filter"
-            class="filter-form"
-            :model="formState"
-            @finish="onFinish"
-          >
-            <a-row :gutter="{ xs: 8, sm: 16, md: 24 }">
-              <template v-for="item in formState" :key="item.key">
-                <a-col :span="8">
-                  <a-form-item :name="item.name" :label="item.name">
-                    <a-input
-                      v-model:value="filterValue[item.key]"
-                      placeholder="請輸入"
-                      @keyup.enter="handleSearch"
-                    ></a-input>
-                  </a-form-item>
-                </a-col>
-              </template>
-              <a-col :span="8">
-                <button
-                  type="button"
-                  class="btn btn-primary me-2"
-                  @click="handleSearch"
-                >
-                  查詢
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-light"
-                  @click="handleReset"
-                >
-                  重置
-                </button>
-              </a-col>
-            </a-row></a-form
-          >
-        </a-collapse-panel>
-      </a-collapse>
-    </div>
+    <!-- Filter -->
+    <Filter
+      :formState="formState"
+      :filterValue="filterValue"
+      @search="handleSearch"
+      @reset="handleReset"
+    />
+    <!-- User Data List -->
     <div class="user py-4 px-5">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
@@ -119,58 +70,42 @@
             v-model:currentPage="currentPage"
             v-model:pageSize="pageSize"
             :total="total"
-            :i18n="i18nHandler"
             @page-change="fetchData()"
           >
           </vxe-pager>
         </div>
 
         <!-- Modals -->
-        <AddModal ref="addModalRef" @openTips="openTips" @submit="reload" />
+        <UserModal ref="modalRef" @openTips="openTips" @submit="reload" />
       </div>
     </div>
   </Layout>
 </template>
 <script>
-import { defineComponent, reactive, ref, onMounted, createVNode, h } from "vue";
+import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
 import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
-import {
-  ExclamationCircleOutlined,
-  LoadingOutlined,
-  DownOutlined,
-  UpOutlined,
-  CaretRightOutlined,
-  SearchOutlined,
-} from "@ant-design/icons-vue";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import Filter from "@/components/filter.vue";
 // Modal
-import AddModal from "./component/AddModal.vue";
-import TipsModal from "./component/TipsModal.vue";
-import AllocationFunctionModal from "./component/AllocationFunctionModal.vue";
-// import AllocationBtnModal from "./component/AllocationBtnModal.vue";
-import { message, Modal, Form, Row, Col, Collapse } from "ant-design-vue";
-import { server } from "@/api";
+import UserModal from "./component/UserModal.vue";
+import { Modal, message } from "ant-design-vue";
+import { getUserList, resetUserPassword } from "@/api/systemApi.js";
 import { filterNullValues } from "./component/data";
 export default defineComponent({
   components: {
     Layout,
     PageHeader,
-    AddModal,
-    AForm: Form,
-    ARow: Row,
-    ACol: Col,
-    ACollapse: Collapse,
-    ACollapsePanel: Collapse.Panel,
-    UpOutlined,
-    SearchOutlined,
+    Filter,
+    UserModal,
   },
   setup() {
     // table
     const tableColumn = reactive([
       { field: "loginName", title: "登入帳號", width: "10%" },
-      { field: "userName", title: "用戶姓名", width: "10%" },
-      { field: "roleName", title: "角色資料", width: "10%" },
+      { field: "username", title: "用戶姓名", width: "10%" },
+      { field: "roleName", title: "角色", width: "10%" },
       { field: "position", title: "職稱", width: "10%" },
       {
         field: "phonenum",
@@ -188,17 +123,15 @@ export default defineComponent({
         width: "20%",
       },
     ]);
-    const tableData = reactive([
-      {
-        loginName: "1",
-        userName: "2",
-        roleName: "3",
-        position: "4",
-        phonenum: "5",
-        description: "6",
-      },
-    ]);
+    const tableData = ref([]);
+    const currentPage = ref(1);
+    const pageSize = ref(10);
+    const total = ref(0);
+
+    // Modal
+    const modalRef = ref(null);
     // filter
+    const searchParams = ref();
     const filterValue = reactive({ loginName: undefined, userName: undefined });
     const formState = reactive([
       {
@@ -210,42 +143,107 @@ export default defineComponent({
         key: "userName",
       },
     ]);
-    const activeKey = ref(["1"]);
-    const text = `A dog is a type of domesticated animal.Known for its loyalty and faithfulness,it can be found as a welcome guest in many households across the world.`;
-    const customStyle =
-      "border-radius: 4px;margin-bottom: 24px;overflow: hidden";
+    const activeKey = ref(0);
+
     // 取得data
     function fetchData() {
       // 串接api
-      console.log("fetch data");
+      getUserList(currentPage.value, pageSize.value, searchParams.value).then(
+        (apiResult) => {
+          total.value = apiResult.total;
+          tableData.value = apiResult.rows;
+        }
+      );
     }
 
     // 篩選器查詢
-    function handleSearch() {
-      console.log("查詢");
+    function handleSearch(formData) {
+      const params = {
+        loginName:
+          formData.loginName && formData.loginName !== undefined
+            ? formData.loginName
+            : null,
+        userName:
+          formData.userName && formData.userName !== undefined
+            ? formData.userName
+            : null,
+      };
+      const filterParams = filterNullValues(params);
+      if (Object.keys(filterParams).length !== 0) {
+        searchParams.value = JSON.stringify(filterParams);
+      } else {
+        searchParams.value = null;
+      }
+      fetchData();
     }
 
     // 篩選器重置
     function handleReset() {
-      console.log("重置");
+      filterValue.loginName = "";
+      filterValue.userName = "";
+      handleSearch(filterValue);
     }
 
     // 新增用戶
     function handleClickAddUser() {
-      console.log("新增用戶");
+      modalRef.value.openModal("add", undefined);
+    }
+
+    // 刷新資料
+    function reload() {
+      fetchData();
     }
 
     // 編輯用戶
     function handleClickEdit(row) {
-      console.log("編輯", row);
+      modalRef.value.openModal("edit", row);
     }
 
     // 重設密碼
     function handleClickResetPassword(row) {
-      console.log("重設密碼", row);
+      Modal.confirm({
+        title: "重置密碼",
+        okText: "確認",
+        cancelText: "取消",
+        icon: createVNode(ExclamationCircleOutlined),
+        content: createVNode(
+          "div",
+          { class: "reset-password d-flex flex-column" },
+          [
+            createVNode(
+              "span",
+              {
+                style: "color:block;",
+              },
+              `是否要將用戶 ${row.username} 密碼重置?`
+            ),
+            createVNode(
+              "span",
+              {
+                style: "color:red;",
+              },
+              "密碼預設為: 123456"
+            ),
+          ]
+        ),
+        onOk() {
+          const data = { id: row.id };
+          resetUserPassword(data)
+            .then(() => {
+              message.success(`用戶${row.username},重置密碼成功`);
+              reload();
+            })
+            .catch((error) => {
+              console.log("error from resetPassword", error);
+              return;
+            });
+        },
+      });
     }
 
-    onMounted(() => {});
+    onMounted(() => {
+      fetchData();
+    });
 
     return {
       tableColumn,
@@ -253,14 +251,17 @@ export default defineComponent({
       filterValue,
       formState,
       activeKey,
-      text,
-      customStyle,
       fetchData,
       handleClickAddUser,
       handleSearch,
       handleReset,
       handleClickEdit,
       handleClickResetPassword,
+      currentPage,
+      pageSize,
+      total,
+      modalRef,
+      reload,
     };
   },
 });
@@ -321,5 +322,10 @@ export default defineComponent({
     text-align: center;
     color: #fff;
   }
+}
+
+:deep(.vxe-pager .vxe-pager--wrapper) {
+  text-align: center;
+  margin-top: 18px;
 }
 </style>
