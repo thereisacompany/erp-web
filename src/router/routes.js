@@ -50,7 +50,7 @@ const routes = [
 			// 客戶管理
 			{
 				path: 'customer',
-				name: 'customerList',
+				name: 'customer',
 				meta: { authRequired: true },
 				component: CustomerList
 			},
