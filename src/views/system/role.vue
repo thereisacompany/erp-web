@@ -18,50 +18,17 @@
       </template>
     </PageHeader>
 
+    <!-- Filter -->
+    <Filter
+      :formState="formState"
+      :filterValue="filterValue"
+      @search="handleSearch"
+      @reset="handleReset"
+    />
+
     <div class="role py-4 px-5">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
-        <!-- filter -->
-        <div class="role__filter p-3">
-          <a-form
-            ref="formRef"
-            name="advanced_search"
-            class="ant-advanced-search-form"
-            :model="formState"
-            @finish="onFinish"
-          >
-            <a-row :gutter="{ xs: 8, sm: 16, md: 24 }">
-              <template v-for="item in formState" :key="item.key">
-                <a-col :span="8">
-                  <a-form-item :name="item.name" :label="item.name">
-                    <a-input
-                      v-model:value="filterValue[item.key]"
-                      placeholder="請輸入"
-                      @keyup.enter="handleSearch"
-                    ></a-input>
-                  </a-form-item>
-                </a-col>
-              </template>
-              <a-col :span="8">
-                <button
-                  type="button"
-                  class="btn btn-primary me-2"
-                  @click="handleSearch"
-                >
-                  查詢
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-light"
-                  @click="handleReset"
-                >
-                  重置
-                </button>
-              </a-col>
-            </a-row></a-form
-          >
-        </div>
-
         <!-- table -->
         <div class="role__table">
           <vxe-table
@@ -174,6 +141,8 @@ import {
   ExclamationCircleOutlined,
   LoadingOutlined,
 } from "@ant-design/icons-vue";
+import Filter from "@/components/filter.vue";
+
 // Modal
 import AddModal from "./component/AddModal.vue";
 import TipsModal from "./component/TipsModal.vue";
@@ -192,6 +161,7 @@ export default defineComponent({
     AForm: Form,
     ARow: Row,
     ACol: Col,
+    Filter,
   },
   setup() {
     const filterValue = reactive({ name: undefined, description: undefined });
@@ -301,16 +271,14 @@ export default defineComponent({
     }
 
     // 篩選器
-    function handleSearch() {
+    function handleSearch(formData) {
       loading.value = true;
       const params = {
         name:
-          filterValue.name && filterValue.name !== undefined
-            ? filterValue.name
-            : null,
+          formData.name && formData.name !== undefined ? formData.name : null,
         description:
-          filterValue.description && filterValue.description !== undefined
-            ? filterValue.description
+          formData.description && formData.description !== undefined
+            ? formData.description
             : null,
       };
 
@@ -329,7 +297,7 @@ export default defineComponent({
     function handleReset() {
       filterValue.name = "";
       filterValue.description = "";
-      handleSearch();
+      handleSearch(filterValue);
     }
 
     // 按鈕動作
