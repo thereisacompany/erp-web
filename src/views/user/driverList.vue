@@ -621,7 +621,10 @@ export default {
 
                         <div
                           class="col-sm-12 col-md-4 col-lg-3"
-                          v-if="customers.type == '家電-司機'"
+                          v-if="
+                            customers.type == '家電-司機' ||
+                            customers.type == '冷氣-師傅'
+                          "
                         >
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
@@ -636,7 +639,10 @@ export default {
                         </div>
                         <div
                           class="col-sm-12 col-md-4 col-lg-3"
-                          v-if="customers.type == '家電-司機'"
+                          v-if="
+                            customers.type == '家電-司機' ||
+                            customers.type == '冷氣-師傅'
+                          "
                         >
                           <div class="mb-3">
                             <label for="loginPassword">登入密碼</label>
