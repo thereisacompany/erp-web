@@ -64,6 +64,7 @@ export default {
       categoryActiveIsShow1: false,
       categoryActiveIsShow2: false,
       submitted: false,
+      showDelete: false,
     };
   },
   mounted() {
@@ -71,6 +72,9 @@ export default {
     //   this.GetData();
     // }, 2000);
     //this.GetSupplierList();
+    const user = localStorage.getItem("user");
+    const role = JSON.parse(user).roleName;
+    if (role == "超級管理者") this.showDelete = true;
     this.setData();
   },
   setup() {
@@ -501,7 +505,7 @@ export default {
                   <tr v-for="(item, index) in lists" :key="index">
                     <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
                     <td style="white-space: break-spaces">
-                      {{ formatOrganName(item) }}
+                      {{ item.organName }}
                     </td>
                     <td style="white-space: break-spaces">{{ item.number }}</td>
                     <td style="white-space: break-spaces">{{ item.name }}</td>
@@ -547,6 +551,7 @@ export default {
                           class="btn btn-danger"
                           href="javascript:;"
                           @click="confirmDelete(item)"
+                          v-if="showDelete"
                           >刪除</a
                         >
                       </div>
@@ -727,7 +732,11 @@ export default {
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="name">客戶</label>
-                  <select class="form-select" v-model="formData.organId">
+                  <select
+                    class="form-select"
+                    v-model="formData.organId"
+                    :disabled="modelInfo.type == 'edit'"
+                  >
                     <option
                       :value="u1.id"
                       selected

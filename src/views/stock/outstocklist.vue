@@ -1455,7 +1455,7 @@ export default {
             alert(common.replaceAll(dataMsg, "'", ""));
             this.GetData();
           } else if (res != null && res.data != null && res.data.code != 200) {
-            console.log("else if", res.data.data);
+            console.log("else if file", res.data.data);
             alert(res.data.data);
           }
         })
@@ -1673,7 +1673,7 @@ export default {
         <div class="card">
           <div class="card-body">
             <div class="row mb-2">
-              <div class="col-sm-8">
+              <div class="col-sm-7">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <div style="display: flex; align-items: center; gap: 5px">
@@ -1837,15 +1837,22 @@ export default {
                   </div>
                 </div>
               </div>
-              <div class="col-sm-4">
+              <div class="col-sm-5">
                 <div class="text-sm-end actions">
                   <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
                     @click="EditOne({ id: 0, isPickup: 1 })"
+                    style="margin-left: 50%"
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增配送單
                   </button>
+                  <ImportFile
+                    :buttonName="'匯入配送單'"
+                    :apiLink="'depotHead/importExcel'"
+                    @importSuccess="setData"
+                    class="import-delivery"
+                  />
                   <button
                     type="button"
                     class="btn btn-primary btn-rounded mb-2 me-2"
@@ -1855,11 +1862,17 @@ export default {
                   </button>
                   <button
                     type="button"
-                    class="btn btn-primary btn-rounded mb-2 me-2"
+                    class="btn btn-pickup btn-rounded mb-2 me-2"
                     @click="EditOne({ id: 0, isPickup: 3 })"
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增門市取貨派送
                   </button>
+                  <ImportFile
+                    :buttonName="'匯入門市取貨派送'"
+                    :apiLink="'depotHead/importPickupExcel'"
+                    @importSuccess="setData"
+                    class="import-pickup"
+                  />
                   <!-- <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
@@ -1867,21 +1880,17 @@ export default {
                   >
                     匯入配送單
                   </button> -->
-                  <ImportFile
-                    :buttonName="'匯入配送單'"
-                    :apiLink="'depotHead/importExcel'"
-                    @importSuccess="setData"
-                  />
+
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded mb-2 me-2"
+                    class="btn btn-success btn-rounded btn-batch mb-2 me-2"
                     @click="BatchExcelOut"
                   >
                     批次匯出
                   </button>
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded mb-2 me-2"
+                    class="btn btn-success btn-rounded btn-export-picking mb-2 me-2"
                     @click="handleExportPicking"
                   >
                     匯出揀貨單
@@ -3171,5 +3180,59 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.import-delivery button {
+  background-color: #fff;
+  border: 1px solid #227c5b;
+  color: #227c5b;
+}
+
+.import-delivery button:hover {
+  background-color: #227c5b;
+  border: 1px solid #227c5b;
+  color: #fff;
+}
+
+.import-pickup button {
+  background-color: #fff;
+  border: 1px solid #3b6fa3;
+  color: #3b6fa3;
+}
+
+.import-pickup button:hover {
+  background-color: #3b6fa3 !important;
+  border: 1px solid #3b6fa3 !important;
+  color: #fff;
+}
+
+.btn-pickup {
+  background-color: #559ee6 !important;
+  border: 1px solid #559ee6 !important;
+  color: #fff !important;
+}
+
+.btn-batch {
+  background-color: #ed7c2d !important;
+  border: 1px solid #ed7c2d !important;
+  color: #fff;
+}
+
+.btn-batch:hover {
+  background-color: #d47129 !important;
+  border: 1px solid #d47129 !important;
+  color: #fff;
+}
+
+.btn-export-picking {
+  background-color: #fff !important;
+  border: 1px solid #d47129 !important;
+  color: #d47129 !important;
+}
+
+.btn-export-picking:hover {
+  background-color: #cc5804 !important;
+  border: 1px solid #cc5804 !important;
+  color: #fff !important;
 }
 </style>

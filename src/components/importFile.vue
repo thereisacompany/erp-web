@@ -68,7 +68,7 @@ export default {
               res.data != null &&
               res.data.code != 200
             ) {
-              console.log("else if", res.data.data);
+              console.log("else if file api", res.data.data);
               alert(res.data.data);
               event.target.value = "";
             }

@@ -138,10 +138,10 @@ export default {
 
       this.showModal = true;
     },
-    formatSupplierName(SubItem) {
-      if (SubItem == null) return "";
-      return common.PadLeftZero(SubItem.id, 3) + " " + SubItem.supplier;
-    },
+    // formatSupplierName(SubItem) {
+    //   if (SubItem == null) return "";
+    //   return common.PadLeftZero(SubItem.id, 3) + " " + SubItem.supplier;
+    // },
     GetData() {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
@@ -519,7 +519,7 @@ export default {
                     :key="SubItem.id"
                   >
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                    <td>{{ formatSupplierName(SubItem) }}</td>
+                    <td>{{ SubItem.supplier }}</td>
                     <td>{{ SubItem.supplierall }}</td>
                     <td>{{ SubItem.taxid }}</td>
                     <td>{{ SubItem.contacts }}</td>
