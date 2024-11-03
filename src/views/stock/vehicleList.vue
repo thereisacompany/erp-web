@@ -403,11 +403,7 @@ export default {
                               type="text"
                               class="form-control"
                               placeholder="車牌號碼"
-                              :class="{
-                                'is-invalid':
-                                  submitted &&
-                                  v$.customers.licensePlateNumber.$error,
-                              }"
+                              required
                             />
                             <div
                               v-if="
@@ -439,10 +435,7 @@ export default {
                               type="text"
                               class="form-control"
                               placeholder="品牌型號"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.brandModel.$error,
-                              }"
+                              required
                             />
                             <div
                               v-if="submitted && v$.customers.brandModel.$error"
@@ -500,10 +493,7 @@ export default {
                               v-model="customers.mileage"
                               type="text"
                               class="form-control"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.mileage.$error,
-                              }"
+                              required
                               placeholder="里程數(公里)"
                             />
                             <div
@@ -645,10 +635,7 @@ export default {
                               v-model="customers.emissions"
                               type="text"
                               class="form-control"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.emissions.$error,
-                              }"
+                              required
                               placeholder="排放量(c.c.)"
                             />
                             <div
@@ -674,10 +661,7 @@ export default {
                               v-model="customers.price"
                               type="text"
                               class="form-control"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.price.$error,
-                              }"
+                              required
                               placeholder="車價"
                             />
                             <div
@@ -719,11 +703,8 @@ export default {
                             v-model="customers.remark"
                             type="text"
                             class="form-control"
-                            :class="{
-                              'is-invalid':
-                                submitted && v$.customers.remark.$error,
-                            }"
                             placeholder="備註"
+                            required
                           />
                         </div>
                       </div>

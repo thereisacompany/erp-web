@@ -19,6 +19,8 @@ import '@vueform/slider/themes/default.css';
 import store from "@/state/store.js";
 import "@/design/app.scss";
 import TablePager from '@/components/table-pager.vue';
+import zhTW from 'vxe-table/lib/locale/lang/zh-TW'
+import 'vxe-table/lib/style.css'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_APIKEY,
@@ -37,6 +39,11 @@ if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
   configureFakeBackend();
 }
 
+VxeUI.setI18n('zh-TW', zhTW)
+// 切换指定语言
+VxeUI.setLanguage('zh-TW')
+// 获取当前使用的语言
+VxeUI.getLanguage()
 
 createApp(App)
   .component('TablePager', TablePager)

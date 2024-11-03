@@ -115,7 +115,12 @@ export default {
               <img src="@/assets/images/jslbear.png" alt height="22" />
             </span>
             <span class="logo-lg">
-              <img src="@/assets/images/logo.png" alt height="50" width="150" />
+              <img
+                src="@/assets/images/logo.png"
+                alt
+                height="46"
+                style="width: 90%"
+              />
             </span>
           </router-link>
 
@@ -124,7 +129,12 @@ export default {
               <img src="@/assets/images/jslbear.png" alt height="22" />
             </span>
             <span class="logo-lg">
-              <img src="@/assets/images/logo.png" alt height="50" width="150" />
+              <img
+                src="@/assets/images/logo.png"
+                alt
+                height="46"
+                style="width: 90%"
+              />
             </span>
           </router-link>
         </div>
