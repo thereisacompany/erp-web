@@ -143,14 +143,14 @@ export default {
      */
     // eslint-disable-next-line no-unused-vars
 
-    formatOrganName(SubItem) {
-      if (SubItem == null) return "";
-      return (
-        common.PadLeftZero(SubItem.organId || "", 3) +
-        " " +
-        (SubItem.organName || "")
-      );
-    },
+    // formatOrganName(SubItem) {
+    //   if (SubItem == null) return "";
+    //   return (
+    //     common.PadLeftZero(SubItem.organId || "", 3) +
+    //     " " +
+    //     (SubItem.organName || "")
+    //   );
+    // },
     GetDepotList() {
       ///jshERP-boot/depot/findDepotByCurrentUser
       let APIUrl = `/depot/findDepotByCurrentUser`;
@@ -515,7 +515,7 @@ export default {
                       <td
                         style="white-space: break-spaces; word-break: break-all"
                       >
-                        {{ formatOrganName(SubItem) }}
+                        {{ SubItem.organName }}
                       </td>
                       <td
                         style="white-space: break-spaces; word-break: break-all"
