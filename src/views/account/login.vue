@@ -45,6 +45,7 @@ export default {
       tryingToLogIn: false,
       isAuthError: false,
       version,
+      rememberMe: "not_accepted",
     };
   },
   validations: {
@@ -150,6 +151,18 @@ export default {
         // })
       }
     },
+    handleClickRemember() {
+      if (this.rememberMe) {
+        localStorage.setItem(
+          "rememberedUser",
+          JSON.stringify({
+            loginName: this.loginName,
+          })
+        );
+      } else {
+        localStorage.removeItem("rememberedUser");
+      }
+    },
   },
   mounted() {
     //console.log("this.$route.query.vConsole=", import.meta.env.NODE_ENV)
@@ -157,6 +170,12 @@ export default {
     localStorage.removeItem("user_authList");
     if (this.$route.query.vConsole == "1") {
       new VConsole().show();
+    }
+
+    if (localStorage.getItem("rememberedUser")) {
+      const rememberedUser = JSON.parse(localStorage.getItem("rememberedUser"));
+      this.loginName = rememberedUser.loginName;
+      this.rememberMe = "accepted";
     }
   },
 };
@@ -266,8 +285,11 @@ export default {
                 name="checkbox-1"
                 value="accepted"
                 unchecked-value="not_accepted"
-                >記住我
+                v-model="rememberMe"
+                @change="handleClickRemember"
+                >記住帳號
               </b-form-checkbox>
+
               <div class="mt-3 d-grid">
                 <b-button type="submit" variant="primary" class="btn-block"
                   >登入</b-button
