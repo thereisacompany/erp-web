@@ -1673,14 +1673,14 @@ export default {
         <div class="card">
           <div class="card-body">
             <div class="row mb-2">
-              <div class="col-sm-7">
+              <div class="col-sm-6">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <div style="display: flex; align-items: center; gap: 5px">
                       <label for="name">關鍵字搜尋</label>
                       <a-tooltip>
                         <template #title
-                          >例如：單號、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                          >例如：單號、客單編號、原始客編、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
                         >
                         <InfoCircleOutlined
                           style="color: #556ee6; margin-bottom: 0.5rem"
@@ -1837,13 +1837,12 @@ export default {
                   </div>
                 </div>
               </div>
-              <div class="col-sm-5">
+              <div class="col-sm-6">
                 <div class="text-sm-end actions">
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded mb-2 me-2"
+                    class="btn btn-rounded mb-2 me-2 add-delivery"
                     @click="EditOne({ id: 0, isPickup: 1 })"
-                    style="margin-left: 50%"
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增配送單
                   </button>
@@ -1853,16 +1852,10 @@ export default {
                     @importSuccess="setData"
                     class="import-delivery"
                   />
+
                   <button
                     type="button"
-                    class="btn btn-primary btn-rounded mb-2 me-2"
-                    @click="EditOne({ id: 0, isPickup: 2 })"
-                  >
-                    <i class="mdi mdi-plus me-1"></i> 新增門市取貨
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-pickup btn-rounded mb-2 me-2"
+                    class="btn btn-pickup btn-rounded mb-2 me-2 add-pickup-delivery"
                     @click="EditOne({ id: 0, isPickup: 3 })"
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增門市取貨派送
@@ -1873,6 +1866,13 @@ export default {
                     @importSuccess="setData"
                     class="import-pickup"
                   />
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-rounded mb-2 me-2 add-pickup"
+                    @click="EditOne({ id: 0, isPickup: 2 })"
+                  >
+                    <i class="mdi mdi-plus me-1"></i> 新增門市取貨
+                  </button>
                   <!-- <button
                     type="button"
                     class="btn btn-success btn-rounded mb-2 me-2"
@@ -1883,14 +1883,14 @@ export default {
 
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded btn-batch mb-2 me-2"
+                    class="btn btn-success btn-rounded btn-batch mb-2 me-2 batch-export"
                     @click="BatchExcelOut"
                   >
                     批次匯出
                   </button>
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded btn-export-picking mb-2 me-2"
+                    class="btn btn-success btn-rounded btn-export-picking mb-2 me-2 export-picking"
                     @click="handleExportPicking"
                   >
                     匯出揀貨單
@@ -3182,57 +3182,52 @@ export default {
   justify-content: flex-end;
 }
 
+/* 新增配送單 */
+.add-delivery {
+  background-color: #2a6189 !important;
+  border: 1px solid #2a6189 !important;
+  color: #fff !important;
+}
+
+/* 匯入配送單 */
 .import-delivery button {
-  background-color: #fff;
-  border: 1px solid #227c5b;
-  color: #227c5b;
+  background-color: #2a6189 !important;
+  border: 1px solid #2a6189 !important;
+  color: #fff !important;
 }
 
-.import-delivery button:hover {
-  background-color: #227c5b;
-  border: 1px solid #227c5b;
-  color: #fff;
-}
-
-.import-pickup button {
-  background-color: #fff;
-  border: 1px solid #3b6fa3;
-  color: #3b6fa3;
-}
-
-.import-pickup button:hover {
-  background-color: #3b6fa3 !important;
-  border: 1px solid #3b6fa3 !important;
-  color: #fff;
-}
-
-.btn-pickup {
+/* 新增門市取貨派送 */
+.add-pickup-delivery {
   background-color: #559ee6 !important;
   border: 1px solid #559ee6 !important;
   color: #fff !important;
 }
 
-.btn-batch {
-  background-color: #ed7c2d !important;
-  border: 1px solid #ed7c2d !important;
-  color: #fff;
+/* 匯入門市取貨派送 */
+.import-pickup button {
+  background-color: #559ee6 !important;
+  border: 1px solid #559ee6 !important;
+  color: #fff !important;
 }
 
-.btn-batch:hover {
-  background-color: #d47129 !important;
-  border: 1px solid #d47129 !important;
-  color: #fff;
+/* 新增門市取貨 */
+.add-pickup {
+  background-color: #e4903b !important;
+  border: 1px solid #e4903b !important;
+  color: #fff !important;
 }
 
-.btn-export-picking {
-  background-color: #fff !important;
-  border: 1px solid #d47129 !important;
-  color: #d47129 !important;
+/* 批次匯入 */
+.batch-export {
+  background-color: #802670 !important;
+  border: 1px solid #802670 !important;
+  color: #fff !important;
 }
 
-.btn-export-picking:hover {
-  background-color: #cc5804 !important;
-  border: 1px solid #cc5804 !important;
+/* 匯出揀貨單 */
+.export-picking {
+  background-color: #46966a !important;
+  border: 1px solid #46966a !important;
   color: #fff !important;
 }
 </style>
