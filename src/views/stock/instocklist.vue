@@ -1403,7 +1403,7 @@ export default {
                         v-for="u1 in supplierlist"
                         :key="'organId' + u1.id"
                       >
-                        {{ formatPadLeftZero(u1.id, 3) }} {{ u1.supplier }}
+                        {{ u1.supplier }}
                       </option>
                     </select>
                   </div>
