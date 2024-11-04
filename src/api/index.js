@@ -59,7 +59,7 @@ server.GetSupplierList = function (callback) {
                 //回傳資料成功
                 let jshdata = JSON.parse(JSON.stringify(res.data.data));
                 for (let i = 0; i < jshdata.rows.length; i++) {
-                    jshdata.rows[i].idname = common.PadLeftZero(jshdata.rows[i].id, 3) + ' ' + jshdata.rows[i].supplier;
+                    jshdata.rows[i].idname = jshdata.rows[i].supplier;
                 }
                 if (callback) callback(jshdata.rows)
                 return;
@@ -84,7 +84,7 @@ server.GetSupplier2List = function (typename, callback) {
                 //回傳資料成功
                 let jshdata = JSON.parse(JSON.stringify(res.data.data));
                 for (let i = 0; i < jshdata.rows.length; i++) {
-                    jshdata.rows[i].idname = common.PadLeftZero(jshdata.rows[i].id, 3) + ' ' + jshdata.rows[i].supplier;
+                    jshdata.rows[i].idname = jshdata.rows[i].supplier;
                 }
                 if (callback) callback(jshdata.rows)
                 return;
