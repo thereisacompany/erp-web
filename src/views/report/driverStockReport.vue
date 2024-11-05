@@ -633,7 +633,9 @@ export default {
                       <td
                         style="white-space: break-spaces; word-break: break-all"
                       >
-                        {{ SubItem.number }}
+                        <a :href="`/depot/stock_out#${SubItem.number}`">
+                          {{ SubItem.number }}
+                        </a>
                       </td>
                       <td
                         style="white-space: break-spaces; word-break: break-all"

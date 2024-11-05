@@ -162,6 +162,7 @@ export default {
           dataIndex: "name",
         },
       ],
+      routerId: null,
     };
   },
   computed: {
@@ -791,6 +792,7 @@ export default {
     },
     EditShow(RowItem) {
       this.SubView = 3;
+      console.log("EditShow", RowItem);
       //   狀態1已審2未/ {{ SubItem.status }} 配送狀態/{{
       //   formatdStatus(SubItem.dStatus)
       // }}
@@ -1352,6 +1354,17 @@ export default {
             this.customersData[i].chk = this.chkAll;
           }
           //console.log("datalist:", this.customersData)
+
+          setTimeout(() => {
+            if (this.$route.hash && this.$route.hash !== null) {
+              const id = this.$route.hash.split("#").join("");
+              this.routerId = id;
+              // console.log("this.routerId-", this.routerId);
+              if (this.routerId != null) {
+                this.directToDriverTab();
+              }
+            }
+          }, 100);
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1694,6 +1707,15 @@ export default {
           );
         });
     },
+    // 直接跳轉至司機派單及回報
+    directToDriverTab() {
+      const item = this.customersData.find(
+        (data) => data.number == this.routerId
+      );
+      console.log("item:", item);
+      this.EditShow(item);
+      this.selectedTab = 1;
+    },
   },
 };
 </script>
@@ -1704,7 +1726,6 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
-
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
@@ -2107,6 +2128,7 @@ export default {
         </div>
       </div>
     </div>
+
     <b-tabs
       content-class="py-3 text-muted"
       v-if="SubView != 0"
@@ -2629,6 +2651,7 @@ export default {
           </span>
           <span class="d-none d-sm-inline-block">司機派單及回報</span>
         </template>
+
         <div class="row py-1">
           <div class="col-12">
             <div class="card">
