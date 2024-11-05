@@ -9,7 +9,7 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import { Modal, Tag, Tooltip } from "ant-design-vue";
+import { Modal, Tag, Tooltip, Button } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
@@ -29,6 +29,7 @@ export default {
     ATag: Tag,
     InfoCircleOutlined,
     ATooltip: Tooltip,
+    AButton: Button,
   },
   data() {
     return {
@@ -1543,6 +1544,7 @@ export default {
           });
         }
       } else {
+        console.log("else file");
         window.open(filename, "file1");
       }
     },
@@ -1656,6 +1658,41 @@ export default {
         alert("數量大於庫存，請重新輸入");
         item.operNumber = item.stock;
       }
+    },
+    downloadAllFiles(fileList) {
+      fileList.forEach((url) => {
+        const fileUrl = this.GetAccessFile1(url);
+        console.log("fileUrl", fileUrl);
+        this.downloadFile(fileUrl);
+      });
+    },
+    // 下載文件的方法
+    // 下載文件的方法
+    downloadFile(url) {
+      fetch(url)
+        .then((response) => {
+          // 检查响应是否成功
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.blob(); // 将响应转换为 Blob
+        })
+        .then((blob) => {
+          const fileURL = window.URL.createObjectURL(blob);
+          const fileLink = document.createElement("a");
+          fileLink.href = fileURL;
+          fileLink.setAttribute("download", `${url.split("/").pop()}`); // 获取文件名
+          document.body.appendChild(fileLink);
+          fileLink.click();
+          fileLink.remove(); // 清理 DOM
+          window.URL.revokeObjectURL(fileURL); // 释放对象 URL
+        })
+        .catch((error) => {
+          console.error(
+            "There has been a problem with your fetch operation:",
+            error
+          );
+        });
     },
   },
 };
@@ -2908,10 +2945,16 @@ export default {
                 <hr />
                 <div class="row mb-2">
                   <div class="col-sm-12">
-                    <div class="flex-1 overflow-hidden">
-                      <h5 class="text-bold mb-1" style="font-weight: bold">
+                    <div class="flex-1 overflow-hidden upload-section mb-3">
+                      <h5 class="text-bold" style="font-weight: bold">
                         <i class="bx bx-folder-open"></i> 圖片影片及附件
                       </h5>
+
+                      <a-button
+                        type="primary"
+                        @click="downloadAllFiles(driver.filelist)"
+                        >全部下載</a-button
+                      >
                     </div>
                   </div>
                   <div class="col-sm-12 bg-light pt-3 pb-3">
@@ -3229,5 +3272,21 @@ export default {
   background-color: #46966a !important;
   border: 1px solid #46966a !important;
   color: #fff !important;
+}
+
+.upload-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.upload-section h5 {
+  margin: 0 !important;
+}
+
+.all-download {
+  padding: 2px 8px;
+  border: 1px solid #000;
+  border-radius: 4px;
 }
 </style>
