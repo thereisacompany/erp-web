@@ -1736,12 +1736,23 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <label for="name">配送單號</label>
+                    <div style="display: flex; align-items: center; gap: 5px">
+                      <label for="name">單號</label>
+                      <a-tooltip>
+                        <template #title
+                          >例如：單號、客單編號、原始客編</template
+                        >
+                        <InfoCircleOutlined
+                          style="color: #556ee6; margin-bottom: 0.5rem"
+                        />
+                      </a-tooltip>
+                    </div>
+
                     <input
                       autocomplete="off"
                       type="text"
                       class="form-control"
-                      placeholder="配送單號"
+                      placeholder="單號"
                       v-model="number"
                       @keyup.enter="GetData()"
                     />
