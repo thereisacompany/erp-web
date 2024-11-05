@@ -493,7 +493,6 @@ export default {
                               v-model="customers.mileage"
                               type="text"
                               class="form-control"
-                              required
                               placeholder="里程數(公里)"
                             />
                             <div
@@ -635,7 +634,6 @@ export default {
                               v-model="customers.emissions"
                               type="text"
                               class="form-control"
-                              required
                               placeholder="排放量(c.c.)"
                             />
                             <div
@@ -661,7 +659,6 @@ export default {
                               v-model="customers.price"
                               type="text"
                               class="form-control"
-                              required
                               placeholder="車價"
                             />
                             <div
@@ -704,7 +701,6 @@ export default {
                             type="text"
                             class="form-control"
                             placeholder="備註"
-                            required
                           />
                         </div>
                       </div>
