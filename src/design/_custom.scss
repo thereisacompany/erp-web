@@ -337,3 +337,7 @@ table tbody tr:nth-child(even) {
     }
   }
 }
+
+.ant-modal-root .ant-modal-wrap {
+  z-index: 1200;
+}
