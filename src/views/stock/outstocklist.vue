@@ -9,7 +9,14 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import { Modal, Tag, Tooltip, Button } from "ant-design-vue";
+import {
+  Modal,
+  Tag,
+  Tooltip,
+  Button,
+  Select,
+  SelectOption,
+} from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
@@ -30,6 +37,8 @@ export default {
     InfoCircleOutlined,
     ATooltip: Tooltip,
     AButton: Button,
+    ASelect: Select,
+    ASelectOption: SelectOption,
   },
   data() {
     return {
@@ -2292,11 +2301,26 @@ export default {
                                 </div>
                               </td>
                               <td>
+                                <!-- 品號 -->
                                 <div
                                   class="position-relative"
                                   v-if="IsPickup1 && this.SubView !== 3"
                                 >
-                                  <input
+                                  <a-select
+                                    v-model:value="SubItem.number"
+                                    placeholder="請選擇"
+                                    show-search
+                                    :filter-option="filterOption"
+                                    @keyup="queryMaterialByRow(SubItem, cidx)"
+                                  >
+                                    <a-select-option
+                                      v-for="option in SubItem.queryMaterialList"
+                                      :key="option.id"
+                                      :value="option.number"
+                                      >{{ option.number }}</a-select-option
+                                    >
+                                  </a-select>
+                                  <!-- <input
                                     autocomplete="off"
                                     type="text"
                                     class="form-control"
@@ -2315,7 +2339,7 @@ export default {
                                     >
                                       {{ q1.number }}
                                     </option>
-                                  </datalist>
+                                  </datalist> -->
                                 </div>
                                 <div v-else>-</div>
                               </td>
@@ -3231,7 +3255,7 @@ export default {
   </Layout>
 </template>
 
-<style>
+<style scoped>
 .detail-table > .table {
   width: 100%;
   table-layout: fixed;
@@ -3318,5 +3342,9 @@ export default {
   padding: 2px 8px;
   border: 1px solid #000;
   border-radius: 4px;
+}
+
+:deep(.ant-select) {
+  width: 100%;
 }
 </style>
