@@ -1738,7 +1738,7 @@ export default {
                       <label for="name">關鍵字搜尋</label>
                       <a-tooltip>
                         <template #title
-                          >例如：單號、客單編號、原始客編、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                          >例如：收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
                         >
                         <InfoCircleOutlined
                           style="color: #556ee6; margin-bottom: 0.5rem"
