@@ -1743,7 +1743,7 @@ export default {
                       <label for="name">關鍵字搜尋</label>
                       <a-tooltip>
                         <template #title
-                          >例如：收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                          >例如：收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號、建單人員</template
                         >
                         <InfoCircleOutlined
                           style="color: #556ee6; margin-bottom: 0.5rem"
@@ -1797,7 +1797,7 @@ export default {
                     />
                   </div>
                 </div>
-                <div class="search-box me-2 mb-2 d-inline-block">
+                <div class="search-box me-2 mb-2 d-inline-block" v-if="false">
                   <div class="position-relative">
                     <label for="name">商品資料</label>
                     <input
