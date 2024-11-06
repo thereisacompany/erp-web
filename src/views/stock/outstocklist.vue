@@ -9,7 +9,14 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import { Modal, Tag, Tooltip, Button } from "ant-design-vue";
+import {
+  Modal,
+  Tag,
+  Tooltip,
+  Button,
+  Select,
+  SelectOption,
+} from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
@@ -30,6 +37,8 @@ export default {
     InfoCircleOutlined,
     ATooltip: Tooltip,
     AButton: Button,
+    ASelect: Select,
+    ASelectOption: SelectOption,
   },
   data() {
     return {
@@ -162,7 +171,6 @@ export default {
           dataIndex: "name",
         },
       ],
-      routerId: null,
     };
   },
   computed: {
@@ -1357,12 +1365,13 @@ export default {
 
           setTimeout(() => {
             if (this.$route.hash && this.$route.hash !== null) {
-              const id = this.$route.hash.split("#").join("");
-              this.routerId = id;
-              // console.log("this.routerId-", this.routerId);
-              if (this.routerId != null) {
-                this.directToDriverTab();
-              }
+              const splitArray = this.$route.hash
+                .split("#")
+                .join("")
+                .split("&");
+              const number = splitArray[0];
+              const id = splitArray[1];
+              this.directToDriverTab(number, id);
             }
           }, 100);
         })
@@ -1708,12 +1717,8 @@ export default {
         });
     },
     // 直接跳轉至司機派單及回報
-    directToDriverTab() {
-      const item = this.customersData.find(
-        (data) => data.number == this.routerId
-      );
-      console.log("item:", item);
-      this.EditShow(item);
+    directToDriverTab(number, id) {
+      this.EditShow({ number, id });
       this.selectedTab = 1;
     },
   },
@@ -1738,7 +1743,7 @@ export default {
                       <label for="name">關鍵字搜尋</label>
                       <a-tooltip>
                         <template #title
-                          >例如：單號、客單編號、原始客編、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                          >例如：收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號、建單人員</template
                         >
                         <InfoCircleOutlined
                           style="color: #556ee6; margin-bottom: 0.5rem"
@@ -1792,7 +1797,7 @@ export default {
                     />
                   </div>
                 </div>
-                <div class="search-box me-2 mb-2 d-inline-block">
+                <div class="search-box me-2 mb-2 d-inline-block" v-if="false">
                   <div class="position-relative">
                     <label for="name">商品資料</label>
                     <input
@@ -2296,11 +2301,26 @@ export default {
                                 </div>
                               </td>
                               <td>
+                                <!-- 品號 -->
                                 <div
                                   class="position-relative"
                                   v-if="IsPickup1 && this.SubView !== 3"
                                 >
-                                  <input
+                                  <a-select
+                                    v-model:value="SubItem.number"
+                                    placeholder="請選擇"
+                                    show-search
+                                    :filter-option="filterOption"
+                                    @keyup="queryMaterialByRow(SubItem, cidx)"
+                                  >
+                                    <a-select-option
+                                      v-for="option in SubItem.queryMaterialList"
+                                      :key="option.id"
+                                      :value="option.number"
+                                      >{{ option.number }}</a-select-option
+                                    >
+                                  </a-select>
+                                  <!-- <input
                                     autocomplete="off"
                                     type="text"
                                     class="form-control"
@@ -2319,7 +2339,7 @@ export default {
                                     >
                                       {{ q1.number }}
                                     </option>
-                                  </datalist>
+                                  </datalist> -->
                                 </div>
                                 <div v-else>-</div>
                               </td>
@@ -3235,7 +3255,7 @@ export default {
   </Layout>
 </template>
 
-<style>
+<style scoped>
 .detail-table > .table {
   width: 100%;
   table-layout: fixed;
@@ -3322,5 +3342,9 @@ export default {
   padding: 2px 8px;
   border: 1px solid #000;
   border-radius: 4px;
+}
+
+:deep(.ant-select) {
+  width: 100%;
 }
 </style>

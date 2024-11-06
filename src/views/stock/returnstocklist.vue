@@ -9,6 +9,7 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
+import { Select, SelectOption } from "ant-design-vue";
 
 /**
  * Customers component
@@ -18,7 +19,12 @@ export default {
     title: "退貨單",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader },
+  components: {
+    Layout,
+    PageHeader,
+    ASelect: Select,
+    ASelectOption: SelectOption,
+  },
   data() {
     return {
       selectedTab: 0,
@@ -1547,7 +1553,25 @@ export default {
                           </td>
                           <td>
                             <div class="position-relative" v-if="IsPickup1">
-                              <input
+                              <a-select
+                                :disabled="
+                                  (SubView == 2 && !SubItem.isNewAdd) ||
+                                  SubView == 3
+                                "
+                                v-model:value="SubItem.number"
+                                placeholder="請選擇"
+                                show-search
+                                :filter-option="filterOption"
+                                @keyup="queryMaterialByRow(SubItem, cidx)"
+                              >
+                                <a-select-option
+                                  v-for="option in SubItem.queryMaterialList"
+                                  :key="option.id"
+                                  :value="option.number"
+                                  >{{ option.number }}</a-select-option
+                                >
+                              </a-select>
+                              <!-- <input
                                 autocomplete="off"
                                 type="text"
                                 class="form-control"
@@ -1564,7 +1588,7 @@ export default {
                                 >
                                   {{ q1.number }}
                                 </option>
-                              </datalist>
+                              </datalist> -->
                             </div>
                             <div v-else>-</div>
                           </td>
@@ -1839,3 +1863,8 @@ export default {
     <!-- end row -->
   </Layout>
 </template>
+<style scoped>
+:deep(.ant-select) {
+  width: 100%;
+}
+</style>

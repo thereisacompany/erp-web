@@ -6,6 +6,7 @@ import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
+import { Select, SelectOption } from "ant-design-vue";
 
 import appConfig from "@/app.config";
 
@@ -17,7 +18,12 @@ export default {
     title: "移倉管理",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader },
+  components: {
+    Layout,
+    PageHeader,
+    ASelect: Select,
+    ASelectOption: SelectOption,
+  },
   data() {
     return {
       chkAll: true,
@@ -1116,7 +1122,7 @@ export default {
                   />
                 </div>
               </div>
-              <div class="row">
+              <div class="row my-3">
                 <div class="col-sm-12">
                   <div class="table-responsive">
                     <table
@@ -1169,7 +1175,26 @@ export default {
                           </td>
                           <td>
                             <div class="position-relative">
-                              <input
+                              <a-select
+                                :disabled="
+                                  (SubView == 2 && !SubItem.isNewAdd) ||
+                                  SubView == 3
+                                "
+                                v-model:value="SubItem.number"
+                                placeholder="請選擇"
+                                show-search
+                                :filter-option="filterOption"
+                                @keyup="queryMaterialByRow(SubItem, cidx)"
+                              >
+                                <a-select-option
+                                  v-for="option in SubItem.queryMaterialList"
+                                  :key="option.id"
+                                  :value="option.number"
+                                  >{{ option.number }}</a-select-option
+                                >
+                              </a-select>
+
+                              <!-- <input
                                 autocomplete="off"
                                 type="text"
                                 class="form-control"
@@ -1186,7 +1211,7 @@ export default {
                                 >
                                   {{ q1.number }}
                                 </option>
-                              </datalist>
+                              </datalist> -->
                             </div>
                           </td>
                           <td>{{ SubItem.name }}</td>
@@ -1618,3 +1643,9 @@ export default {
     <!-- end row -->
   </Layout>
 </template>
+
+<style scoped>
+:deep(.ant-select) {
+  width: 100%;
+}
+</style>
