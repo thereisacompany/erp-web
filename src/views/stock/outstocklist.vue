@@ -162,7 +162,6 @@ export default {
           dataIndex: "name",
         },
       ],
-      routerId: null,
     };
   },
   computed: {
@@ -1357,12 +1356,13 @@ export default {
 
           setTimeout(() => {
             if (this.$route.hash && this.$route.hash !== null) {
-              const id = this.$route.hash.split("#").join("");
-              this.routerId = id;
-              // console.log("this.routerId-", this.routerId);
-              if (this.routerId != null) {
-                this.directToDriverTab();
-              }
+              const splitArray = this.$route.hash
+                .split("#")
+                .join("")
+                .split("&");
+              const number = splitArray[0];
+              const id = splitArray[1];
+              this.directToDriverTab(number, id);
             }
           }, 100);
         })
@@ -1708,12 +1708,8 @@ export default {
         });
     },
     // 直接跳轉至司機派單及回報
-    directToDriverTab() {
-      const item = this.customersData.find(
-        (data) => data.number == this.routerId
-      );
-      console.log("item:", item);
-      this.EditShow(item);
+    directToDriverTab(number, id) {
+      this.EditShow({ number, id });
       this.selectedTab = 1;
     },
   },
