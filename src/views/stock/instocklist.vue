@@ -7,10 +7,7 @@ import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import { server } from "@/api";
 import common from "@/api/common";
-import {
-  ExclamationCircleOutlined,
-  InfoCircleOutlined,
-} from "@ant-design/icons-vue";
+import { ExclamationCircleOutlined, InfoCircleOutlined } from "@ant-design/icons-vue";
 import appConfig from "@/app.config";
 import { Modal, Tooltip, Select, SelectOption } from "ant-design-vue";
 
@@ -338,9 +335,7 @@ export default {
       }
     },
     DeleteRow1(SubItem) {
-      const filteredArray = this.customersItem.filter(
-        (obj) => !(obj.id === SubItem.id)
-      );
+      const filteredArray = this.customersItem.filter((obj) => !(obj.id === SubItem.id));
       for (let i = 0; i < filteredArray.length; i++) {
         filteredArray[i].orderNum = i + 1;
       }
@@ -424,9 +419,7 @@ export default {
       };
       server.GetMaterialListByRow(wObj, (rows) => {
         SubItem.queryMaterialList = rows;
-        let F1List = rows.filter(
-          (x) => String(x.number) == String(SubItem.number)
-        );
+        let F1List = rows.filter((x) => String(x.number) == String(SubItem.number));
         if (F1List.length != 0) {
           if (
             this.customers.organId != null &&
@@ -506,15 +499,9 @@ export default {
           if (res != null && res.data != null && res.status == 200) {
             let jshdata = res.data.data;
             this.customers = jshdata;
-            this.customers.date2 = dayjs(this.customers.operTime).format(
-              "YYYY-MM-DD"
-            );
-            this.customers.time2 = dayjs(this.customers.operTime).format(
-              "HH:mm:ss"
-            );
-            this.filelist = this.customers.fileName
-              .split(",")
-              .filter((x) => x != "");
+            this.customers.date2 = dayjs(this.customers.operTime).format("YYYY-MM-DD");
+            this.customers.time2 = dayjs(this.customers.operTime).format("HH:mm:ss");
+            this.filelist = this.customers.fileName.split(",").filter((x) => x != "");
           }
         })
         .catch(function (error) {
@@ -895,9 +882,7 @@ export default {
     GetAccessFile1(UrlPath1) {
       ///systemConfig/static/
 
-      let APIUrl = `${
-        import.meta.env.VITE_APP_API_URL
-      }/systemConfig/static/${UrlPath1}`;
+      let APIUrl = `${import.meta.env.VITE_APP_API_URL}/systemConfig/static/${UrlPath1}`;
       return APIUrl;
     },
     DeleteFile1(file1) {
@@ -921,11 +906,7 @@ export default {
           <div class="card-body">
             <h4 class="card-title mb-4">
               {{
-                SubView == 1
-                  ? "新增進貨單"
-                  : SubView == 2
-                  ? "修改進貨單"
-                  : "查看進貨單"
+                SubView == 1 ? "新增進貨單" : SubView == 2 ? "修改進貨單" : "查看進貨單"
               }}
             </h4>
             <b-form>
@@ -1015,24 +996,15 @@ export default {
                           <th width="5%">庫存</th>
                           <th width="10%">儲位</th>
                           <th width="5%">
-                            {{
-                              SubView == 2 || SubView == 3
-                                ? "實際入庫"
-                                : "進貨數量"
-                            }}
+                            {{ SubView == 2 || SubView == 3 ? "實際入庫" : "進貨數量" }}
                           </th>
                           <th width="5%" v-if="SubView !== 1">進貨數量</th>
                           <th width="10%">備註</th>
-                          <th v-if="SubView == 1 || SubView == 2" width="1%">
-                            操作
-                          </th>
+                          <th v-if="SubView == 1 || SubView == 2" width="1%">操作</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr
-                          v-for="(SubItem, cidx) in customersItem"
-                          :key="SubItem.id"
-                        >
+                        <tr v-for="(SubItem, cidx) in customersItem" :key="SubItem.id">
                           <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                           <td>
                             <!-- 倉庫 -->
@@ -1040,8 +1012,7 @@ export default {
                               class="form-select"
                               v-model="SubItem.depotId"
                               :disabled="
-                                (SubView == 2 && !SubItem.isNewAdd) ||
-                                SubView == 3
+                                (SubView == 2 && !SubItem.isNewAdd) || SubView == 3
                               "
                               @change="
                                 SubItem.number = '';
@@ -1064,14 +1035,14 @@ export default {
                             <div class="position-relative">
                               <a-select
                                 :disabled="
-                                  (SubView == 2 && !SubItem.isNewAdd) ||
-                                  SubView == 3
+                                  (SubView == 2 && !SubItem.isNewAdd) || SubView == 3
                                 "
                                 v-model:value="SubItem.number"
                                 placeholder="請選擇"
                                 show-search
                                 :filter-option="filterOption"
                                 @keyup="queryMaterialByRow(SubItem, cidx)"
+                                @select="queryMaterialByRow(SubItem, cidx)"
                               >
                                 <a-select-option
                                   v-for="option in SubItem.queryMaterialList"
@@ -1124,8 +1095,7 @@ export default {
                               type="text"
                               class="form-control"
                               :disabled="
-                                (SubView == 2 && !SubItem.isNewAdd) ||
-                                SubView == 3
+                                (SubView == 2 && !SubItem.isNewAdd) || SubView == 3
                               "
                               v-model="SubItem.counterName"
                             />
@@ -1138,8 +1108,7 @@ export default {
                               class="form-control"
                               :disabled="SubView == 3"
                               @change="
-                                SubItem.allPrice =
-                                  SubItem.operNumber * SubItem.unitPrice
+                                SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice
                               "
                               v-model="SubItem.operNumber"
                             />
@@ -1155,17 +1124,12 @@ export default {
                               type="text"
                               class="form-control"
                               :disabled="
-                                (SubView == 2 && !SubItem.isNewAdd) ||
-                                SubView == 3
+                                (SubView == 2 && !SubItem.isNewAdd) || SubView == 3
                               "
                               v-model="SubItem.remark"
                             />
                           </td>
-                          <td
-                            v-if="
-                              SubView == 1 || (SubView == 2 && SubItem.isNewAdd)
-                            "
-                          >
+                          <td v-if="SubView == 1 || (SubView == 2 && SubItem.isNewAdd)">
                             <div class="button-items">
                               <a
                                 href="javascript:;"
@@ -1246,10 +1210,7 @@ export default {
                     <a v-else href="javascript:;" @click="ShowImage(f1)">{{
                       f1.split("/").pop()
                     }}</a>
-                    <a
-                      href="javascript:;"
-                      class="text-danger"
-                      @click="DeleteFile1(f1)"
+                    <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)"
                       >&nbsp;<i class="bx bx-x"></i
                     ></a>
                   </div>
@@ -1261,9 +1222,7 @@ export default {
       </div>
 
       <div class="loglist" v-if="SubView != 0 && LogList.length != 0">
-        <table
-          class="table table-centered table-bordered table-nowrap align-middle"
-        >
+        <table class="table table-centered table-bordered table-nowrap align-middle">
           <tr>
             <th class="text-center" width="50px">#</th>
             <th width="150px">操作時間</th>
@@ -1314,9 +1273,7 @@ export default {
             v-if="SubView == 3 && customers.status == 1 && havePermission"
             >修改</a
           >
-          <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0"
-            >返回
-          </a>
+          <a href="javascript:;" class="btn btn-secondary" @click="SubView = 0">返回 </a>
         </div>
       </div>
     </div>
@@ -1342,9 +1299,7 @@ export default {
         </div>
 
         <div class="text-end pt-5 mt-3">
-          <b-button variant="light" @click="showImageModal = false"
-            >關閉</b-button
-          >
+          <b-button variant="light" @click="showImageModal = false">關閉</b-button>
         </div>
       </form>
     </b-modal>
@@ -1420,11 +1375,7 @@ export default {
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <label for="name">客戶</label>
-                    <select
-                      class="form-select"
-                      v-model="organId"
-                      @change="GetData()"
-                    >
+                    <select class="form-select" v-model="organId" @change="GetData()">
                       <option value="">全部客戶</option>
                       <option
                         :value="u1.id"
@@ -1440,18 +1391,11 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <label for="name">倉庫別</label>
-                  <select
-                    class="form-select"
-                    v-model="depotId"
-                    @change="GetData()"
-                  >
+                  <select class="form-select" v-model="depotId" @change="GetData()">
                     <option
                       :value="u1.id"
                       selected
-                      v-for="u1 in [
-                        { id: '', depotName: '全部' },
-                        ...depotList,
-                      ]"
+                      v-for="u1 in [{ id: '', depotName: '全部' }, ...depotList]"
                       :key="'query_depot_id' + u1.id"
                     >
                       {{ u1.depotName }}
@@ -1532,29 +1476,18 @@ export default {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(SubItem, cidx) in customersData"
-                    :key="SubItem.id"
-                  >
+                  <tr v-for="(SubItem, cidx) in customersData" :key="SubItem.id">
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.organName }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.number }}
                     </td>
                     <td>{{ SubItem.mNumber }}</td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       <div
-                        v-for="name1 in String(SubItem.materialsList).split(
-                          ','
-                        )"
+                        v-for="name1 in String(SubItem.materialsList).split(',')"
                         :key="'SubItem' + cidx + name1"
                       >
                         {{ name1 }}
@@ -1576,14 +1509,10 @@ export default {
                         >
                       </div>
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.userName }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.operTimeStr }}
                     </td>
                     <td>

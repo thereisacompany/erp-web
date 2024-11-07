@@ -9,14 +9,7 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import {
-  Modal,
-  Tag,
-  Tooltip,
-  Button,
-  Select,
-  SelectOption,
-} from "ant-design-vue";
+import { Modal, Tag, Tooltip, Button, Select, SelectOption } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
@@ -179,8 +172,7 @@ export default {
       return false;
     },
     EditOneTitle() {
-      let SubTitle =
-        this.SubView == 1 ? "新增" : this.SubView == 2 ? "修改" : "查看";
+      let SubTitle = this.SubView == 1 ? "新增" : this.SubView == 2 ? "修改" : "查看";
       SubTitle = SubTitle + this.customers.subType;
       return SubTitle;
     },
@@ -273,8 +265,7 @@ export default {
       this.GetData();
     },
     GetDriverDay(iStatus) {
-      if (this.driver == null || this.driver.deliveryStatusList == null)
-        return "";
+      if (this.driver == null || this.driver.deliveryStatusList == null) return "";
       let F1List = this.driver.deliveryStatusList.filter(
         (x) => String(x.status) == String(iStatus)
       );
@@ -292,8 +283,7 @@ export default {
       //server.GetSupplierByID(this.driver.driverId, (aaa) => { console.log(aaa) });
     },
     formatDateTime(value) {
-      if (common.IsDate(value))
-        return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
+      if (common.IsDate(value)) return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
       return value;
     },
     formatDate(value) {
@@ -383,9 +373,7 @@ export default {
         }
 
         //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
-        this.customers.extrasArrival = dayjs(
-          this.customers.extrasArrival
-        ).isValid()
+        this.customers.extrasArrival = dayjs(this.customers.extrasArrival).isValid()
           ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
           : null;
         if (
@@ -511,11 +499,7 @@ export default {
       // 1. 會檢查是否為配送單
       // 2. 是否已有指派過司機
       // 3. 檢查司機是否已有綁定車輛
-      if (
-        this.customers == null ||
-        this.customers.id == null ||
-        this.customers.id == 0
-      )
+      if (this.customers == null || this.customers.id == null || this.customers.id == 0)
         return;
 
       let data2 = {};
@@ -527,13 +511,8 @@ export default {
 
       let errMsg = "";
 
-      if (data2.driverId == null || data2.driverId == "")
-        errMsg += "請選擇指派司機\n";
-      if (
-        data2.assignDate == null ||
-        data2.assignDate == "" ||
-        data2.assignDate == ""
-      )
+      if (data2.driverId == null || data2.driverId == "") errMsg += "請選擇指派司機\n";
+      if (data2.assignDate == null || data2.assignDate == "" || data2.assignDate == "")
         errMsg += "請選擇指派日期\n";
       if (data2.assignUser == null || data2.assignUser == "")
         errMsg += "請選擇派發人員\n";
@@ -690,9 +669,7 @@ export default {
       }
     },
     DeleteRow1(SubItem) {
-      const filteredArray = this.customersItem.filter(
-        (obj) => !(obj.id === SubItem.id)
-      );
+      const filteredArray = this.customersItem.filter((obj) => !(obj.id === SubItem.id));
       for (let i = 0; i < filteredArray.length; i++) {
         filteredArray[i].orderNum = i + 1;
       }
@@ -824,9 +801,7 @@ export default {
       server.GetMaterialListByRow(wObj, (rows) => {
         //SubItem.queryMaterialList = rows;
         SubItem.queryMaterialList = rows.filter((x) => x.stock > 0);
-        let F1List = rows.filter(
-          (x) => String(x.number) == String(SubItem.number)
-        );
+        let F1List = rows.filter((x) => String(x.number) == String(SubItem.number));
         if (F1List.length != 0) {
           if (
             this.customers.organId != null &&
@@ -857,8 +832,7 @@ export default {
         this.customersItem[cidx].stock = MaterialSubItem.stock;
         this.customersItem[cidx].number = MaterialSubItem.number;
         this.customersItem[cidx].counterName = MaterialSubItem.counter;
-        this.customersItem[cidx].operNumber =
-          this.customersItem[cidx].operNumber || 1; //1,數量
+        this.customersItem[cidx].operNumber = this.customersItem[cidx].operNumber || 1; //1,數量
         // this.SetMaterialModel(this.customersItem[cidx])
         // this.SetDepotStock(this.customersItem[cidx]);
       } else {
@@ -881,16 +855,11 @@ export default {
       let depotId = SubItem.depotId || 0;
       let barCode = SubItem.barCode || "";
       let organId = this.customers.organId || "";
-      this.FindStockByDepotAndBarCode(
-        depotId,
-        barCode,
-        organId,
-        (depotStock) => {
-          if (depotStock != null) {
-            SubItem.stock = depotStock.stock;
-          }
+      this.FindStockByDepotAndBarCode(depotId, barCode, organId, (depotStock) => {
+        if (depotStock != null) {
+          SubItem.stock = depotStock.stock;
         }
-      );
+      });
     },
     SetMaterialModel(SubItem) {
       //let depotId = SubItem.depotId || 0;
@@ -916,9 +885,7 @@ export default {
       let NumberList = this.customersData
         .filter((x) => x.chk == true)
         .map((y) => y.number);
-      let subIdList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.subId);
+      let subIdList = this.customersData.filter((x) => x.chk == true).map((y) => y.subId);
       //console.log(NumberList)
 
       if (NumberList == null || NumberList.length == 0) {
@@ -971,9 +938,7 @@ export default {
 
       let number = this.customers.number;
       let type =
-        this.customersItem.filter((x) => x.categoryName == "冷氣").length != 0
-          ? 1
-          : 0;
+        this.customersItem.filter((x) => x.categoryName == "冷氣").length != 0 ? 1 : 0;
       let isRecycle = 0; //先帶不回收
       let brand = ""; //先帶不回收
       // console.log(JSON.stringify(this.customers))
@@ -1038,25 +1003,15 @@ export default {
             let jshdata = res.data.data;
 
             this.customers = jshdata;
-            this.customers.date2 = dayjs(this.customers.operTime).format(
-              "YYYY-MM-DD"
-            );
-            this.customers.time2 = dayjs(this.customers.operTime).format(
-              "HH:mm:ss"
-            );
-            this.customers.mainArrival = dayjs(
-              this.customers.mainArrival
-            ).isValid()
+            this.customers.date2 = dayjs(this.customers.operTime).format("YYYY-MM-DD");
+            this.customers.time2 = dayjs(this.customers.operTime).format("HH:mm:ss");
+            this.customers.mainArrival = dayjs(this.customers.mainArrival).isValid()
               ? dayjs(this.customers.mainArrival).format("YYYY-MM-DD")
               : null;
-            this.customers.extrasArrival = dayjs(
-              this.customers.extrasArrival
-            ).isValid()
+            this.customers.extrasArrival = dayjs(this.customers.extrasArrival).isValid()
               ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
               : null;
-            this.customers.agreedDelivery = dayjs(
-              this.customers.agreedDelivery
-            ).isValid()
+            this.customers.agreedDelivery = dayjs(this.customers.agreedDelivery).isValid()
               ? dayjs(this.customers.agreedDelivery).format("YYYY-MM-DD")
               : null;
             this.customers.delivered = dayjs(this.customers.delivered).isValid()
@@ -1290,9 +1245,7 @@ export default {
             console.log("jshdata", jshdata);
             this.driver.driverId = jshdata.driverId;
             this.driver.carNumber = jshdata.carNumber;
-            this.driver.assignDate = dayjs(jshdata.takeDate).format(
-              "YYYY-MM-DD"
-            );
+            this.driver.assignDate = dayjs(jshdata.takeDate).format("YYYY-MM-DD");
             this.driver.assignUser = jshdata.assignUser;
 
             this.driver.filePath = jshdata.filePath;
@@ -1365,10 +1318,7 @@ export default {
 
           setTimeout(() => {
             if (this.$route.hash && this.$route.hash !== null) {
-              const splitArray = this.$route.hash
-                .split("#")
-                .join("")
-                .split("&");
+              const splitArray = this.$route.hash.split("#").join("").split("&");
               const number = splitArray[0];
               const id = splitArray[1];
               this.directToDriverTab(number, id);
@@ -1573,9 +1523,7 @@ export default {
     GetAccessFile1(UrlPath1) {
       ///systemConfig/static/
 
-      let APIUrl = `${
-        import.meta.env.VITE_APP_API_URL
-      }/systemConfig/static/${UrlPath1}`;
+      let APIUrl = `${import.meta.env.VITE_APP_API_URL}/systemConfig/static/${UrlPath1}`;
       return APIUrl;
     },
     DeleteFile1(file1) {
@@ -1584,9 +1532,7 @@ export default {
       this.filelist = filteredArray;
     },
     DeleteFile2(file1) {
-      const filteredArray = this.driver.filelist.filter(
-        (obj) => !(obj === file1)
-      );
+      const filteredArray = this.driver.filelist.filter((obj) => !(obj === file1));
 
       this.driver.filelist = filteredArray;
     },
@@ -1595,9 +1541,7 @@ export default {
       let NumberList = this.customersData
         .filter((x) => x.chk == true)
         .map((y) => y.number);
-      let subIdList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.subId);
+      let subIdList = this.customersData.filter((x) => x.chk == true).map((y) => y.subId);
       //console.log(NumberList)
 
       if (NumberList == null || NumberList.length == 0) {
@@ -1710,10 +1654,7 @@ export default {
           window.URL.revokeObjectURL(fileURL); // 释放对象 URL
         })
         .catch((error) => {
-          console.error(
-            "There has been a problem with your fetch operation:",
-            error
-          );
+          console.error("There has been a problem with your fetch operation:", error);
         });
     },
     // 直接跳轉至司機派單及回報
@@ -1727,10 +1668,7 @@ export default {
 
 <template>
   <Layout>
-    <PageHeader
-      :title="title + (SubView == 0 ? '列表' : '明細')"
-      :items="items"
-    />
+    <PageHeader :title="title + (SubView == 0 ? '列表' : '明細')" :items="items" />
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
@@ -1765,9 +1703,7 @@ export default {
                     <div style="display: flex; align-items: center; gap: 5px">
                       <label for="name">單號</label>
                       <a-tooltip>
-                        <template #title
-                          >例如：單號、客單編號、原始客編</template
-                        >
+                        <template #title>例如：單號、客單編號、原始客編</template>
                         <InfoCircleOutlined
                           style="color: #556ee6; margin-bottom: 0.5rem"
                         />
@@ -1813,11 +1749,7 @@ export default {
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <label for="name">客戶</label>
-                    <select
-                      class="form-select"
-                      v-model="organId"
-                      @change="GetData()"
-                    >
+                    <select class="form-select" v-model="organId" @change="GetData()">
                       <option value="">全部客戶</option>
                       <option
                         :value="u1.id"
@@ -1832,18 +1764,11 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <label for="name">倉庫別</label>
-                  <select
-                    class="form-select"
-                    v-model="depotId"
-                    @change="GetData()"
-                  >
+                  <select class="form-select" v-model="depotId" @change="GetData()">
                     <option
                       :value="u1.id"
                       selected
-                      v-for="u1 in [
-                        { id: '', depotName: '全部' },
-                        ...depotList,
-                      ]"
+                      v-for="u1 in [{ id: '', depotName: '全部' }, ...depotList]"
                       :key="'query_depot_id' + u1.id"
                     >
                       {{ u1.depotName }}
@@ -1852,11 +1777,7 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <label for="name">配送類別</label>
-                  <select
-                    class="form-select"
-                    v-model="subType"
-                    @change="GetData()"
-                  >
+                  <select class="form-select" v-model="subType" @change="GetData()">
                     <option
                       :value="u1.id"
                       selected
@@ -2012,51 +1933,33 @@ export default {
                   >
                     <td><input type="checkbox" v-model="SubItem.chk" /></td>
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.organName }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.number }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.customNumber }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.sourceNumber }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.mNumber }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       <div
-                        v-for="name1 in String(SubItem.materialsList).split(
-                          ','
-                        )"
+                        v-for="name1 in String(SubItem.materialsList).split(',')"
                         :key="'SubItem' + cidx + name1"
                       >
                         {{ name1 }}
                       </div>
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.depotName }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.counterName }}
                     </td>
 
@@ -2074,41 +1977,26 @@ export default {
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <span
-                          class="btn"
-                          :class="formatdStatusCSS(SubItem.dStatus)"
-                        >
+                        <span class="btn" :class="formatdStatusCSS(SubItem.dStatus)">
                           {{ formatdStatus(SubItem.dStatus) }}
                         </span>
                       </div>
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.subType }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.userName }}
                     </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
+                    <td style="white-space: break-spaces; word-break: break-all">
                       {{ SubItem.createTime }}
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <a
-                          class="btn btn-info"
-                          href="#"
-                          @click="EditShow(SubItem)"
+                        <a class="btn btn-info" href="#" @click="EditShow(SubItem)"
                           >查看</a
                         >
-                        <a
-                          class="btn btn-secondary"
-                          href="#"
-                          @click="EditOne(SubItem)"
+                        <a class="btn btn-secondary" href="#" @click="EditOne(SubItem)"
                           >編輯</a
                         >
                         <a
@@ -2134,11 +2022,7 @@ export default {
       </div>
     </div>
 
-    <b-tabs
-      content-class="py-3 text-muted"
-      v-if="SubView != 0"
-      v-model="selectedTab"
-    >
+    <b-tabs content-class="py-3 text-muted" v-if="SubView != 0" v-model="selectedTab">
       <b-tab active class="border-0">
         <template v-slot:title>
           <span class="d-inline-block d-sm-none">
@@ -2147,10 +2031,7 @@ export default {
           <span class="d-none d-sm-inline-block">配送單基本資料</span>
         </template>
 
-        <div
-          class="row my-1"
-          v-if="SubView == 1 || SubView == 2 || SubView == 3"
-        >
+        <div class="row my-1" v-if="SubView == 1 || SubView == 2 || SubView == 3">
           <div class="col-lg-62">
             <div class="card">
               <div class="card-body">
@@ -2312,6 +2193,7 @@ export default {
                                     show-search
                                     :filter-option="filterOption"
                                     @keyup="queryMaterialByRow(SubItem, cidx)"
+                                    @select="queryMaterialByRow(SubItem, cidx)"
                                   >
                                     <a-select-option
                                       v-for="option in SubItem.queryMaterialList"
@@ -2477,8 +2359,7 @@ export default {
                         placeholder="收件人名稱"
                         v-model="customers.receiveName"
                         :class="{
-                          'is-invalid':
-                            submitted && v$.customers.receiveName.$error,
+                          'is-invalid': submitted && v$.customers.receiveName.$error,
                         }"
                         :disabled="this.SubView == 3"
                       />
@@ -2486,12 +2367,9 @@ export default {
                         v-if="submitted && v$.customers.receiveName.$error"
                         class="invalid-feedback"
                       >
-                        <span
-                          v-if="v$.customers.receiveName.required.$message"
-                          >{{
-                            v$.customers.receiveName.required.$message
-                          }}</span
-                        >
+                        <span v-if="v$.customers.receiveName.required.$message">{{
+                          v$.customers.receiveName.required.$message
+                        }}</span>
                       </div>
                     </div>
 
@@ -2505,8 +2383,7 @@ export default {
                         placeholder="####-###-###"
                         v-model="customers.cellphone"
                         :class="{
-                          'is-invalid':
-                            submitted && v$.customers.cellphone.$error,
+                          'is-invalid': submitted && v$.customers.cellphone.$error,
                         }"
                         :disabled="this.SubView == 3"
                       />
@@ -2528,8 +2405,7 @@ export default {
                         placeholder="地址"
                         v-model="customers.address"
                         :class="{
-                          'is-invalid':
-                            submitted && v$.customers.address.$error,
+                          'is-invalid': submitted && v$.customers.address.$error,
                         }"
                         :disabled="this.SubView == 3"
                       />
@@ -2560,8 +2436,7 @@ export default {
                         class="form-select"
                         v-model="customers.recycle"
                         :class="{
-                          'is-invalid':
-                            submitted && v$.customers.recycle.$error,
+                          'is-invalid': submitted && v$.customers.recycle.$error,
                         }"
                         :disabled="this.SubView == 3"
                       >
@@ -2573,8 +2448,7 @@ export default {
                         v-if="submitted && v$.customers.recycle.$error"
                         class="invalid-feedback"
                         :class="{
-                          'is-invalid':
-                            submitted && v$.customers.recycle.$error,
+                          'is-invalid': submitted && v$.customers.recycle.$error,
                         }"
                       >
                         <span v-if="v$.customers.recycle.required.$message">{{
@@ -2597,10 +2471,7 @@ export default {
                     </div>
                   </div>
                   <div class="row py-1">
-                    <div
-                      class="col-sm-12 my-1"
-                      v-if="SubView == 1 || SubView == 2"
-                    >
+                    <div class="col-sm-12 my-1" v-if="SubView == 1 || SubView == 2">
                       <b-button variant="light" class="w-sm">
                         <i
                           class="mdi mdi-upload d-block font-size-16"
@@ -2642,11 +2513,7 @@ export default {
                           @click="ShowImage(f1)"
                         />
                         <a
-                          style="
-                            word-break: break-all;
-                            display: block;
-                            max-width: 100px;
-                          "
+                          style="word-break: break-all; display: block; max-width: 100px"
                           v-else
                           href="#"
                           @click="ShowImage(f1)"
@@ -2681,9 +2548,7 @@ export default {
                     <div class="mb-3">
                       <label class="form-label" for="subject">指派司機</label>
                       <div class="input-group">
-                        <span class="input-group-text"
-                          ><i class="bx bx-user"></i
-                        ></span>
+                        <span class="input-group-text"><i class="bx bx-user"></i></span>
                         <select
                           class="form-select"
                           v-model="driver.driverId"
@@ -2692,10 +2557,7 @@ export default {
                           <option
                             :value="u1.id"
                             selected
-                            v-for="u1 in [
-                              { id: '', idname: '' },
-                              ...driverlist,
-                            ]"
+                            v-for="u1 in [{ id: '', idname: '' }, ...driverlist]"
                             :key="'driver_driverlist' + u1.id"
                           >
                             {{ u1.idname }}
@@ -2721,9 +2583,7 @@ export default {
                   </div>
                   <div class="col-lg-2">
                     <div class="mb-3">
-                      <label class="form-label" for="productname"
-                        >指派日期</label
-                      >
+                      <label class="form-label" for="productname">指派日期</label>
                       <div class="input-group">
                         <span class="input-group-text"
                           ><i class="mdi mdi-calendar"></i
@@ -2748,10 +2608,7 @@ export default {
                           <option
                             :value="u1.id"
                             selected
-                            v-for="u1 in [
-                              { id: '', userName: '' },
-                              ...userlist,
-                            ]"
+                            v-for="u1 in [{ id: '', userName: '' }, ...userlist]"
                             :key="'driver_userlist' + u1.id"
                           >
                             {{ u1.userName }}
@@ -2791,9 +2648,7 @@ export default {
                         >重新指派</a
                       >
                     </div> -->
-                    <a-tag color="#108ee9" v-if="driver.status != 0"
-                      >已指派</a-tag
-                    >
+                    <a-tag color="#108ee9" v-if="driver.status != 0">已指派</a-tag>
                   </div>
                 </div>
 
@@ -2848,9 +2703,7 @@ export default {
                               />
                               聯絡中
                             </div>
-                            <button @click="handleSearchRecode">
-                              查詢約配紀錄
-                            </button>
+                            <button @click="handleSearchRecode">查詢約配紀錄</button>
                           </label>
                           <div class="input-group">
                             <span class="input-group-text"
@@ -2985,10 +2838,7 @@ export default {
                           rows="3"
                           v-model="r1.feedback"
                         ></textarea>
-                        <a
-                          href="#"
-                          class="btn btn-primary"
-                          @click="SendFeedback(r1)"
+                        <a href="#" class="btn btn-primary" @click="SendFeedback(r1)"
                           >客服回覆保存</a
                         >
                       </div>
@@ -3004,9 +2854,7 @@ export default {
                         <i class="bx bx-folder-open"></i> 圖片影片及附件
                       </h5>
 
-                      <a-button
-                        type="primary"
-                        @click="downloadAllFiles(driver.filelist)"
+                      <a-button type="primary" @click="downloadAllFiles(driver.filelist)"
                         >全部下載</a-button
                       >
                     </div>
@@ -3016,11 +2864,7 @@ export default {
                       <div
                         v-for="(f1, fidx) in driver.filelist"
                         :key="'driver-filelist-' + fidx"
-                        style="
-                          display: inline-block;
-                          word-break: break-all;
-                          margin: 10px;
-                        "
+                        style="display: inline-block; word-break: break-all; margin: 10px"
                       >
                         <img
                           v-if="CheckIsImage(f1)"
@@ -3036,11 +2880,7 @@ export default {
                           @click="ShowImage(f1)"
                         />
                         <a
-                          style="
-                            word-break: break-all;
-                            display: block;
-                            max-width: 100px;
-                          "
+                          style="word-break: break-all; display: block; max-width: 100px"
                           v-else
                           href="#"
                           @click="ShowImage(f1)"
@@ -3074,13 +2914,8 @@ export default {
         </div>
       </b-tab>
     </b-tabs>
-    <div
-      class="loglist"
-      v-if="SubView != 0 && LogList.length != 0 && selectedTab == 0"
-    >
-      <table
-        class="table table-centered table-bordered table-nowrap align-middle"
-      >
+    <div class="loglist" v-if="SubView != 0 && LogList.length != 0 && selectedTab == 0">
+      <table class="table table-centered table-bordered table-nowrap align-middle">
         <tr>
           <th class="text-center" width="50px">#</th>
           <th width="150px">操作時間</th>
@@ -3209,9 +3044,7 @@ export default {
         </div>
 
         <div class="text-end pt-5 mt-3">
-          <b-button variant="light" @click="showImageModal = false"
-            >關閉</b-button
-          >
+          <b-button variant="light" @click="showImageModal = false">關閉</b-button>
         </div>
       </form>
     </b-modal>
@@ -3225,18 +3058,11 @@ export default {
       <span class="search-recode-text">{{
         searchRecode.length == 0 ? "查無資料" : ""
       }}</span>
-      <div
-        class="search-recode-table"
-        v-if="searchRecode && searchRecode.length > 0"
-      >
+      <div class="search-recode-table" v-if="searchRecode && searchRecode.length > 0">
         <table class="table">
           <thead>
             <tr>
-              <th
-                scope="col"
-                v-for="(col, index) in recodeColumns"
-                :key="index"
-              >
+              <th scope="col" v-for="(col, index) in recodeColumns" :key="index">
                 {{ col.title }}
               </th>
             </tr>
