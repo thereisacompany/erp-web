@@ -768,7 +768,6 @@ export default {
                     <td>{{ SubItem.licensePlateNumber }}</td>
                     <td>{{ SubItem.brandModel }}</td>
                     <td>
-                      {{ formatPadLeftZero(SubItem.driver, 3) }}
                       {{ SubItem.driverName }}
                     </td>
                     <td>{{ SubItem.color }}</td>

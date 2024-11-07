@@ -1479,7 +1479,10 @@ export default {
             // {    "code": 200,
             // "data": "匯入成功, 匯入失敗列數:\nExcel文件第1列->此筆資料重覆匯入(客單編號:20231025, 原始編號:1)\nExcel文件第2列->此筆資料重覆匯入(客單編號:20231025-1, 原始編號:2)\nExcel文件第3列->發單日未填寫\n"}
             alert(common.replaceAll(dataMsg, "'", ""));
-            this.GetData();
+
+            setTimeout(() => {
+              this.GetData();
+            }, 3000);
           } else if (res != null && res.data != null && res.data.code != 200) {
             console.log("else if file", res.data.data);
             alert(res.data.data);
@@ -1730,6 +1733,7 @@ export default {
 
 <template>
   <Layout>
+    SubView/{{ SubView }}
     <PageHeader
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
