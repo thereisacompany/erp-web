@@ -1529,7 +1529,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1538,7 +1538,7 @@ export default {
       return false;
     },
     CheckIsVideo(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".mp4", ".mov"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1547,7 +1547,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
@@ -1574,7 +1574,7 @@ export default {
       }
     },
     GetAccessFile1(UrlPath1) {
-      ///systemConfig/static/
+      console.log("UrlPath1", UrlPath1);
 
       let APIUrl = `${
         import.meta.env.VITE_APP_API_URL
@@ -1686,9 +1686,9 @@ export default {
     },
     downloadAllFiles(fileList) {
       fileList.forEach((url) => {
-        const fileUrl = this.GetAccessFile1(url);
-        console.log("fileUrl", fileUrl);
-        this.downloadFile(fileUrl);
+        // const fileUrl = this.GetAccessFile1(url);
+        // console.log("fileUrl", fileUrl);
+        this.downloadFile(url);
       });
     },
     // 下載文件的方法
@@ -2661,7 +2661,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="GetAccessFile1(f1)"
+                          :src="f1"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
@@ -3055,7 +3055,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="GetAccessFile1(f1)"
+                          :src="f1"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
