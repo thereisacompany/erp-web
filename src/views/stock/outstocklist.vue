@@ -2342,6 +2342,7 @@ export default {
                                     show-search
                                     :filter-option="filterOption"
                                     @keyup="queryMaterialByRow(SubItem, cidx)"
+                                    @select="queryMaterialByRow(SubItem, cidx)"
                                   >
                                     <a-select-option
                                       v-for="option in SubItem.queryMaterialList"
