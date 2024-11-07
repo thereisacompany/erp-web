@@ -97,4 +97,18 @@ export default {
 .ant-upload-wrapper {
   display: block;
 }
+
+/* 匯入配送單 */
+.import-delivery .upload-button {
+  background-color: #2a6189 !important;
+  border: 1px solid #2a6189 !important;
+  color: #fff !important;
+}
+
+/* 匯入門市取貨派送 */
+.import-pickup button {
+  background-color: #559ee6 !important;
+  border: 1px solid #559ee6 !important;
+  color: #fff !important;
+}
 </style>

@@ -160,6 +160,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -168,6 +169,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -1374,7 +1376,10 @@ export default {
                       class="form-control"
                       placeholder="關鍵字"
                       v-model="queryKeyword"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1387,7 +1392,10 @@ export default {
                       class="form-control"
                       placeholder="進貨單號"
                       v-model="number"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1400,7 +1408,10 @@ export default {
                       class="form-control"
                       placeholder="品號"
                       v-model="mNumber"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1412,7 +1423,10 @@ export default {
                       type="text"
                       class="form-control"
                       placeholder="商品資料"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                       v-model="materialParam"
                     />
                   </div>
@@ -1423,7 +1437,10 @@ export default {
                     <select
                       class="form-select"
                       v-model="organId"
-                      @change="GetData()"
+                      @change="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     >
                       <option value="">全部客戶</option>
                       <option
@@ -1443,7 +1460,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="depotId"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -1484,7 +1504,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
