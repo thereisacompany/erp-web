@@ -35,6 +35,7 @@ server.interceptors.response.use(function (response) {
     //console.log(error);
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
     const errorMessage = error.response.data;
+    alert('API錯誤:' + errorMessage)
     //console.log(errorMessage);
     if (errorMessage == "loginOut") {
         localStorage.removeItem("user");
