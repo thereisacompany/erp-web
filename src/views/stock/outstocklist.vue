@@ -17,14 +17,6 @@ import {
   Select,
   SelectOption,
 } from "ant-design-vue";
-import {
-  Modal,
-  Tag,
-  Tooltip,
-  Button,
-  Select,
-  SelectOption,
-} from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
@@ -1741,6 +1733,7 @@ export default {
 
 <template>
   <Layout>
+    SubView/{{ SubView }}
     <PageHeader
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
