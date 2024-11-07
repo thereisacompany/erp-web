@@ -88,7 +88,7 @@ export default defineComponent({
     const formData = reactive({
       loginName: "",
       username: "",
-      roleId: "",
+      roleId: null,
       position: "",
       description: "",
       phonenum: "",

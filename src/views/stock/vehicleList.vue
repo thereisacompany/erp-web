@@ -313,7 +313,10 @@ export default {
                       class="form-control"
                       placeholder="車牌號碼"
                       v-model="licensePlateNumber"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -325,7 +328,10 @@ export default {
                       class="form-control"
                       placeholder="品牌型號"
                       v-model="brandModel"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -334,7 +340,10 @@ export default {
                     <select
                       class="form-select"
                       v-model="driver"
-                      @change="GetData()"
+                      @change="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     >
                       <option
                         :value="u1.id"
@@ -353,7 +362,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing

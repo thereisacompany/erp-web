@@ -400,13 +400,21 @@ export default {
                             v-for="(item, index) in categoryList"
                             :key="index"
                           >
-                            <dt @click="handelCategorySelectForQuery(item)">
+                            <dt
+                              @click="
+                                this.currentPage = 1;
+                                handelCategorySelectForQuery(item);
+                              "
+                            >
                               {{ item.title }}
                             </dt>
                             <dd
                               v-for="(child, childIndex) in item.children"
                               :key="childIndex"
-                              @click="handelCategorySelectForQuery(child)"
+                              @click="
+                                this.currentPage = 1;
+                                handelCategorySelectForQuery(child);
+                              "
                             >
                               {{ child.title }}
                             </dd>
@@ -417,7 +425,14 @@ export default {
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
-                  <select class="form-select" v-model="organId">
+                  <select
+                    class="form-select"
+                    v-model="organId"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
+                  >
                     <option
                       :value="u1.id"
                       selected
@@ -439,14 +454,23 @@ export default {
                       class="form-control"
                       placeholder="關鍵字(名稱/規格/型號)"
                       v-model="materialParam"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing

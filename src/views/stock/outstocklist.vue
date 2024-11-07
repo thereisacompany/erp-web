@@ -17,6 +17,14 @@ import {
   Select,
   SelectOption,
 } from "ant-design-vue";
+import {
+  Modal,
+  Tag,
+  Tooltip,
+  Button,
+  Select,
+  SelectOption,
+} from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 
@@ -242,6 +250,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -250,6 +259,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -1323,19 +1333,20 @@ export default {
 
       //let queryStr = `{"type":"出庫","number":"${this.number}","materialParam":"${this.materialParam}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","organId":"${this.organId}"}`;
       let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
-      if (
-        this.subType !== "" ||
-        this.number !== "" ||
-        this.mNumber !== "" ||
-        this.materialParam !== "" ||
-        this.organId !== "" ||
-        this.beginTime !== "" ||
-        this.endTime !== "" ||
-        this.depotId !== "" ||
-        this.queryKeyword !== ""
-      ) {
-        this.currentPage = 1;
-      }
+      // if (
+      //   this.subType !== "" ||
+      //   this.number !== "" ||
+      //   this.mNumber !== "" ||
+      //   this.materialParam !== "" ||
+      //   this.organId !== "" ||
+      //   this.beginTime !== "" ||
+      //   this.endTime !== "" ||
+      //   this.depotId !== "" ||
+      //   this.queryKeyword !== ""
+      // ) {
+      //   this.currentPage = 1;
+      // }
+      console.log("currentPage", this.currentPage);
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server
@@ -1759,7 +1770,10 @@ export default {
                       class="form-control"
                       placeholder="關鍵字"
                       v-model="queryKeyword"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1783,7 +1797,10 @@ export default {
                       class="form-control"
                       placeholder="單號"
                       v-model="number"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1796,7 +1813,10 @@ export default {
                       class="form-control"
                       placeholder="品號"
                       v-model="mNumber"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1808,7 +1828,10 @@ export default {
                       type="text"
                       class="form-control"
                       placeholder="商品資料"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                       v-model="materialParam"
                     />
                   </div>
@@ -1819,7 +1842,10 @@ export default {
                     <select
                       class="form-select"
                       v-model="organId"
-                      @change="GetData()"
+                      @change="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     >
                       <option value="">全部客戶</option>
                       <option
@@ -1838,7 +1864,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="depotId"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -1858,7 +1887,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="subType"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -1900,7 +1932,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -3170,6 +3208,7 @@ export default {
           @click="
             SubView = 0;
             selectedTab = 0;
+
             GetData();
           "
           v-if="SubView != 0"
@@ -3290,22 +3329,8 @@ export default {
   color: #fff !important;
 }
 
-/* 匯入配送單 */
-.import-delivery button {
-  background-color: #2a6189 !important;
-  border: 1px solid #2a6189 !important;
-  color: #fff !important;
-}
-
 /* 新增門市取貨派送 */
 .add-pickup-delivery {
-  background-color: #559ee6 !important;
-  border: 1px solid #559ee6 !important;
-  color: #fff !important;
-}
-
-/* 匯入門市取貨派送 */
-.import-pickup button {
   background-color: #559ee6 !important;
   border: 1px solid #559ee6 !important;
   color: #fff !important;

@@ -133,7 +133,8 @@ export default {
       return false;
     },
     EditOneTitle() {
-      let SubTitle = this.SubView == 1 ? "新增" : this.SubView == 2 ? "修改" : "查看";
+      let SubTitle =
+        this.SubView == 1 ? "新增" : this.SubView == 2 ? "修改" : "查看";
       SubTitle = SubTitle + this.customers.subType + "單";
       return SubTitle;
     },
@@ -195,6 +196,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -203,6 +205,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -210,7 +213,8 @@ export default {
   },
   methods: {
     formatDateTime(value) {
-      if (common.IsDate(value)) return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
+      if (common.IsDate(value))
+        return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
       return value;
     },
     formatDate(value) {
@@ -276,7 +280,9 @@ export default {
         return;
       } else {
         //console.log ("this.customers.extrasArrival",this.customers.extrasArrival)
-        this.customers.extrasArrival = dayjs(this.customers.extrasArrival).isValid()
+        this.customers.extrasArrival = dayjs(
+          this.customers.extrasArrival
+        ).isValid()
           ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
           : null;
         if (
@@ -422,7 +428,9 @@ export default {
       }
     },
     DeleteRow1(SubItem) {
-      const filteredArray = this.customersItem.filter((obj) => !(obj.id === SubItem.id));
+      const filteredArray = this.customersItem.filter(
+        (obj) => !(obj.id === SubItem.id)
+      );
       for (let i = 0; i < filteredArray.length; i++) {
         filteredArray[i].orderNum = i + 1;
       }
@@ -522,7 +530,9 @@ export default {
       server.GetMaterialListByRow(wObj, (rows) => {
         //SubItem.queryMaterialList = rows;
         SubItem.queryMaterialList = rows.filter((x) => x.stock > 0);
-        let F1List = rows.filter((x) => String(x.number) == String(SubItem.number));
+        let F1List = rows.filter(
+          (x) => String(x.number) == String(SubItem.number)
+        );
         if (F1List.length != 0) {
           if (
             this.customers.organId != null &&
@@ -553,7 +563,8 @@ export default {
         this.customersItem[cidx].stock = MaterialSubItem.stock;
         this.customersItem[cidx].number = MaterialSubItem.number;
         this.customersItem[cidx].counterName = MaterialSubItem.counter;
-        this.customersItem[cidx].operNumber = this.customersItem[cidx].operNumber || 1; //1,數量
+        this.customersItem[cidx].operNumber =
+          this.customersItem[cidx].operNumber || 1; //1,數量
         // this.SetMaterialModel(this.customersItem[cidx])
         // this.SetDepotStock(this.customersItem[cidx]);
       } else {
@@ -576,11 +587,16 @@ export default {
       let depotId = SubItem.depotId || 0;
       let barCode = SubItem.barCode || "";
       let organId = this.customers.organId || "";
-      this.FindStockByDepotAndBarCode(depotId, barCode, organId, (depotStock) => {
-        if (depotStock != null) {
-          SubItem.stock = depotStock.stock;
+      this.FindStockByDepotAndBarCode(
+        depotId,
+        barCode,
+        organId,
+        (depotStock) => {
+          if (depotStock != null) {
+            SubItem.stock = depotStock.stock;
+          }
         }
-      });
+      );
     },
     SetMaterialModel(SubItem) {
       //let depotId = SubItem.depotId || 0;
@@ -606,7 +622,9 @@ export default {
       let NumberList = this.customersData
         .filter((x) => x.chk == true)
         .map((y) => y.number);
-      let subIdList = this.customersData.filter((x) => x.chk == true).map((y) => y.subId);
+      let subIdList = this.customersData
+        .filter((x) => x.chk == true)
+        .map((y) => y.subId);
       //console.log(NumberList)
 
       if (NumberList == null || NumberList.length == 0) {
@@ -659,7 +677,9 @@ export default {
 
       let number = this.customers.number;
       let type =
-        this.customersItem.filter((x) => x.categoryName == "冷氣").length != 0 ? 1 : 0;
+        this.customersItem.filter((x) => x.categoryName == "冷氣").length != 0
+          ? 1
+          : 0;
       let isRecycle = 0; //先帶不回收
       let brand = ""; //先帶不回收
       // console.log(JSON.stringify(this.customers))
@@ -723,15 +743,25 @@ export default {
           if (res != null && res.data != null && res.status == 200) {
             let jshdata = res.data.data;
             this.customers = jshdata;
-            this.customers.date2 = dayjs(this.customers.operTime).format("YYYY-MM-DD");
-            this.customers.time2 = dayjs(this.customers.operTime).format("HH:mm:ss");
-            this.customers.mainArrival = dayjs(this.customers.mainArrival).isValid()
+            this.customers.date2 = dayjs(this.customers.operTime).format(
+              "YYYY-MM-DD"
+            );
+            this.customers.time2 = dayjs(this.customers.operTime).format(
+              "HH:mm:ss"
+            );
+            this.customers.mainArrival = dayjs(
+              this.customers.mainArrival
+            ).isValid()
               ? dayjs(this.customers.mainArrival).format("YYYY-MM-DD")
               : null;
-            this.customers.extrasArrival = dayjs(this.customers.extrasArrival).isValid()
+            this.customers.extrasArrival = dayjs(
+              this.customers.extrasArrival
+            ).isValid()
               ? dayjs(this.customers.extrasArrival).format("YYYY-MM-DD")
               : null;
-            this.customers.agreedDelivery = dayjs(this.customers.agreedDelivery).isValid()
+            this.customers.agreedDelivery = dayjs(
+              this.customers.agreedDelivery
+            ).isValid()
               ? dayjs(this.customers.agreedDelivery).format("YYYY-MM-DD")
               : null;
             this.customers.delivered = dayjs(this.customers.delivered).isValid()
@@ -1112,7 +1142,9 @@ export default {
     GetAccessFile1(UrlPath1) {
       ///systemConfig/static/
 
-      let APIUrl = `${import.meta.env.VITE_APP_API_URL}/systemConfig/static/${UrlPath1}`;
+      let APIUrl = `${
+        import.meta.env.VITE_APP_API_URL
+      }/systemConfig/static/${UrlPath1}`;
       return APIUrl;
     },
     DeleteFile1(file1) {
@@ -1126,7 +1158,10 @@ export default {
 
 <template>
   <Layout>
-    <PageHeader :title="title + (SubView == 0 ? '列表' : '明細')" :items="items" />
+    <PageHeader
+      :title="title + (SubView == 0 ? '列表' : '明細')"
+      :items="items"
+    />
     <div class="row" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
@@ -1142,7 +1177,10 @@ export default {
                       class="form-control"
                       placeholder="關鍵字"
                       v-model="queryKeyword"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1155,7 +1193,10 @@ export default {
                       class="form-control"
                       placeholder="退貨單號"
                       v-model="number"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1168,7 +1209,10 @@ export default {
                       class="form-control"
                       placeholder="品號"
                       v-model="mNumber"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1180,7 +1224,10 @@ export default {
                       type="text"
                       class="form-control"
                       placeholder="商品資料"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                       v-model="materialParam"
                     />
                   </div>
@@ -1188,7 +1235,14 @@ export default {
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <label for="name">客戶</label>
-                    <select class="form-select" v-model="organId" @change="GetData()">
+                    <select
+                      class="form-select"
+                      v-model="organId"
+                      @change="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <option value="">全部客戶</option>
                       <option
                         :value="u1.id"
@@ -1203,11 +1257,21 @@ export default {
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <label for="name">倉庫別</label>
-                  <select class="form-select" v-model="depotId" @change="GetData()">
+                  <select
+                    class="form-select"
+                    v-model="depotId"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
+                  >
                     <option
                       :value="u1.id"
                       selected
-                      v-for="u1 in [{ id: '', depotName: '全部' }, ...depotList]"
+                      v-for="u1 in [
+                        { id: '', depotName: '全部' },
+                        ...depotList,
+                      ]"
                       :key="'query_depot_id' + u1.id"
                     >
                       {{ u1.depotName }}
@@ -1240,7 +1304,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -1305,28 +1375,42 @@ export default {
                   >
                     <td><input type="checkbox" v-model="SubItem.chk" /></td>
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.organName }}
                     </td>
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.number }}
                     </td>
 
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.mNumber }}
                     </td>
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       <div
-                        v-for="name1 in String(SubItem.materialsList).split(',')"
+                        v-for="name1 in String(SubItem.materialsList).split(
+                          ','
+                        )"
                         :key="'SubItem' + cidx + name1"
                       >
                         {{ name1 }}
                       </div>
                     </td>
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.depotName }}
                     </td>
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.counterName }}
                     </td>
 
@@ -1343,10 +1427,14 @@ export default {
                       </div>
                     </td>
 
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.userName }}
                     </td>
-                    <td style="white-space: break-spaces; word-break: break-all">
+                    <td
+                      style="white-space: break-spaces; word-break: break-all"
+                    >
                       {{ SubItem.operTimeStr }}
                     </td>
                     <td>
@@ -1459,7 +1547,10 @@ export default {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="(SubItem, cidx) in customersItem" :key="SubItem.id">
+                        <tr
+                          v-for="(SubItem, cidx) in customersItem"
+                          :key="SubItem.id"
+                        >
                           <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                           <td>
                             <div v-if="IsPickup1">
@@ -1490,7 +1581,8 @@ export default {
                             <div class="position-relative" v-if="IsPickup1">
                               <a-select
                                 :disabled="
-                                  (SubView == 2 && !SubItem.isNewAdd) || SubView == 3
+                                  (SubView == 2 && !SubItem.isNewAdd) ||
+                                  SubView == 3
                                 "
                                 v-model:value="SubItem.number"
                                 placeholder="請選擇"
@@ -1558,7 +1650,8 @@ export default {
                               class="form-control"
                               placeholder="數量"
                               @change="
-                                SubItem.allPrice = SubItem.operNumber * SubItem.unitPrice
+                                SubItem.allPrice =
+                                  SubItem.operNumber * SubItem.unitPrice
                               "
                               v-model="SubItem.operNumber"
                             />
@@ -1654,13 +1747,20 @@ export default {
                       @click="ShowImage(f1)"
                     />
                     <a
-                      style="word-break: break-all; display: block; max-width: 100px"
+                      style="
+                        word-break: break-all;
+                        display: block;
+                        max-width: 100px;
+                      "
                       v-else
                       href="javascript:;"
                       @click="ShowImage(f1)"
                       >{{ f1.split("/").pop() }}</a
                     >
-                    <a href="javascript:;" class="text-danger" @click="DeleteFile1(f1)"
+                    <a
+                      href="javascript:;"
+                      class="text-danger"
+                      @click="DeleteFile1(f1)"
                       >&nbsp;<i class="bx bx-x"></i
                     ></a>
                   </div>
@@ -1672,7 +1772,9 @@ export default {
       </div>
     </div>
     <div class="loglist" v-if="SubView != 0 && LogList.length != 0">
-      <table class="table table-centered table-bordered table-nowrap align-middle">
+      <table
+        class="table table-centered table-bordered table-nowrap align-middle"
+      >
         <tr>
           <th class="text-center" width="50px">#</th>
           <th width="150px">操作時間</th>
@@ -1778,7 +1880,9 @@ export default {
         </div>
 
         <div class="text-end pt-5 mt-3">
-          <b-button variant="light" @click="showImageModal = false">關閉</b-button>
+          <b-button variant="light" @click="showImageModal = false"
+            >關閉</b-button
+          >
         </div>
       </form>
     </b-modal>

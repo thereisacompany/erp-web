@@ -498,7 +498,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="type"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1"
@@ -518,7 +521,10 @@ export default {
                       class="form-control"
                       placeholder="搜尋姓名"
                       v-model="supplier"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -530,7 +536,10 @@ export default {
                       class="form-control"
                       placeholder="手機號碼"
                       v-model="telephone"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -542,13 +551,22 @@ export default {
                       class="form-control"
                       placeholder="聯繫電話"
                       v-model="phoneNum"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
