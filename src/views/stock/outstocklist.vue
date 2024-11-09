@@ -129,6 +129,10 @@ export default {
         isPickup: 1,
         install: "",
         recycle: "",
+        storeMan: "",
+        storeName: "",
+        storeAddress: "",
+        storePhone: "",
       },
       driver: {
         driverId: "",
@@ -2458,7 +2462,48 @@ export default {
                       </div>
                     </div>
                   </div>
-
+                  <div class="row" v-if="customers.subType == '門市取貨派送'">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">取貨人</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeMan"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">門市名稱</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeName"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">門市位置</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeAddress"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">電話</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storePhone"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                  </div>
                   <div class="row py-1">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">主商品到貨日</label>
