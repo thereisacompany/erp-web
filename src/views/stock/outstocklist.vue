@@ -52,7 +52,7 @@ export default {
       selectedTab: 0,
       chkAll: false,
       SubView: 0,
-
+      dStatus: "",
       materialParam: "",
       queryKeyword: "",
       depotId: "",
@@ -184,6 +184,16 @@ export default {
       ],
       checkNumberList: [],
       checkSubIdList: [],
+      dStatusOption: [
+        { value: 1, name: "未派發" },
+        { value: 2, name: "已派發" },
+        { value: 3, name: "已接單" },
+        { value: 4, name: "聯絡中" },
+        { value: 5, name: "配送中" },
+        { value: 6, name: "配送完成" },
+        { value: 7, name: "配送異常" },
+        { value: 8, name: "作廢" },
+      ],
     };
   },
   computed: {
@@ -357,6 +367,8 @@ export default {
           return "btn-success";
         case 6:
           return "btn-danger";
+        case 7:
+          return "btn-dark";
         default:
           return dStatus;
       }
@@ -1335,7 +1347,7 @@ export default {
       //"beginTime":"2023-03-01","endTime":"2023-03-02"
 
       //let queryStr = `{"type":"出庫","number":"${this.number}","materialParam":"${this.materialParam}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","organId":"${this.organId}"}`;
-      let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
+      let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}","dStatus":"${this.dStatus}"}`;
       // if (
       //   this.subType !== "" ||
       //   this.number !== "" ||
@@ -1924,6 +1936,27 @@ export default {
                       :key="'query_subType_id' + u1.id"
                     >
                       {{ u1.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="search-box mb-2 d-inline-block" style="width: 25%">
+                  <label for="name">配送狀態</label>
+                  <select
+                    class="form-select"
+                    v-model="dStatus"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
+                  >
+                    <option value="" selected>請選擇</option>
+                    <option
+                      v-for="status in dStatusOption"
+                      :key="status.value"
+                      :value="status.value"
+                      selected
+                    >
+                      {{ status.name }}
                     </option>
                   </select>
                 </div>
