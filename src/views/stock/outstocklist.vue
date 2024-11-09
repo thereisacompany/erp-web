@@ -322,6 +322,8 @@ export default {
           return "配送完成";
         case 6:
           return "配送異常";
+        case 7:
+          return "作廢";
         default:
           return dStatus;
       }
@@ -2139,6 +2141,7 @@ export default {
                           >查看</a
                         >
                         <a
+                          v-if="SubItem.dStatus != 6 && SubItem.dStatus != 7"
                           class="btn btn-secondary"
                           href="#"
                           @click="EditOne(SubItem)"
@@ -3190,7 +3193,13 @@ export default {
         <a
           href="#"
           class="btn btn-primary btn-block"
-          v-if="driver.status != 0 && driver.status != 5 && selectedTab == 1"
+          v-if="
+            driver.status != 0 &&
+            driver.status != 5 &&
+            driver.status != 6 &&
+            driver.status != 7 &&
+            selectedTab == 1
+          "
           @click="ReAssignDriver()"
           >重新指派</a
         >
