@@ -129,6 +129,10 @@ export default {
         isPickup: 1,
         install: "",
         recycle: "",
+        storeMan: "",
+        storeName: "",
+        storeAddress: "",
+        storePhone: "",
       },
       driver: {
         driverId: "",
@@ -322,6 +326,8 @@ export default {
           return "配送完成";
         case 6:
           return "配送異常";
+        case 7:
+          return "作廢";
         default:
           return dStatus;
       }
@@ -1532,7 +1538,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1541,7 +1547,7 @@ export default {
       return false;
     },
     CheckIsVideo(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".mp4", ".mov"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1550,7 +1556,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
@@ -1577,7 +1583,7 @@ export default {
       }
     },
     GetAccessFile1(UrlPath1) {
-      ///systemConfig/static/
+      console.log("UrlPath1", UrlPath1);
 
       let APIUrl = `${
         import.meta.env.VITE_APP_API_URL
@@ -1689,9 +1695,9 @@ export default {
     },
     downloadAllFiles(fileList) {
       fileList.forEach((url) => {
-        const fileUrl = this.GetAccessFile1(url);
-        console.log("fileUrl", fileUrl);
-        this.downloadFile(fileUrl);
+        // const fileUrl = this.GetAccessFile1(url);
+        // console.log("fileUrl", fileUrl);
+        this.downloadFile(url);
       });
     },
     // 下載文件的方法
@@ -2139,6 +2145,7 @@ export default {
                           >查看</a
                         >
                         <a
+                          v-if="SubItem.dStatus != 6 && SubItem.dStatus != 7"
                           class="btn btn-secondary"
                           href="#"
                           @click="EditOne(SubItem)"
@@ -2166,7 +2173,6 @@ export default {
         </div>
       </div>
     </div>
-
     <b-tabs
       content-class="py-3 text-muted"
       v-if="SubView != 0"
@@ -2428,7 +2434,7 @@ export default {
                                   v-if="this.SubView !== 3"
                                 />
 
-                                <span v-else>{{ SubItem.operNumber }}</span>
+                                <span v-else>{{ SubItem.remark }}</span>
                               </td>
                               <!-- v-if="SubView == 1 || SubView == 2" -->
                               <td v-if="false">
@@ -2455,7 +2461,48 @@ export default {
                       </div>
                     </div>
                   </div>
-
+                  <div class="row" v-if="customers.subType == '門市取貨派送'">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">取貨人</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeMan"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">門市名稱</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeName"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">門市位置</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeAddress"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">電話</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storePhone"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                  </div>
                   <div class="row py-1">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">主商品到貨日</label>
@@ -2664,7 +2711,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="GetAccessFile1(f1)"
+                          :src="f1"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
@@ -3058,7 +3105,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="GetAccessFile1(f1)"
+                          :src="f1"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
@@ -3190,7 +3237,13 @@ export default {
         <a
           href="#"
           class="btn btn-primary btn-block"
-          v-if="driver.status != 0 && driver.status != 5 && selectedTab == 1"
+          v-if="
+            driver.status != 0 &&
+            driver.status != 5 &&
+            driver.status != 6 &&
+            driver.status != 7 &&
+            selectedTab == 1
+          "
           @click="ReAssignDriver()"
           >重新指派</a
         >
