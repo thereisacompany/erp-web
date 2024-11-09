@@ -24,6 +24,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 // import "./style.css";
 import { Navigation } from "swiper/modules";
+
 /**
  * Customers component
  */
@@ -257,6 +258,7 @@ export default {
         if (newVal !== oldVal) {
           for (let i = 0; i < this.customersData.length; i++) {
             this.customersData[i].chk = newVal;
+            this.clickCheckbox(this.customersData[i]);
           }
         }
       },
@@ -1187,7 +1189,6 @@ export default {
           callback(null);
         });
     },
-
     // SubCounterList(depotId) {
     //     if (depotId == null || depotId == '' || depotId == 0) return this.counterList;
     //     return this.counterList.filter(x => String(x.depotId) == String(depotId));
@@ -1337,7 +1338,6 @@ export default {
           return;
         });
     },
-
     GetData() {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
@@ -3338,7 +3338,7 @@ export default {
         <swiper-slide v-for="(file, index) in driver.filelist" :key="index"
           ><img
             v-if="CheckIsImage(file)"
-            :src="GetAccessFile1(file)"
+            :src="file"
             style="max-width: 320px; max-height: 50%"
           />
           <img
