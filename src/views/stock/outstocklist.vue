@@ -19,7 +19,11 @@ import {
 } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
-
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/navigation";
+// import "./style.css";
+import { Navigation } from "swiper/modules";
 /**
  * Customers component
  */
@@ -39,9 +43,12 @@ export default {
     AButton: Button,
     ASelect: Select,
     ASelectOption: SelectOption,
+    Swiper,
+    SwiperSlide,
   },
   data() {
     return {
+      modules: [Navigation],
       selectedTab: 0,
       chkAll: true,
       SubView: 0,
@@ -3262,14 +3269,39 @@ export default {
       </div>
     </div>
     <b-modal
-      size="xl"
       v-model="showImageModal"
       title="顯示圖片"
       title-class="text-black font-18"
-      body-class="p-3"
+      body-class="p-3 my-2"
       hide-footer
     >
-      <form>
+      <swiper
+        :navigation="true"
+        :modules="modules"
+        class="swiper"
+        :centeredSlides="true"
+      >
+        <swiper-slide v-for="(file, index) in driver.filelist" :key="index"
+          ><img
+            v-if="CheckIsImage(file)"
+            :src="GetAccessFile1(file)"
+            style="max-width: 320px; max-height: 50%"
+          />
+          <img
+            class="logo-bank"
+            v-else-if="CheckIsVideo(file)"
+            style="max-width: 320px; max-height: 50%"
+            src="/images/playvideo.jpg"
+          />
+          <a
+            style="word-break: break-all; display: block; max-width: 50%"
+            v-else
+            href="#"
+            >{{ file.split("/").pop() }}</a
+          ></swiper-slide
+        >
+      </swiper>
+      <form v-if="false">
         <div class="row text-center">
           <div class="col-12" v-if="showImageURL != ''">
             <img
@@ -3420,5 +3452,11 @@ export default {
 
 :deep(.ant-select) {
   width: 100%;
+}
+
+:deep(.swiper-slide) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
