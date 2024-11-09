@@ -2173,7 +2173,6 @@ export default {
         </div>
       </div>
     </div>
-
     <b-tabs
       content-class="py-3 text-muted"
       v-if="SubView != 0"
@@ -2435,7 +2434,7 @@ export default {
                                   v-if="this.SubView !== 3"
                                 />
 
-                                <span v-else>{{ SubItem.operNumber }}</span>
+                                <span v-else>{{ SubItem.remark }}</span>
                               </td>
                               <!-- v-if="SubView == 1 || SubView == 2" -->
                               <td v-if="false">
