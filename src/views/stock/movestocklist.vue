@@ -1011,7 +1011,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = ImageUrl;
+      let filename = this.GetAccessFile1(ImageUrl);
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1020,7 +1020,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = ImageUrl;
+      let filename = this.GetAccessFile1(ImageUrl);
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();

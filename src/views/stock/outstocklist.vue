@@ -1538,7 +1538,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = ImageUrl;
+      let filename = this.GetAccessFile1(ImageUrl);
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1547,7 +1547,7 @@ export default {
       return false;
     },
     CheckIsVideo(ImageUrl) {
-      let filename = ImageUrl;
+      let filename = this.GetAccessFile1(ImageUrl);
       const imageExtensions = [".mp4", ".mov"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1556,7 +1556,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = ImageUrl;
+      let filename = this.GetAccessFile1(ImageUrl);
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
@@ -2711,7 +2711,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="f1"
+                          :src="GetAccessFile1(f1)"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
@@ -3105,7 +3105,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="f1"
+                          :src="GetAccessFile1(f1)"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
