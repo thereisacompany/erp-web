@@ -51,7 +51,7 @@ export default {
     return {
       modules: [Navigation],
       selectedTab: 0,
-      chkAll: true,
+      chkAll: false,
       SubView: 0,
 
       materialParam: "",
@@ -183,6 +183,8 @@ export default {
           dataIndex: "name",
         },
       ],
+      checkNumberList: [],
+      checkSubIdList: [],
     };
   },
   computed: {
@@ -246,6 +248,7 @@ export default {
         if (newVal !== oldVal) {
           for (let i = 0; i < this.customersData.length; i++) {
             this.customersData[i].chk = newVal;
+            this.clickCheckbox(this.customersData[i]);
           }
         }
       },
@@ -929,12 +932,8 @@ export default {
       });
     },
     BatchExcelOut() {
-      let NumberList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.number);
-      let subIdList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.subId);
+      let NumberList = this.checkNumberList;
+      let subIdList = this.checkSubIdList;
       //console.log(NumberList)
 
       if (NumberList == null || NumberList.length == 0) {
@@ -1178,7 +1177,6 @@ export default {
           callback(null);
         });
     },
-
     // SubCounterList(depotId) {
     //     if (depotId == null || depotId == '' || depotId == 0) return this.counterList;
     //     return this.counterList.filter(x => String(x.depotId) == String(depotId));
@@ -1328,7 +1326,6 @@ export default {
           return;
         });
     },
-
     GetData() {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
@@ -1376,7 +1373,9 @@ export default {
           this.IsGetDataing = false;
           // console.log("this.customersData", this.customersData);
           for (let i = 0; i < this.customersData.length; i++) {
-            this.customersData[i].chk = this.chkAll;
+            if (this.checkSubIdList.includes(this.customersData[i].subId)) {
+              this.customersData[i].chk = true;
+            }
           }
           //console.log("datalist:", this.customersData)
 
@@ -1612,13 +1611,8 @@ export default {
     },
     // 批次匯出揀貨單
     handleExportPicking() {
-      let NumberList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.number);
-      let subIdList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.subId);
-      //console.log(NumberList)
+      let NumberList = this.checkNumberList;
+      let subIdList = this.checkSubIdList;
 
       if (NumberList == null || NumberList.length == 0) {
         alert("請至少選擇一個單據!");
@@ -1740,6 +1734,25 @@ export default {
     directToDriverTab(number, id) {
       this.EditShow({ number, id });
       this.selectedTab = 1;
+    },
+    // 點擊勾選
+    clickCheckbox(item) {
+      if (
+        item.chk &&
+        !this.checkNumberList.includes(item.number) &&
+        !this.checkSubIdList.includes(item.subId)
+      ) {
+        this.checkNumberList.push(item.number);
+        this.checkSubIdList.push(item.subId);
+      } else {
+        // 取消勾選時，從陣列中移除item
+        this.checkNumberList = this.checkNumberList.filter(
+          (number) => number !== item.number
+        );
+        this.checkSubIdList = this.checkSubIdList.filter(
+          (subId) => subId !== item.subId
+        );
+      }
     },
   },
 };
@@ -2057,7 +2070,13 @@ export default {
                     v-for="(SubItem, cidx) in customersData"
                     :key="'customersData' + cidx"
                   >
-                    <td><input type="checkbox" v-model="SubItem.chk" /></td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        v-model="SubItem.chk"
+                        @change="clickCheckbox(SubItem)"
+                      />
+                    </td>
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
