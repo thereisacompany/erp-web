@@ -1659,10 +1659,10 @@ export default {
           } else {
             // console.log("res", res)
             if (res != null && res.data != null) {
-              // console.log(123123)
+              console.log("res.data", res.data);
               var fileURL = window.URL.createObjectURL(
                 new Blob([res.data], {
-                  type: "application/octet-stream",
+                  type: res.data.type,
                 })
               );
               // console.log("fileURL", fileURL);
@@ -1670,7 +1670,7 @@ export default {
               fileLink.href = fileURL;
               fileLink.download = `${dayjs().format(
                 "YYYYMMDDHHmmss"
-              )}配送單-揀貨總表.xlsx`;
+              )}配送單-揀貨總表`;
               // fileLink.setAttribute(
               //   "download",
               //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
