@@ -1805,7 +1805,6 @@ export default {
 
 <template>
   <Layout>
-    this.SubView/{{ this.SubView }}
     <PageHeader
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
