@@ -4,6 +4,8 @@ import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import JSZip from "jszip";
+import axios from "axios";
 
 import { server } from "@/api";
 import common from "@/api/common";
@@ -1708,12 +1710,36 @@ export default {
         item.operNumber = item.stock;
       }
     },
-    downloadAllFiles(fileList) {
-      fileList.forEach((url) => {
-        // const fileUrl = this.GetAccessFile1(url);
-        // console.log("fileUrl", fileUrl);
-        this.downloadFile(url);
-      });
+    async downloadAllFiles(fileList) {
+      const zip = new JSZip();
+
+      try {
+        // 依次處理每個文件 URL
+        for (let i = 0; i < fileList.length; i++) {
+          const url = fileList[i];
+          const response = await axios.get(url, {
+            responseType: "blob", // 以 Blob 格式獲取文件數據
+          });
+
+          // 將文件加入到 ZIP 中
+          const filename = url.split("/").pop(); // 從 URL 中提取文件名
+          zip.file(filename, response.data);
+        }
+
+        // 生成 ZIP 文件並下載
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const downloadUrl = URL.createObjectURL(zipBlob);
+        const fileName = `${this.customers.defaultNumber}附件`;
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = fileName || "files.zip";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.error("下載 ZIP 檔案失敗：", error);
+      }
     },
     // 下載文件的方法
     // 下載文件的方法
