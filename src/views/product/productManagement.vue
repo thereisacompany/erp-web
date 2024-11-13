@@ -609,7 +609,9 @@ export default {
                     type="text"
                     v-model="formData.name"
                     class="form-control"
-                    :class="{ 'is-invalid': submitted && v$.formData.$error }"
+                    :class="{
+                      'is-invalid': submitted && v$.formData.name.$error,
+                    }"
                   />
                   <div
                     v-if="submitted && v$.formData.name.$error"
@@ -763,7 +765,9 @@ export default {
                     class="form-select"
                     v-model="formData.organId"
                     :disabled="modelInfo.type == 'edit'"
-                    :class="{ 'is-invalid': submitted && v$.formData.$error }"
+                    :class="{
+                      'is-invalid': submitted && v$.formData.organId.$error,
+                    }"
                   >
                     <option
                       :value="u1.id"
