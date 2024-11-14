@@ -50,7 +50,7 @@ export default {
         number: "",
         barcode: "",
         counter: "",
-        organId: "",
+        organId: undefined,
       },
       modelInfo: {
         title: "",
@@ -64,6 +64,7 @@ export default {
       categoryActiveIsShow1: false,
       categoryActiveIsShow2: false,
       submitted: false,
+      showDelete: false,
     };
   },
   mounted() {
@@ -71,6 +72,9 @@ export default {
     //   this.GetData();
     // }, 2000);
     //this.GetSupplierList();
+    const user = localStorage.getItem("user");
+    const role = JSON.parse(user).roleName;
+    if (role == "超級管理者") this.showDelete = true;
     this.setData();
   },
   setup() {
@@ -83,6 +87,9 @@ export default {
     formData: {
       name: {
         required: helpers.withMessage("請輸入品名", required),
+      },
+      organId: {
+        required: helpers.withMessage("請選擇客戶", required),
       },
     },
   },
@@ -396,13 +403,21 @@ export default {
                             v-for="(item, index) in categoryList"
                             :key="index"
                           >
-                            <dt @click="handelCategorySelectForQuery(item)">
+                            <dt
+                              @click="
+                                this.currentPage = 1;
+                                handelCategorySelectForQuery(item);
+                              "
+                            >
                               {{ item.title }}
                             </dt>
                             <dd
                               v-for="(child, childIndex) in item.children"
                               :key="childIndex"
-                              @click="handelCategorySelectForQuery(child)"
+                              @click="
+                                this.currentPage = 1;
+                                handelCategorySelectForQuery(child);
+                              "
                             >
                               {{ child.title }}
                             </dd>
@@ -413,7 +428,14 @@ export default {
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
-                  <select class="form-select" v-model="organId">
+                  <select
+                    class="form-select"
+                    v-model="organId"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
+                  >
                     <option
                       :value="u1.id"
                       selected
@@ -435,14 +457,23 @@ export default {
                       class="form-control"
                       placeholder="關鍵字(名稱/規格/型號)"
                       v-model="materialParam"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -501,7 +532,7 @@ export default {
                   <tr v-for="(item, index) in lists" :key="index">
                     <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
                     <td style="white-space: break-spaces">
-                      {{ formatOrganName(item) }}
+                      {{ item.organName }}
                     </td>
                     <td style="white-space: break-spaces">{{ item.number }}</td>
                     <td style="white-space: break-spaces">{{ item.name }}</td>
@@ -547,6 +578,7 @@ export default {
                           class="btn btn-danger"
                           href="javascript:;"
                           @click="confirmDelete(item)"
+                          v-if="showDelete"
                           >刪除</a
                         >
                       </div>
@@ -577,7 +609,9 @@ export default {
                     type="text"
                     v-model="formData.name"
                     class="form-control"
-                    :class="{ 'is-invalid': submitted && v$.formData.$error }"
+                    :class="{
+                      'is-invalid': submitted && v$.formData.name.$error,
+                    }"
                   />
                   <div
                     v-if="submitted && v$.formData.name.$error"
@@ -727,10 +761,16 @@ export default {
 
                 <div class="col-sm-12 col-md-4 col-lg-3">
                   <label for="name">客戶</label>
-                  <select class="form-select" v-model="formData.organId">
+                  <select
+                    class="form-select"
+                    v-model="formData.organId"
+                    :disabled="modelInfo.type == 'edit'"
+                    :class="{
+                      'is-invalid': submitted && v$.formData.organId.$error,
+                    }"
+                  >
                     <option
                       :value="u1.id"
-                      selected
                       v-for="u1 in supplierlist"
                       :key="'formData_organId' + u1.id"
                       :disabled="!u1.enabled"
@@ -738,6 +778,15 @@ export default {
                       {{ u1.idname }}
                     </option>
                   </select>
+
+                  <div
+                    v-if="submitted && v$.formData.organId.$error"
+                    class="invalid-feedback"
+                  >
+                    <span v-if="v$.formData.organId.required.$message">{{
+                      v$.formData.organId.required.$message
+                    }}</span>
+                  </div>
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">

@@ -440,7 +440,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -449,7 +449,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
@@ -498,7 +498,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="type"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1"
@@ -518,7 +521,10 @@ export default {
                       class="form-control"
                       placeholder="搜尋姓名"
                       v-model="supplier"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -530,7 +536,10 @@ export default {
                       class="form-control"
                       placeholder="手機號碼"
                       v-model="telephone"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -542,13 +551,22 @@ export default {
                       class="form-control"
                       placeholder="聯繫電話"
                       v-model="phoneNum"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -621,7 +639,10 @@ export default {
 
                         <div
                           class="col-sm-12 col-md-4 col-lg-3"
-                          v-if="customers.type == '家電-司機'"
+                          v-if="
+                            customers.type == '家電-司機' ||
+                            customers.type == '冷氣-師傅'
+                          "
                         >
                           <div class="mb-3">
                             <label for="name">登入帳號</label>
@@ -636,7 +657,10 @@ export default {
                         </div>
                         <div
                           class="col-sm-12 col-md-4 col-lg-3"
-                          v-if="customers.type == '家電-司機'"
+                          v-if="
+                            customers.type == '家電-司機' ||
+                            customers.type == '冷氣-師傅'
+                          "
                         >
                           <div class="mb-3">
                             <label for="loginPassword">登入密碼</label>
@@ -955,7 +979,7 @@ export default {
                           >
                             <img
                               v-if="CheckIsImage(f1)"
-                              :src="GetAccessFile1(f1)"
+                              :src="f1"
                               @click="ShowImage(f1)"
                               style="max-width: 100px; max-height: 100px"
                             />

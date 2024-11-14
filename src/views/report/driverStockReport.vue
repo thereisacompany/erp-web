@@ -388,7 +388,10 @@ export default {
             <select
               class="form-select"
               v-model="driverName"
-              @change="GetData()"
+              @change="
+                this.currentPage = 1;
+                GetData();
+              "
             >
               <option
                 :value="u1.supplier"
@@ -409,7 +412,10 @@ export default {
             <select
               class="form-select"
               v-model="licensePlateNumber"
-              @change="GetData()"
+              @change="
+                this.currentPage = 1;
+                GetData();
+              "
             >
               <option
                 v-for="(lp1, lpidx) in [
@@ -432,7 +438,10 @@ export default {
                 type="text"
                 class="form-control"
                 placeholder="關鍵字查詢"
-                @keyup.enter="GetData()"
+                @keyup.enter="
+                  this.currentPage = 1;
+                  GetData();
+                "
                 v-model="keyword"
               />
             </div>
@@ -443,7 +452,10 @@ export default {
               autocomplete="off"
               type="date"
               class="form-control"
-              @change="GetData()"
+              @change="
+                this.currentPage = 1;
+                GetData();
+              "
               v-model="beginDate"
             />
           </div>
@@ -453,7 +465,10 @@ export default {
               autocomplete="off"
               type="time"
               class="form-control"
-              @change="GetData()"
+              @change="
+                this.currentPage = 1;
+                GetData();
+              "
               v-model="beginTime"
             />
           </div>
@@ -463,7 +478,10 @@ export default {
               autocomplete="off"
               type="date"
               class="form-control"
-              @change="GetData()"
+              @change="
+                this.currentPage = 1;
+                GetData();
+              "
               v-model="endDate"
             />
           </div>
@@ -473,13 +491,22 @@ export default {
               autocomplete="off"
               type="time"
               class="form-control"
-              @change="GetData()"
+              @change="
+                this.currentPage = 1;
+                GetData();
+              "
               v-model="endTime"
             />
           </div>
           <div class="search-box me-2 mb-2 d-inline-block">
             <div class="position-relative">
-              <b-button variant="primary" @click="GetData()">
+              <b-button
+                variant="primary"
+                @click="
+                  this.currentPage = 1;
+                  GetData();
+                "
+              >
                 <i
                   :class="
                     IsGetDataing
@@ -633,7 +660,11 @@ export default {
                       <td
                         style="white-space: break-spaces; word-break: break-all"
                       >
-                        {{ SubItem.number }}
+                        <a
+                          :href="`/depot/stock_out#${SubItem.number}&${SubItem.id}`"
+                        >
+                          {{ SubItem.number }}
+                        </a>
                       </td>
                       <td
                         style="white-space: break-spaces; word-break: break-all"

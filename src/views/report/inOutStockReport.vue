@@ -143,14 +143,14 @@ export default {
      */
     // eslint-disable-next-line no-unused-vars
 
-    formatOrganName(SubItem) {
-      if (SubItem == null) return "";
-      return (
-        common.PadLeftZero(SubItem.organId || "", 3) +
-        " " +
-        (SubItem.organName || "")
-      );
-    },
+    // formatOrganName(SubItem) {
+    //   if (SubItem == null) return "";
+    //   return (
+    //     common.PadLeftZero(SubItem.organId || "", 3) +
+    //     " " +
+    //     (SubItem.organName || "")
+    //   );
+    // },
     GetDepotList() {
       ///jshERP-boot/depot/findDepotByCurrentUser
       let APIUrl = `/depot/findDepotByCurrentUser`;
@@ -322,6 +322,7 @@ export default {
       } else {
         this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期為第一日
       }
+      this.currentPage = 1;
       this.GetData();
     },
   },
@@ -369,7 +370,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="depotId"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -390,7 +394,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="organId"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -413,7 +420,10 @@ export default {
                       type="text"
                       class="form-control"
                       placeholder="商品資料"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                       v-model="materialParam"
                     />
                   </div>
@@ -427,7 +437,10 @@ export default {
                     autocomplete="off"
                     type="date"
                     class="form-control"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                     v-model="beginDate"
                   />
                 </div>
@@ -440,7 +453,10 @@ export default {
                     autocomplete="off"
                     type="time"
                     class="form-control"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                     v-model="beginTime"
                   />
                 </div>
@@ -453,7 +469,10 @@ export default {
                     autocomplete="off"
                     type="date"
                     class="form-control"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                     v-model="endDate"
                   />
                 </div>
@@ -466,13 +485,22 @@ export default {
                     autocomplete="off"
                     type="time"
                     class="form-control"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                     v-model="endTime"
                   />
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -515,7 +543,7 @@ export default {
                       <td
                         style="white-space: break-spaces; word-break: break-all"
                       >
-                        {{ formatOrganName(SubItem) }}
+                        {{ SubItem.organName }}
                       </td>
                       <td
                         style="white-space: break-spaces; word-break: break-all"

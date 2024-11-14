@@ -253,7 +253,10 @@ export default {
                       class="form-control"
                       placeholder="倉庫名稱"
                       v-model="name"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -265,14 +268,23 @@ export default {
                       class="form-control"
                       placeholder="備註"
                       v-model="remark"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing

@@ -35,6 +35,7 @@ server.interceptors.response.use(function (response) {
     //console.log(error);
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
     const errorMessage = error.response.data;
+    alert('API錯誤:' + errorMessage)
     //console.log(errorMessage);
     if (errorMessage == "loginOut") {
         localStorage.removeItem("user");
@@ -59,7 +60,7 @@ server.GetSupplierList = function (callback) {
                 //回傳資料成功
                 let jshdata = JSON.parse(JSON.stringify(res.data.data));
                 for (let i = 0; i < jshdata.rows.length; i++) {
-                    jshdata.rows[i].idname = common.PadLeftZero(jshdata.rows[i].id, 3) + ' ' + jshdata.rows[i].supplier;
+                    jshdata.rows[i].idname = jshdata.rows[i].supplier;
                 }
                 if (callback) callback(jshdata.rows)
                 return;
@@ -84,7 +85,7 @@ server.GetSupplier2List = function (typename, callback) {
                 //回傳資料成功
                 let jshdata = JSON.parse(JSON.stringify(res.data.data));
                 for (let i = 0; i < jshdata.rows.length; i++) {
-                    jshdata.rows[i].idname = common.PadLeftZero(jshdata.rows[i].id, 3) + ' ' + jshdata.rows[i].supplier;
+                    jshdata.rows[i].idname = jshdata.rows[i].supplier;
                 }
                 if (callback) callback(jshdata.rows)
                 return;

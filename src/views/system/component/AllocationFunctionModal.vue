@@ -22,11 +22,10 @@
     </div>
   </a-modal>
 </template>
-
 <script>
 import { defineComponent, ref, onMounted } from "vue";
 import { Modal, Tree } from "ant-design-vue";
-import { menuItems } from "./data";
+import { getMenuItem } from "./data";
 import { message } from "ant-design-vue";
 import { server } from "@/api";
 import { filterNullValues } from "@/utils/common";
@@ -44,6 +43,7 @@ export default defineComponent({
     const rowData = ref(); // 角色列表data
     const originalCheckedKeys = ref([]); // 儲存原始的checkedKeys
     const wasSameList = ref(true); // 判斷勾選的與原始的陣列是否相同
+    const menuItems = ref();
     // 開啟
     function openModal(data) {
       checkedKeys.value = [];
@@ -53,27 +53,30 @@ export default defineComponent({
         const url = `/function/findRoleFunction?UBType=RoleFunctions&UBKeyId=${rowData.value.id}`;
         server.get(url).then((res) => {
           const dataList = res.data[0].children;
-          dataList.forEach((data) => {
-            if (data.children.length > 0) {
-              data.children.forEach((item) => {
-                if (item.checked == true) {
-                  if (!checkedKeys.value.includes(data.key)) {
-                    checkedKeys.value.push(data.key);
-                  }
-                  checkedKeys.value.push(item.key);
-                }
-              });
-            } else {
-              if (data.checked == true) {
-                checkedKeys.value.push(data.key);
-              }
-            }
-            originalCheckedKeys.value = [...checkedKeys.value];
-          });
+          checkedKeys.value = collectCheckedItems(dataList);
+          originalCheckedKeys.value = [...checkedKeys.value];
         });
       }
 
       open.value = true;
+    }
+
+    // 取得勾選的id
+    function collectCheckedItems(data) {
+      const checkedItems = [];
+      function recursiveSearch(item) {
+        // 如果 checked 為 true，則加入結果陣列
+        if (item.checked === true) {
+          checkedItems.push(item.id);
+        }
+        // 若有 children，遞迴檢查
+        if (item.children && item.children.length > 0) {
+          item.children.forEach((child) => recursiveSearch(child));
+        }
+      }
+
+      data.forEach((child) => recursiveSearch(child));
+      return checkedItems;
     }
 
     // 關閉
@@ -175,6 +178,9 @@ export default defineComponent({
 
     onMounted(() => {
       checkedKeys.value = [];
+      getMenuItem().then((res) => {
+        menuItems.value = res;
+      });
     });
 
     return {
@@ -182,9 +188,9 @@ export default defineComponent({
       openModal,
       closeModal,
       handleOk,
-      menuItems,
       checkedKeys,
       checkedAll,
+      menuItems,
     };
   },
 });

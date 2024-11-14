@@ -313,7 +313,10 @@ export default {
                       class="form-control"
                       placeholder="車牌號碼"
                       v-model="licensePlateNumber"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -325,7 +328,10 @@ export default {
                       class="form-control"
                       placeholder="品牌型號"
                       v-model="brandModel"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -334,7 +340,10 @@ export default {
                     <select
                       class="form-select"
                       v-model="driver"
-                      @change="GetData()"
+                      @change="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     >
                       <option
                         :value="u1.id"
@@ -353,7 +362,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -403,11 +418,7 @@ export default {
                               type="text"
                               class="form-control"
                               placeholder="車牌號碼"
-                              :class="{
-                                'is-invalid':
-                                  submitted &&
-                                  v$.customers.licensePlateNumber.$error,
-                              }"
+                              required
                             />
                             <div
                               v-if="
@@ -439,10 +450,7 @@ export default {
                               type="text"
                               class="form-control"
                               placeholder="品牌型號"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.brandModel.$error,
-                              }"
+                              required
                             />
                             <div
                               v-if="submitted && v$.customers.brandModel.$error"
@@ -500,10 +508,6 @@ export default {
                               v-model="customers.mileage"
                               type="text"
                               class="form-control"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.mileage.$error,
-                              }"
                               placeholder="里程數(公里)"
                             />
                             <div
@@ -645,10 +649,6 @@ export default {
                               v-model="customers.emissions"
                               type="text"
                               class="form-control"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.emissions.$error,
-                              }"
                               placeholder="排放量(c.c.)"
                             />
                             <div
@@ -674,10 +674,6 @@ export default {
                               v-model="customers.price"
                               type="text"
                               class="form-control"
-                              :class="{
-                                'is-invalid':
-                                  submitted && v$.customers.price.$error,
-                              }"
                               placeholder="車價"
                             />
                             <div
@@ -719,10 +715,6 @@ export default {
                             v-model="customers.remark"
                             type="text"
                             class="form-control"
-                            :class="{
-                              'is-invalid':
-                                submitted && v$.customers.remark.$error,
-                            }"
                             placeholder="備註"
                           />
                         </div>
@@ -776,7 +768,6 @@ export default {
                     <td>{{ SubItem.licensePlateNumber }}</td>
                     <td>{{ SubItem.brandModel }}</td>
                     <td>
-                      {{ formatPadLeftZero(SubItem.driver, 3) }}
                       {{ SubItem.driverName }}
                     </td>
                     <td>{{ SubItem.color }}</td>

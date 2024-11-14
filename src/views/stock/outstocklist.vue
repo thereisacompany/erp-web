@@ -1,17 +1,34 @@
 <script>
+import { createVNode } from "vue";
 import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import JSZip from "jszip";
+import axios from "axios";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 
 import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import { Modal, Tag, Tooltip } from "ant-design-vue";
+import {
+  Modal,
+  Tag,
+  Tooltip,
+  Button,
+  Select,
+  SelectOption,
+  message,
+} from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/navigation";
+// import "./style.css";
+import { Navigation } from "swiper/modules";
 
 /**
  * Customers component
@@ -29,13 +46,19 @@ export default {
     ATag: Tag,
     InfoCircleOutlined,
     ATooltip: Tooltip,
+    AButton: Button,
+    ASelect: Select,
+    ASelectOption: SelectOption,
+    Swiper,
+    SwiperSlide,
   },
   data() {
     return {
+      modules: [Navigation],
       selectedTab: 0,
-      chkAll: true,
+      chkAll: false,
       SubView: 0,
-
+      dStatus: "",
       materialParam: "",
       queryKeyword: "",
       depotId: "",
@@ -119,6 +142,10 @@ export default {
         isPickup: 1,
         install: "",
         recycle: "",
+        storeMan: "",
+        storeName: "",
+        storeAddress: "",
+        storePhone: "",
       },
       driver: {
         driverId: "",
@@ -160,6 +187,18 @@ export default {
           key: "name",
           dataIndex: "name",
         },
+      ],
+      checkNumberList: [],
+      checkSubIdList: [],
+      dStatusOption: [
+        { value: 0, name: "未派發" },
+        { value: 1, name: "已派發" },
+        { value: 2, name: "已接單" },
+        { value: 3, name: "聯絡中" },
+        { value: 4, name: "配送中" },
+        { value: 5, name: "配送完成" },
+        { value: 6, name: "配送異常" },
+        { value: 7, name: "作廢" },
       ],
     };
   },
@@ -224,6 +263,7 @@ export default {
         if (newVal !== oldVal) {
           for (let i = 0; i < this.customersData.length; i++) {
             this.customersData[i].chk = newVal;
+            this.clickCheckbox(this.customersData[i]);
           }
         }
       },
@@ -232,6 +272,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -240,6 +281,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -310,6 +352,8 @@ export default {
           return "配送完成";
         case 6:
           return "配送異常";
+        case 7:
+          return "作廢";
         default:
           return dStatus;
       }
@@ -330,6 +374,8 @@ export default {
           return "btn-success";
         case 6:
           return "btn-danger";
+        case 7:
+          return "btn-dark";
         default:
           return dStatus;
       }
@@ -790,6 +836,7 @@ export default {
     },
     EditShow(RowItem) {
       this.SubView = 3;
+      console.log("EditShow", RowItem);
       //   狀態1已審2未/ {{ SubItem.status }} 配送狀態/{{
       //   formatdStatus(SubItem.dStatus)
       // }}
@@ -902,12 +949,8 @@ export default {
       });
     },
     BatchExcelOut() {
-      let NumberList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.number);
-      let subIdList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.subId);
+      let NumberList = this.checkNumberList;
+      let subIdList = this.checkSubIdList;
       //console.log(NumberList)
 
       if (NumberList == null || NumberList.length == 0) {
@@ -1151,7 +1194,6 @@ export default {
           callback(null);
         });
     },
-
     // SubCounterList(depotId) {
     //     if (depotId == null || depotId == '' || depotId == 0) return this.counterList;
     //     return this.counterList.filter(x => String(x.depotId) == String(depotId));
@@ -1301,7 +1343,6 @@ export default {
           return;
         });
     },
-
     GetData() {
       if (this.IsGetDataing == true) return;
       this.IsGetDataing = true;
@@ -1311,20 +1352,21 @@ export default {
       //"beginTime":"2023-03-01","endTime":"2023-03-02"
 
       //let queryStr = `{"type":"出庫","number":"${this.number}","materialParam":"${this.materialParam}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","organId":"${this.organId}"}`;
-      let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}"}`;
-      if (
-        this.subType !== "" ||
-        this.number !== "" ||
-        this.mNumber !== "" ||
-        this.materialParam !== "" ||
-        this.organId !== "" ||
-        this.beginTime !== "" ||
-        this.endTime !== "" ||
-        this.depotId !== "" ||
-        this.queryKeyword !== ""
-      ) {
-        this.currentPage = 1;
-      }
+      let queryStr = `{"type":"出庫","subType":"${this.subType}","number":"${this.number}","MNumber":"${this.mNumber}","materialParam":"${this.materialParam}","organId":"${this.organId}","beginTime":"${this.beginTime}","endTime":"${this.endTime}","depotId":"${this.depotId}","keyword":"${this.queryKeyword}","dStatus":"${this.dStatus}"}`;
+      // if (
+      //   this.subType !== "" ||
+      //   this.number !== "" ||
+      //   this.mNumber !== "" ||
+      //   this.materialParam !== "" ||
+      //   this.organId !== "" ||
+      //   this.beginTime !== "" ||
+      //   this.endTime !== "" ||
+      //   this.depotId !== "" ||
+      //   this.queryKeyword !== ""
+      // ) {
+      //   this.currentPage = 1;
+      // }
+      console.log("currentPage", this.currentPage);
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server
@@ -1348,9 +1390,23 @@ export default {
           this.IsGetDataing = false;
           // console.log("this.customersData", this.customersData);
           for (let i = 0; i < this.customersData.length; i++) {
-            this.customersData[i].chk = this.chkAll;
+            if (this.checkSubIdList.includes(this.customersData[i].subId)) {
+              this.customersData[i].chk = true;
+            }
           }
           //console.log("datalist:", this.customersData)
+
+          setTimeout(() => {
+            if (this.$route.hash && this.$route.hash !== null) {
+              const splitArray = this.$route.hash
+                .split("#")
+                .join("")
+                .split("&");
+              const number = splitArray[0];
+              const id = splitArray[1];
+              this.directToDriverTab(number, id);
+            }
+          }, 100);
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1453,9 +1509,12 @@ export default {
             // {    "code": 200,
             // "data": "匯入成功, 匯入失敗列數:\nExcel文件第1列->此筆資料重覆匯入(客單編號:20231025, 原始編號:1)\nExcel文件第2列->此筆資料重覆匯入(客單編號:20231025-1, 原始編號:2)\nExcel文件第3列->發單日未填寫\n"}
             alert(common.replaceAll(dataMsg, "'", ""));
-            this.GetData();
+
+            setTimeout(() => {
+              this.GetData();
+            }, 3000);
           } else if (res != null && res.data != null && res.data.code != 200) {
-            console.log("else if", res.data.data);
+            console.log("else if file", res.data.data);
             alert(res.data.data);
           }
         })
@@ -1503,7 +1562,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1512,7 +1571,7 @@ export default {
       return false;
     },
     CheckIsVideo(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".mp4", ".mov"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1521,7 +1580,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
@@ -1543,11 +1602,12 @@ export default {
           });
         }
       } else {
+        console.log("else file");
         window.open(filename, "file1");
       }
     },
     GetAccessFile1(UrlPath1) {
-      ///systemConfig/static/
+      console.log("UrlPath1", UrlPath1);
 
       let APIUrl = `${
         import.meta.env.VITE_APP_API_URL
@@ -1568,12 +1628,8 @@ export default {
     },
     // 批次匯出揀貨單
     handleExportPicking() {
-      let NumberList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.number);
-      let subIdList = this.customersData
-        .filter((x) => x.chk == true)
-        .map((y) => y.subId);
+      let NumberList = this.checkNumberList;
+      let subIdList = this.checkSubIdList;
       //console.log(NumberList)
 
       if (NumberList == null || NumberList.length == 0) {
@@ -1608,10 +1664,10 @@ export default {
           } else {
             // console.log("res", res)
             if (res != null && res.data != null) {
-              // console.log(123123)
+              console.log("res.data", res.data);
               var fileURL = window.URL.createObjectURL(
                 new Blob([res.data], {
-                  type: "application/octet-stream",
+                  type: res.data.type,
                 })
               );
               // console.log("fileURL", fileURL);
@@ -1619,7 +1675,7 @@ export default {
               fileLink.href = fileURL;
               fileLink.download = `${dayjs().format(
                 "YYYYMMDDHHmmss"
-              )}配送單-揀貨總表.xlsx`;
+              )}配送單-揀貨總表`;
               // fileLink.setAttribute(
               //   "download",
               //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
@@ -1657,6 +1713,92 @@ export default {
         item.operNumber = item.stock;
       }
     },
+    // 全部下載
+    async downloadAllFiles(fileList) {
+      const zip = new JSZip();
+
+      try {
+        // 依次處理每個文件 URL
+        for (let i = 0; i < fileList.length; i++) {
+          const url = fileList[i];
+          const response = await axios.get(url, {
+            responseType: "blob", // 以 Blob 格式獲取文件數據
+          });
+
+          // 將文件加入到 ZIP 中
+          const filename = url.split("/").pop(); // 從 URL 中提取文件名
+          zip.file(filename, response.data);
+        }
+
+        // 生成 ZIP 文件並下載
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const downloadUrl = URL.createObjectURL(zipBlob);
+        const fileName = `${this.customers.defaultNumber}附件`;
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = fileName || "files.zip";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.error("下載 ZIP 檔案失敗：", error);
+      }
+    },
+
+    // 直接跳轉至司機派單及回報
+    directToDriverTab(number, id) {
+      this.EditShow({ number, id });
+      this.selectedTab = 1;
+    },
+    // 點擊勾選
+    clickCheckbox(item) {
+      if (
+        item.chk &&
+        !this.checkNumberList.includes(item.number) &&
+        !this.checkSubIdList.includes(item.subId)
+      ) {
+        this.checkNumberList.push(item.number);
+        this.checkSubIdList.push(item.subId);
+      } else {
+        // 取消勾選時，從陣列中移除item
+        this.checkNumberList = this.checkNumberList.filter(
+          (number) => number !== item.number
+        );
+        this.checkSubIdList = this.checkSubIdList.filter(
+          (subId) => subId !== item.subId
+        );
+      }
+    },
+    // 作廢
+    async handleSetInvalid(id) {
+      Modal.confirm({
+        title: "請確認",
+        icon: createVNode(ExclamationCircleOutlined),
+        content: createVNode(
+          "span",
+          { style: "" },
+          `是否要作廢單號： ${this.customers.defaultNumber}`
+        ),
+        okText: "確認",
+        cancelText: "取消",
+        onOk: async () => {
+          const apiUrl = `/depotHead/setInvalid/${id}`;
+          try {
+            const result = await server.post(apiUrl);
+            console.log("handleSetInvalid result", result);
+            if (result.data.code == 200 && result.data.data.message == "成功") {
+              message.success("作廢成功");
+              this.SubView = 0;
+              this.selectedTab = 0;
+              this.GetData();
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        },
+      });
+    },
   },
 };
 </script>
@@ -1667,20 +1809,19 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
-
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
           <div class="card-body">
             <div class="row mb-2">
-              <div class="col-sm-8">
+              <div class="col-sm-6">
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
                     <div style="display: flex; align-items: center; gap: 5px">
                       <label for="name">關鍵字搜尋</label>
                       <a-tooltip>
                         <template #title
-                          >例如：單號、收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號</template
+                          >例如：收件人、電話、手機、地址、客戶、客戶全名、商品名稱、商品規格、商品型號、建單人員</template
                         >
                         <InfoCircleOutlined
                           style="color: #556ee6; margin-bottom: 0.5rem"
@@ -1693,20 +1834,37 @@ export default {
                       class="form-control"
                       placeholder="關鍵字"
                       v-model="queryKeyword"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <label for="name">配送單號</label>
+                    <div style="display: flex; align-items: center; gap: 5px">
+                      <label for="name">單號</label>
+                      <a-tooltip>
+                        <template #title
+                          >例如：單號、客單編號、原始客編</template
+                        >
+                        <InfoCircleOutlined
+                          style="color: #556ee6; margin-bottom: 0.5rem"
+                        />
+                      </a-tooltip>
+                    </div>
+
                     <input
                       autocomplete="off"
                       type="text"
                       class="form-control"
-                      placeholder="配送單號"
+                      placeholder="單號"
                       v-model="number"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1719,11 +1877,14 @@ export default {
                       class="form-control"
                       placeholder="品號"
                       v-model="mNumber"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
-                <div class="search-box me-2 mb-2 d-inline-block">
+                <div class="search-box me-2 mb-2 d-inline-block" v-if="false">
                   <div class="position-relative">
                     <label for="name">商品資料</label>
                     <input
@@ -1731,7 +1892,10 @@ export default {
                       type="text"
                       class="form-control"
                       placeholder="商品資料"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                       v-model="materialParam"
                     />
                   </div>
@@ -1742,7 +1906,10 @@ export default {
                     <select
                       class="form-select"
                       v-model="organId"
-                      @change="GetData()"
+                      @change="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     >
                       <option value="">全部客戶</option>
                       <option
@@ -1751,7 +1918,7 @@ export default {
                         v-for="u1 in supplierlist"
                         :key="'organId' + u1.id"
                       >
-                        {{ formatPadLeftZero(u1.id, 3) }} {{ u1.supplier }}
+                        {{ u1.supplier }}
                       </option>
                     </select>
                   </div>
@@ -1761,7 +1928,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="depotId"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -1781,7 +1951,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="subType"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -1795,6 +1968,27 @@ export default {
                       :key="'query_subType_id' + u1.id"
                     >
                       {{ u1.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="search-box mb-2 d-inline-block" style="width: 25%">
+                  <label for="name">配送狀態</label>
+                  <select
+                    class="form-select"
+                    v-model="dStatus"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
+                  >
+                    <option value="" selected>請選擇</option>
+                    <option
+                      v-for="status in dStatusOption"
+                      :key="status.value"
+                      :value="status.value"
+                      selected
+                    >
+                      {{ status.name }}
                     </option>
                   </select>
                 </div>
@@ -1823,7 +2017,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -1837,28 +2037,41 @@ export default {
                   </div>
                 </div>
               </div>
-              <div class="col-sm-4">
+              <div class="col-sm-6">
                 <div class="text-sm-end actions">
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded mb-2 me-2"
+                    class="btn btn-rounded mb-2 me-2 add-delivery"
                     @click="EditOne({ id: 0, isPickup: 1 })"
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增配送單
                   </button>
+                  <ImportFile
+                    :buttonName="'匯入配送單'"
+                    :apiLink="'depotHead/importExcel'"
+                    @importSuccess="setData"
+                    class="import-delivery"
+                  />
+
                   <button
                     type="button"
-                    class="btn btn-primary btn-rounded mb-2 me-2"
-                    @click="EditOne({ id: 0, isPickup: 2 })"
-                  >
-                    <i class="mdi mdi-plus me-1"></i> 新增門市取貨
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-primary btn-rounded mb-2 me-2"
+                    class="btn btn-pickup btn-rounded mb-2 me-2 add-pickup-delivery"
                     @click="EditOne({ id: 0, isPickup: 3 })"
                   >
                     <i class="mdi mdi-plus me-1"></i> 新增門市取貨派送
+                  </button>
+                  <ImportFile
+                    :buttonName="'匯入門市取貨派送'"
+                    :apiLink="'depotHead/importPickupExcel'"
+                    @importSuccess="setData"
+                    class="import-pickup"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-rounded mb-2 me-2 add-pickup"
+                    @click="EditOne({ id: 0, isPickup: 2 })"
+                  >
+                    <i class="mdi mdi-plus me-1"></i> 新增門市取貨
                   </button>
                   <!-- <button
                     type="button"
@@ -1867,21 +2080,17 @@ export default {
                   >
                     匯入配送單
                   </button> -->
-                  <ImportFile
-                    :buttonName="'匯入配送單'"
-                    :apiLink="'depotHead/importExcel'"
-                    @importSuccess="setData"
-                  />
+
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded mb-2 me-2"
+                    class="btn btn-success btn-rounded btn-batch mb-2 me-2 batch-export"
                     @click="BatchExcelOut"
                   >
                     批次匯出
                   </button>
                   <button
                     type="button"
-                    class="btn btn-success btn-rounded mb-2 me-2"
+                    class="btn btn-success btn-rounded btn-export-picking mb-2 me-2 export-picking"
                     @click="handleExportPicking"
                   >
                     匯出揀貨單
@@ -1927,7 +2136,13 @@ export default {
                     v-for="(SubItem, cidx) in customersData"
                     :key="'customersData' + cidx"
                   >
-                    <td><input type="checkbox" v-model="SubItem.chk" /></td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        v-model="SubItem.chk"
+                        @change="clickCheckbox(SubItem)"
+                      />
+                    </td>
                     <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
                     <td
                       style="white-space: break-spaces; word-break: break-all"
@@ -2023,6 +2238,7 @@ export default {
                           >查看</a
                         >
                         <a
+                          v-if="SubItem.dStatus != 6 && SubItem.dStatus != 7"
                           class="btn btn-secondary"
                           href="#"
                           @click="EditOne(SubItem)"
@@ -2217,11 +2433,27 @@ export default {
                                 </div>
                               </td>
                               <td>
+                                <!-- 品號 -->
                                 <div
                                   class="position-relative"
                                   v-if="IsPickup1 && this.SubView !== 3"
                                 >
-                                  <input
+                                  <a-select
+                                    v-model:value="SubItem.number"
+                                    placeholder="請選擇"
+                                    show-search
+                                    :filter-option="filterOption"
+                                    @keyup="queryMaterialByRow(SubItem, cidx)"
+                                    @select="queryMaterialByRow(SubItem, cidx)"
+                                  >
+                                    <a-select-option
+                                      v-for="option in SubItem.queryMaterialList"
+                                      :key="option.id"
+                                      :value="option.number"
+                                      >{{ option.number }}</a-select-option
+                                    >
+                                  </a-select>
+                                  <!-- <input
                                     autocomplete="off"
                                     type="text"
                                     class="form-control"
@@ -2240,7 +2472,7 @@ export default {
                                     >
                                       {{ q1.number }}
                                     </option>
-                                  </datalist>
+                                  </datalist> -->
                                 </div>
                                 <div v-else>-</div>
                               </td>
@@ -2295,7 +2527,7 @@ export default {
                                   v-if="this.SubView !== 3"
                                 />
 
-                                <span v-else>{{ SubItem.operNumber }}</span>
+                                <span v-else>{{ SubItem.remark }}</span>
                               </td>
                               <!-- v-if="SubView == 1 || SubView == 2" -->
                               <td v-if="false">
@@ -2322,7 +2554,48 @@ export default {
                       </div>
                     </div>
                   </div>
-
+                  <div class="row" v-if="customers.subType == '門市取貨派送'">
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">取貨人</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeMan"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">門市名稱</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeName"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">門市位置</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storeAddress"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-3">
+                      <label for="name">電話</label>
+                      <input
+                        autocomplete="off"
+                        type="text"
+                        class="form-control"
+                        v-model="customers.storePhone"
+                        :disabled="this.SubView == 3"
+                      />
+                    </div>
+                  </div>
                   <div class="row py-1">
                     <div class="col-sm-12 col-md-4 col-lg-3 my-1">
                       <label for="name">主商品到貨日</label>
@@ -2531,7 +2804,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="GetAccessFile1(f1)"
+                          :src="f1"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
@@ -2572,6 +2845,7 @@ export default {
           </span>
           <span class="d-none d-sm-inline-block">司機派單及回報</span>
         </template>
+
         <div class="row py-1">
           <div class="col-12">
             <div class="card">
@@ -2899,10 +3173,16 @@ export default {
                 <hr />
                 <div class="row mb-2">
                   <div class="col-sm-12">
-                    <div class="flex-1 overflow-hidden">
-                      <h5 class="text-bold mb-1" style="font-weight: bold">
+                    <div class="flex-1 overflow-hidden upload-section mb-3">
+                      <h5 class="text-bold" style="font-weight: bold">
                         <i class="bx bx-folder-open"></i> 圖片影片及附件
                       </h5>
+
+                      <a-button
+                        type="primary"
+                        @click="downloadAllFiles(driver.filelist)"
+                        >全部下載</a-button
+                      >
                     </div>
                   </div>
                   <div class="col-sm-12 bg-light pt-3 pb-3">
@@ -2918,7 +3198,7 @@ export default {
                       >
                         <img
                           v-if="CheckIsImage(f1)"
-                          :src="GetAccessFile1(f1)"
+                          :src="f1"
                           @click="ShowImage(f1)"
                           style="max-width: 100px; max-height: 100px"
                         />
@@ -3050,9 +3330,22 @@ export default {
         <a
           href="#"
           class="btn btn-primary btn-block"
-          v-if="driver.status != 0 && driver.status != 5 && selectedTab == 1"
+          v-if="
+            driver.status != 0 &&
+            driver.status != 5 &&
+            driver.status != 6 &&
+            driver.status != 7 &&
+            selectedTab == 1
+          "
           @click="ReAssignDriver()"
           >重新指派</a
+        >
+        <a
+          href="#"
+          class="btn btn-danger"
+          @click="handleSetInvalid(customers.id)"
+          v-if="SubView == 2 && driver.status != 7"
+          >作廢</a
         >
         <a
           href="#"
@@ -3068,14 +3361,39 @@ export default {
       </div>
     </div>
     <b-modal
-      size="xl"
       v-model="showImageModal"
       title="顯示圖片"
       title-class="text-black font-18"
-      body-class="p-3"
+      body-class="p-3 my-2"
       hide-footer
     >
-      <form>
+      <swiper
+        :navigation="true"
+        :modules="modules"
+        class="swiper"
+        :centeredSlides="true"
+      >
+        <swiper-slide v-for="(file, index) in driver.filelist" :key="index"
+          ><img
+            v-if="CheckIsImage(file)"
+            :src="file"
+            style="max-width: 320px; max-height: 50%"
+          />
+          <img
+            class="logo-bank"
+            v-else-if="CheckIsVideo(file)"
+            style="max-width: 320px; max-height: 50%"
+            src="/images/playvideo.jpg"
+          />
+          <a
+            style="word-break: break-all; display: block; max-width: 50%"
+            v-else
+            href="#"
+            >{{ file.split("/").pop() }}</a
+          ></swiper-slide
+        >
+      </swiper>
+      <form v-if="false">
         <div class="row text-center">
           <div class="col-12" v-if="showImageURL != ''">
             <img
@@ -3149,7 +3467,7 @@ export default {
   </Layout>
 </template>
 
-<style>
+<style scoped>
 .detail-table > .table {
   width: 100%;
   table-layout: fixed;
@@ -3171,5 +3489,66 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+/* 新增配送單 */
+.add-delivery {
+  background-color: #2a6189 !important;
+  border: 1px solid #2a6189 !important;
+  color: #fff !important;
+}
+
+/* 新增門市取貨派送 */
+.add-pickup-delivery {
+  background-color: #559ee6 !important;
+  border: 1px solid #559ee6 !important;
+  color: #fff !important;
+}
+
+/* 新增門市取貨 */
+.add-pickup {
+  background-color: #e4903b !important;
+  border: 1px solid #e4903b !important;
+  color: #fff !important;
+}
+
+/* 批次匯入 */
+.batch-export {
+  background-color: #802670 !important;
+  border: 1px solid #802670 !important;
+  color: #fff !important;
+}
+
+/* 匯出揀貨單 */
+.export-picking {
+  background-color: #46966a !important;
+  border: 1px solid #46966a !important;
+  color: #fff !important;
+}
+
+.upload-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.upload-section h5 {
+  margin: 0 !important;
+}
+
+.all-download {
+  padding: 2px 8px;
+  border: 1px solid #000;
+  border-radius: 4px;
+}
+
+:deep(.ant-select) {
+  width: 100%;
+}
+
+:deep(.swiper-slide) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

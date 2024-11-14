@@ -6,6 +6,7 @@ import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import { server } from "@/api";
+import { Select, SelectOption } from "ant-design-vue";
 
 import appConfig from "@/app.config";
 
@@ -17,7 +18,12 @@ export default {
     title: "移倉管理",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader },
+  components: {
+    Layout,
+    PageHeader,
+    ASelect: Select,
+    ASelectOption: SelectOption,
+  },
   data() {
     return {
       chkAll: true,
@@ -177,6 +183,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -185,6 +192,7 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal !== oldVal) {
+          this.currentPage = 1;
           this.GetData();
         }
       },
@@ -1003,7 +1011,7 @@ export default {
         });
     },
     CheckIsImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
       if (imageExtensions.includes(extension)) {
@@ -1012,7 +1020,7 @@ export default {
       return false;
     },
     ShowImage(ImageUrl) {
-      let filename = this.GetAccessFile1(ImageUrl);
+      let filename = ImageUrl;
 
       const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
       const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
@@ -1116,7 +1124,7 @@ export default {
                   />
                 </div>
               </div>
-              <div class="row">
+              <div class="row my-3">
                 <div class="col-sm-12">
                   <div class="table-responsive">
                     <table
@@ -1169,7 +1177,27 @@ export default {
                           </td>
                           <td>
                             <div class="position-relative">
-                              <input
+                              <a-select
+                                :disabled="
+                                  (SubView == 2 && !SubItem.isNewAdd) ||
+                                  SubView == 3
+                                "
+                                v-model:value="SubItem.number"
+                                placeholder="請選擇"
+                                show-search
+                                :filter-option="filterOption"
+                                @keyup="queryMaterialByRow(SubItem, cidx)"
+                                @select="queryMaterialByRow(SubItem, cidx)"
+                              >
+                                <a-select-option
+                                  v-for="option in SubItem.queryMaterialList"
+                                  :key="option.id"
+                                  :value="option.number"
+                                  >{{ option.number }}</a-select-option
+                                >
+                              </a-select>
+
+                              <!-- <input
                                 autocomplete="off"
                                 type="text"
                                 class="form-control"
@@ -1186,7 +1214,7 @@ export default {
                                 >
                                   {{ q1.number }}
                                 </option>
-                              </datalist>
+                              </datalist> -->
                             </div>
                           </td>
                           <td>{{ SubItem.name }}</td>
@@ -1392,7 +1420,10 @@ export default {
                       class="form-control"
                       placeholder="移倉單號"
                       v-model="number"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                     />
                   </div>
                 </div>
@@ -1404,7 +1435,10 @@ export default {
                       type="text"
                       class="form-control"
                       placeholder="商品資料"
-                      @keyup.enter="GetData()"
+                      @keyup.enter="
+                        this.currentPage = 1;
+                        GetData();
+                      "
                       v-model="materialParam"
                     />
                   </div>
@@ -1415,7 +1449,10 @@ export default {
                   <select
                     class="form-select"
                     v-model="depotId"
-                    @change="GetData()"
+                    @change="
+                      this.currentPage = 1;
+                      GetData();
+                    "
                   >
                     <option
                       :value="u1.id"
@@ -1456,7 +1493,13 @@ export default {
 
                 <div class="search-box me-2 mb-2 d-inline-block">
                   <div class="position-relative">
-                    <b-button variant="primary" @click="GetData()">
+                    <b-button
+                      variant="primary"
+                      @click="
+                        this.currentPage = 1;
+                        GetData();
+                      "
+                    >
                       <i
                         :class="
                           IsGetDataing
@@ -1618,3 +1661,9 @@ export default {
     <!-- end row -->
   </Layout>
 </template>
+
+<style scoped>
+:deep(.ant-select) {
+  width: 100%;
+}
+</style>
