@@ -29,7 +29,7 @@ import { Modal, Tree } from "ant-design-vue";
 import { menuItems } from "./data";
 import { message } from "ant-design-vue";
 import { server } from "@/api";
-import { filterNullValues } from "./data";
+import { filterNullValues } from "@/utils/common";
 export default defineComponent({
   components: {
     AModal: Modal,

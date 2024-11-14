@@ -150,7 +150,7 @@ import AllocationFunctionModal from "./component/AllocationFunctionModal.vue";
 // import AllocationBtnModal from "./component/AllocationBtnModal.vue";
 import { message, Modal, Form, Row, Col } from "ant-design-vue";
 import { server } from "@/api";
-import { filterNullValues } from "./component/data";
+import { filterNullValues } from "@/utils/common";
 export default defineComponent({
   components: {
     Layout,

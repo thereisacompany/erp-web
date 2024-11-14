@@ -4,7 +4,8 @@ import CustomerList from '@/views/user/customerList.vue';
 import DriverList from '@/views/user/driverList.vue';
 import Vehicle from '@/views/stock/vehicleList.vue';
 import ProductManagement from '@/views/product/productManagement.vue';
-import ProductCategory from '@/views/product/productCategory.vue';
+// import productCategory from '@/views/product/productCategory.vue';
+import Category from '@/views/product/category.vue';
 import DepotList from '@/views/stock/depotList.vue';
 import InStockList from '@/views/stock/inStockList.vue';
 import OutStockList from '@/views/stock/outStockList.vue';
@@ -88,7 +89,7 @@ const routes = [
 				path: 'material_category',
 				name: 'productCategory',
 				meta: { authRequired: true },
-				component: ProductCategory,
+				component: Category,
 			},
 		]
 	},

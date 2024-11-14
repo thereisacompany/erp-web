@@ -86,12 +86,12 @@ export default defineComponent({
     const action = ref("");
     const formRef = ref(null);
     const formData = reactive({
-      loginName: "",
-      username: "",
-      roleId: "",
-      position: "",
-      description: "",
-      phonenum: "",
+      loginName: null,
+      username: null,
+      roleId: null,
+      position: null,
+      description: null,
+      phonenum: null,
     });
     const formState = reactive([
       {
@@ -142,7 +142,12 @@ export default defineComponent({
     }
 
     function resetForm() {
-      formRef.value.resetFields();
+      formData.loginName = null;
+      formData.username = null;
+      formData.roleId = null;
+      formData.position = null;
+      formData.description = null;
+      formData.phonenum = null;
     }
 
     // 保存

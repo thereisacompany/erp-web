@@ -92,7 +92,7 @@ import Filter from "@/components/filter.vue";
 import UserModal from "./component/UserModal.vue";
 import { Modal, message } from "ant-design-vue";
 import { getUserList, resetUserPassword } from "@/api/systemApi.js";
-import { filterNullValues } from "./component/data";
+import { filterNullValues } from "@/utils/common";
 export default defineComponent({
   components: {
     Layout,
