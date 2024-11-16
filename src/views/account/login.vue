@@ -1,316 +1,302 @@
+<template>
+  <div class="login_wrapper">
+    <div class="wrapper">
+      <div class="wrapper_login-form">
+        <div class="header">
+          <img src="@/assets/images/logo.png" />
+        </div>
+
+        <div class="login-form">
+          <span class="version">v{{ version }}</span>
+          <a-form
+            :model="formState"
+            layout="vertical"
+            name="normal_login"
+            class="form"
+          >
+            <a-form-item
+              label="帳號"
+              name="loginName"
+              :rules="[{ required: true, message: '請填寫登入帳號!' }]"
+            >
+              <a-input v-model:value="formState.loginName">
+                <template #prefix>
+                  <UserOutlined class="site-form-item-icon" />
+                </template>
+              </a-input>
+            </a-form-item>
+
+            <a-form-item
+              label="密碼"
+              name="password"
+              :rules="[{ required: true, message: '請填寫登入密碼!' }]"
+            >
+              <a-input-password v-model:value="formState.password">
+                <template #prefix>
+                  <LockOutlined class="site-form-item-icon" />
+                </template>
+              </a-input-password>
+            </a-form-item>
+
+            <a-checkbox
+              class="remember-me"
+              v-model:checked="rememberMe"
+              @change="handleClickRemember"
+              >記住帳號</a-checkbox
+            >
+            <button type="submit" @click="handleUserLogin">登入</button>
+          </a-form>
+          <!-- <form>
+            <div class="input-group">
+              <label for="loginName">帳號</label>
+              <input
+                type="text"
+                id="loginName"
+                name="loginName"
+                placeholder="請輸入帳號"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <label for="password">密碼</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="請輸入密碼"
+                required
+              />
+            </div>
+            <a-checkbox class="remember-me" v-model:checked="rememberMe"
+              >記住帳號</a-checkbox
+            >
+            <button type="submit">登入</button>
+          </form> -->
+        </div>
+      </div>
+    </div>
+    <div class="copyright">
+      <span> © {{ new Date().getFullYear() }} 鉅生物流有限公司 ERP </span>
+    </div>
+  </div>
+</template>
+
 <script>
-// import axios from "axios";
-import { server } from "@/api";
-import md5 from "md5";
-import VConsole from "vconsole";
+import { defineComponent, ref, reactive, onMounted } from "vue";
 import { version } from "../../../package.json";
-import Layout from "@/router/layouts/auth.vue";
-import {
-  userMethods,
-  authMethods,
-  authFackMethods,
-  notificationMethods,
-} from "@/state/helpers";
-import { mapState } from "vuex";
+import { Checkbox, Form, FormItem } from "ant-design-vue";
+import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
+import { userLogin } from "@/api/systemApi.js";
+import md5 from "md5";
 
-import appConfig from "@/app.config";
-import { required, helpers } from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
-
-/**
- * Login component
- */
-export default {
-  setup() {
-    return { v$: useVuelidate() };
-  },
-  page: {
-    title: "Login",
-    meta: [
-      {
-        name: "description",
-        content: appConfig.description,
-      },
-    ],
-  },
+export default defineComponent({
   components: {
-    Layout,
+    ACheckbox: Checkbox,
+    AForm: Form,
+    AFormItem: FormItem,
+    UserOutlined,
+    LockOutlined,
   },
-  data() {
-    return {
+  setup() {
+    const rememberMe = ref(false);
+    const formState = reactive({
       loginName: "",
       password: "",
-      submitted: false,
-      authError: null,
-      tryingToLogIn: false,
-      isAuthError: false,
-      version,
-      rememberMe: "not_accepted",
-    };
-  },
-  validations: {
-    loginName: {
-      required: helpers.withMessage("請輸入帳號", required),
-    },
-    password: {
-      required: helpers.withMessage("請輸入密碼", required),
-    },
-  },
-  computed: {
-    ...mapState("authfack", ["status"]),
+    });
 
-    notification() {
-      console.log("this.$store", this.$store);
-      return this.$store ? this.$store.state.notification : null;
-    },
-  },
-  methods: {
-    ...userMethods,
-    ...authMethods,
-    ...authFackMethods,
-    ...notificationMethods,
-    // Try to log the user in with the username
-    // and password they provided.
-    tryToLogIn() {
-      this.submitted = true;
-      // stop here if form is invalid
-      this.v$.$touch();
-      // console.log("this.v$.$invalid",this.v$.$invalid)
-      // console.log("import.meta.env.VITE_APP_DEFAULT_AUTH",import.meta.env.VITE_APP_DEFAULT_AUTH)
-      if (this.v$.$invalid) {
-        return;
-      } else {
-        let loginName = this.loginName;
-        let password = md5(String(this.password));
-        let jsonData = { loginName, password };
-        let APIUrl = `user/login`;
+    // 登入
+    async function handleUserLogin() {
+      const data = {
+        loginName: formState.loginName,
+        password: md5(String(formState.password)),
+      };
 
-        server
-          .post(APIUrl, jsonData)
-          .then((res) => {
-            console.log("res>>", res);
-            // console.log("res.data>>",res.data);
-            if (
-              res != null &&
-              res.data != null &&
-              res.data.code == 200 &&
-              res.data.data != null
-            ) {
-              //回傳資料成功
-              let jshdata = res.data.data;
-              if (jshdata.msgTip == "user can login") {
-                //console.log("OK","this.$route.query.redirectFrom",this.$route.query)
-                //console.log("jshdata",jshdata)
-                this.changeUserID({ value: jshdata.user.id });
-                this.changeLoginName({ value: jshdata.user.loginName });
-                this.changeUsername({ value: jshdata.user.username });
-                this.changeToken({ value: jshdata.token });
-                this.changeTreeList({ value: jshdata.userBtn });
-
-                localStorage.setItem(
-                  "user",
-                  JSON.stringify({
-                    UserID: jshdata.user.id,
-                    token: jshdata.token,
-                    loginName: jshdata.user.loginName,
-                    roleName: jshdata.roleName,
-                  })
-                );
-
-                localStorage.setItem(
-                  "user_authList",
-                  JSON.stringify(jshdata.user.authList)
-                );
-
-                this.$router.push(
-                  this.$route.query.redirectFrom || { name: "home" }
-                );
-
-                // this.tryingToLogIn = false;
-                // this.authError = String(123) || "no data-2";
-                // this.isAuthError = true;
-                //alert("this.$route.query.redirectFrom:"+JSON.stringify(this.$route.query.redirectFrom))
-
-                return;
-              }
-
-              //console.log("error msgTip",jshdata.msgTip)
-              this.tryingToLogIn = false;
-              this.authError = jshdata.msgTip ? jshdata.msgTip : "";
-              this.isAuthError = true;
-              return;
-            }
+      const result = await userLogin(data);
+      if (result) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            UserID: result.user.id,
+            token: result.token,
+            loginName: result.user.loginName,
+            roleName: result.roleName,
           })
-          .catch(function (error) {
-            console.log("error", error);
-          });
+        );
 
-        // jshERP.userlogin({loginName:this.loginName,password:this.password})
-        //   .then((su1)=>{
-        //     console.log("success",su1)
-        // })
+        localStorage.setItem(
+          "user_authList",
+          JSON.stringify(result.user.authList)
+        );
+
+        window.location = "/";
       }
-    },
-    handleClickRemember() {
-      if (this.rememberMe) {
+    }
+
+    //  記住帳號
+    function handleClickRemember() {
+      if (rememberMe.value) {
         localStorage.setItem(
           "rememberedUser",
           JSON.stringify({
-            loginName: this.loginName,
+            loginName: formState.loginName,
           })
         );
       } else {
         localStorage.removeItem("rememberedUser");
       }
-    },
-  },
-  mounted() {
-    //console.log("this.$route.query.vConsole=", import.meta.env.NODE_ENV)
-    localStorage.removeItem("user");
-    localStorage.removeItem("user_authList");
-    if (this.$route.query.vConsole == "1") {
-      new VConsole().show();
     }
 
-    if (localStorage.getItem("rememberedUser")) {
-      const rememberedUser = JSON.parse(localStorage.getItem("rememberedUser"));
-      this.loginName = rememberedUser.loginName;
-      this.rememberMe = "accepted";
-    }
+    onMounted(() => {
+      // 移除local儲存舊的user資料
+      localStorage.removeItem("user");
+      localStorage.removeItem("user_authList");
+
+      // 判斷是否有勾選記住帳號
+      if (localStorage.getItem("rememberedUser")) {
+        const rememberedUser = JSON.parse(
+          localStorage.getItem("rememberedUser")
+        );
+        formState.loginName = rememberedUser.loginName;
+        rememberMe.value = true;
+      }
+    });
+
+    return {
+      version,
+      rememberMe,
+      formState,
+      handleClickRemember,
+      handleUserLogin,
+    };
   },
-};
+});
 </script>
+<style lang="scss" scoped>
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.login_wrapper {
+  height: 100vh;
+  background: linear-gradient(132deg, #fffcfc, #9fb4f8);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  color: #606266;
 
-<template>
-  <Layout>
-    <div class="row justify-content-center">
-      <div class="col-md-8 col-lg-6 col-xl-5">
-        <div class="card overflow-hidden">
-          <div class="bg-soft bg-primary">
-            <div class="row">
-              <div class="col-7">
-                <div class="text-primary p-4">
-                  <img src="@/assets/images/logo.png" class="img-fluid" />
-                </div>
-              </div>
-              <div class="col-5 align-self-end">
-                <img
-                  src="@/assets/images/profile-img.png"
-                  alt
-                  class="img-fluid"
-                />
-              </div>
-            </div>
-          </div>
+  .wrapper {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 8px 15px rgb(0 0 0 / 45%);
+    animation: fadeIn 0.5s ease-in-out;
+    min-width: 500px;
+    min-height: 500px;
+    margin-top: 8%;
 
-          <div class="card-body pt-0">
-            <span class="w-100 px-2 pt-2 d-block text-end"
-              >v.{{ version }}</span
-            >
-            <!-- <div>
-              <router-link to="/">
-                <div class="avatar-md profile-user-wid mb-4">
-                  <span class="avatar-title rounded-circle bg-light">
-                    <img src="@/assets/images/logo.svg" alt height="34" />
-                  </span>
-                </div>
-              </router-link>
-            </div> -->
-            <b-alert
-              v-model="isAuthError"
-              variant="danger"
-              class="mt-3"
-              dismissible
-              >{{ authError }}</b-alert
-            >
-            <!-- <div
-              v-if="notification.message"
-              :class="'alert ' + notification.type"
-            >
-              {{ notification.message }}
-            </div> -->
+    &_login-form {
+      width: 100%;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
 
-            <b-form class="p-2" @submit.prevent="tryToLogIn">
-              <b-form-group
-                class="mb-3"
-                id="input-group-1"
-                label="帳號"
-                label-for="input-1"
-              >
-                <b-form-input
-                  id="input-1"
-                  v-model="loginName"
-                  type="text"
-                  placeholder="請輸入登入帳號"
-                  :class="{
-                    'is-invalid': submitted && v$.loginName.$error,
-                  }"
-                ></b-form-input>
-                <div
-                  v-for="(item, index) in v$.loginName.$errors"
-                  :key="index"
-                  class="invalid-feedback"
-                >
-                  <span v-if="item.$message">{{ item.$message }}</span>
-                </div>
-              </b-form-group>
+      h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+        color: #333;
+        font-weight: bold;
+      }
 
-              <b-form-group
-                class="mb-3"
-                id="input-group-2"
-                label="密碼"
-                label-for="input-2"
-              >
-                <b-form-input
-                  id="input-2"
-                  v-model="password"
-                  type="password"
-                  placeholder="請輸入登入密碼"
-                  :class="{
-                    'is-invalid': submitted && v$.password.$error,
-                  }"
-                ></b-form-input>
-                <div
-                  v-if="submitted && v$.password.$error"
-                  class="invalid-feedback"
-                >
-                  <span v-if="v$.password.required.$message">{{
-                    v$.password.required.$message
-                  }}</span>
-                </div>
-              </b-form-group>
-              <b-form-checkbox
-                class="form-check me-2 mt-0"
-                id="customControlInline"
-                name="checkbox-1"
-                value="accepted"
-                unchecked-value="not_accepted"
-                v-model="rememberMe"
-                @change="handleClickRemember"
-                >記住帳號
-              </b-form-checkbox>
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #556ee6;
+        height: 120px;
+        border-radius: 10px 10px 0 0;
+      }
 
-              <div class="mt-3 d-grid">
-                <b-button type="submit" variant="primary" class="btn-block"
-                  >登入</b-button
-                >
-              </div>
-            </b-form>
-          </div>
-          <!-- end card-body -->
-        </div>
-        <!-- end card -->
+      .login-form {
+        padding: 1rem 2rem;
 
-        <div class="mt-5 text-center">
-          <p>
-            © {{ new Date().getFullYear() }} 鉅生物流有限公司
-            <i class="mdi mdi-heart text-danger"></i> ERP
-          </p>
-        </div>
-        <!-- end row -->
-      </div>
-      <!-- end col -->
-    </div>
-    <!-- end row -->
-  </Layout>
-</template>
+        .version {
+          text-align: end;
+          width: 100%;
+          display: block;
+          margin-bottom: 10px;
+        }
+
+        form {
+          .input-group {
+            margin-bottom: 1rem;
+          }
+
+          .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+          }
+
+          .input-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px !important;
+            transition: border 0.3s;
+          }
+
+          .input-group input:focus {
+            border-color: #4458b8;
+            outline: none;
+          }
+
+          .remember-me {
+            margin-bottom: 1rem;
+            color: #606266;
+          }
+
+          button {
+            width: 100%;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background: #556ee6;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+          }
+
+          button:hover {
+            background: #4458b8;
+          }
+        }
+      }
+    }
+  }
+
+  .copyright {
+    position: absolute;
+    bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+    color: #606266;
+  }
+
+  :deep(.ant-input) {
+    height: 32px;
+    font-size: 16px;
+    color: #606266;
+  }
+
+  :deep(.ant-form-item-label label) {
+    color: #606266;
+  }
+}
+</style>

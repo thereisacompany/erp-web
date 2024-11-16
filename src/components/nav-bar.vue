@@ -119,7 +119,7 @@ export default {
                 src="@/assets/images/logo.png"
                 alt
                 height="46"
-                style="width: 90%"
+                style="width: 95%"
               />
             </span>
           </router-link>
@@ -133,7 +133,7 @@ export default {
                 src="@/assets/images/logo.png"
                 alt
                 height="46"
-                style="width: 90%"
+                style="width: 95%"
               />
             </span>
           </router-link>

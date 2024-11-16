@@ -1,5 +1,6 @@
 
 import { server } from "@/api";
+import { message } from "ant-design-vue";
 
 // 用戶列表
 export function getUserList(currentPage, pageSize, params) {
@@ -73,5 +74,24 @@ export function resetUserPassword(data) {
     })
     .catch(() => {
       return false;
+    });
+}
+
+// 登入
+export function userLogin(data) {
+  const url = `/user/login`;
+  return server
+    .post(url, data)
+    .then((res) => {
+      if (res.data.code === 200 && res.data.data.msgTip === 'user can login') {
+        return res.data.data
+      } else {
+        console.log('error form login')
+        message.error('登入失敗')
+      }
+    })
+    .catch((error) => {
+      console.log('error form login api', error)
+      message.error('登入失敗:' + error)
     });
 }
