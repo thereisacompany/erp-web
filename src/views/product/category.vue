@@ -5,13 +5,13 @@
       <template #actions>
         <!-- actions -->
         <div class="actions d-flex justify-content-end mb-2">
-          <b-button
-            class="px-2 py-0 d-flex align-items-center"
-            :class="`actions__add`"
+          <a-button
+            type="primary"
+            class="custom-button-primary"
             @click="openCategoryModal('add', null)"
           >
-            <i class="mdi mdi-plus fs-3 me-2"></i>
-            <span class="me-2">新增類別</span></b-button
+            <i class="mdi mdi-plus fs-3"></i>
+            <span class="">新增類別</span></a-button
           >
         </div>
       </template>

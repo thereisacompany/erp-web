@@ -1,0 +1,48 @@
+/** @format */
+@mixin button {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.vxe-pager--wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.custom-button {
+  &-primary {
+    @include button;
+    background-color: #556ee6;
+    border: transparent;
+    color: #fff !important;
+
+    &:hover {
+      background-color: #4457b5 !important;
+    }
+  }
+
+  &-import {
+    @include button;
+    background-color: #16a085;
+    border: transparent;
+    color: #fff !important;
+
+    &:hover {
+      background-color: #168771 !important;
+    }
+  }
+
+  &-gray {
+    @include button;
+    background-color: #e7e7e7;
+    border: transparent;
+    color: #000 !important;
+
+    &:hover {
+      background-color: #b9b9b9 !important;
+    }
+  }
+}

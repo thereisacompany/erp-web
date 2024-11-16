@@ -1,13 +1,13 @@
 <template>
   <div style="width: auto">
-    <button
-      type="button"
-      class="btn btn-primary btn-rounded mb-2 me-2 upload-button d-flex align-items-center gap-1"
+    <a-button
+      type="primary"
+      class="custom-button-import"
       @click="handleOpenFile"
     >
       <upload-outlined></upload-outlined>
-      {{ name }}
-    </button>
+      <span class="">{{ name }}</span></a-button
+    >
     <input
       ref="importFile"
       type="file"

@@ -4,27 +4,45 @@
       <template #actions>
         <!-- actions -->
         <div class="actions d-flex justify-content-end mb-2">
-          <b-button
+          <a-button
             v-for="btn in buttonList"
             :key="btn"
-            class="px-2 py-0 d-flex align-items-center"
-            :class="`actions__${btn.type}`"
+            type="primary"
+            class="custom-button-primary"
             @click="clickActions(btn.type, null)"
           >
             <i :class="btn.iconClass"></i>
-            <span class="me-2">{{ btn.name }}</span></b-button
+            <span class="me-2">{{ btn.name }}</span></a-button
           >
         </div>
       </template>
     </PageHeader>
 
     <!-- Filter -->
-    <Filter
-      :formState="formState"
-      :filterValue="filterValue"
-      @search="handleSearch"
-      @reset="handleReset"
-    />
+    <Filter v-if="formState" @search="handleSearch" @reset="handleReset">
+      <template #form>
+        <a-form
+          ref="formRef"
+          name="filter"
+          class="filter-form"
+          :model="formState"
+          style="width: 80%"
+        >
+          <a-row style="gap: 10px">
+            <template v-for="item in formState" :key="item.key">
+              <a-col :span="10">
+                <a-form-item :name="item.name" :label="item.name">
+                  <a-input
+                    v-model:value="filterValue[item.key]"
+                    placeholder="請輸入"
+                    @keyup.enter="handleSearch"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+            </template> </a-row
+        ></a-form>
+      </template>
+    </Filter>
 
     <div class="role py-4 px-5">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
@@ -271,19 +289,21 @@ export default defineComponent({
     }
 
     // 篩選器
-    function handleSearch(formData) {
+    function handleSearch() {
       loading.value = true;
       const params = {
         name:
-          formData.name && formData.name !== undefined ? formData.name : null,
+          filterValue.name && filterValue.name !== undefined
+            ? filterValue.name
+            : null,
         description:
-          formData.description && formData.description !== undefined
-            ? formData.description
+          filterValue.description && filterValue.description !== undefined
+            ? filterValue.description
             : null,
       };
+      console.log("params", params);
 
       const filterParams = filterNullValues(params);
-
       if (Object.keys(filterParams).length !== 0) {
         searchParams.value = JSON.stringify(filterParams);
       } else {
@@ -297,7 +317,7 @@ export default defineComponent({
     function handleReset() {
       filterValue.name = "";
       filterValue.description = "";
-      handleSearch(filterValue);
+      handleSearch();
     }
 
     // 按鈕動作
@@ -406,6 +426,7 @@ export default defineComponent({
       reload,
       fetchData,
       indicator,
+      // formValues,
     };
   },
 });

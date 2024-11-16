@@ -5,24 +5,41 @@
       <template #actions>
         <!-- actions -->
         <div class="actions d-flex justify-content-end mb-2">
-          <b-button
-            class="px-2 py-0 d-flex align-items-center"
-            :class="`actions__add`"
+          <a-button
+            type="primary"
+            class="custom-button-primary"
             @click="handleClickAddUser"
           >
-            <i class="mdi mdi-plus fs-3 me-2"></i>
-            <span class="me-2">新增用戶</span></b-button
+            <i class="mdi mdi-plus fs-3"></i>
+            <span class="">新增用戶</span></a-button
           >
         </div>
       </template>
     </PageHeader>
     <!-- Filter -->
-    <Filter
-      :formState="formState"
-      :filterValue="filterValue"
-      @search="handleSearch"
-      @reset="handleReset"
-    />
+    <Filter @search="handleSearch" @reset="handleReset" v-if="formState">
+      <template #form>
+        <a-form
+          ref="formRef"
+          name="filter"
+          class="filter-form"
+          :model="formState"
+          style="width: 80%"
+        >
+          <a-row style="gap: 10px">
+            <template v-for="item in formState" :key="item.key">
+              <a-col :span="10">
+                <a-form-item :name="item.name" :label="item.name">
+                  <a-input
+                    v-model:value="filterValue[item.key]"
+                    placeholder="請輸入"
+                    @keyup.enter="handleSearch"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+            </template> </a-row
+        ></a-form> </template
+    ></Filter>
     <!-- User Data List -->
     <div class="user py-4 px-5">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
@@ -157,15 +174,15 @@ export default defineComponent({
     }
 
     // 篩選器查詢
-    function handleSearch(formData) {
+    function handleSearch() {
       const params = {
         loginName:
-          formData.loginName && formData.loginName !== undefined
-            ? formData.loginName
+          filterValue.loginName && filterValue.loginName !== undefined
+            ? filterValue.loginName
             : null,
         userName:
-          formData.userName && formData.userName !== undefined
-            ? formData.userName
+          filterValue.userName && filterValue.userName !== undefined
+            ? filterValue.userName
             : null,
       };
       const filterParams = filterNullValues(params);
@@ -181,7 +198,7 @@ export default defineComponent({
     function handleReset() {
       filterValue.loginName = "";
       filterValue.userName = "";
-      handleSearch(filterValue);
+      handleSearch();
     }
 
     // 新增用戶

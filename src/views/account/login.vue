@@ -1,5 +1,5 @@
 <template>
-  <div class="login_wrapper">
+  <div class="login__wrapper">
     <div class="wrapper">
       <div class="wrapper_login-form">
         <div class="header">
@@ -182,7 +182,7 @@ export default defineComponent({
     transform: translateY(0);
   }
 }
-.login_wrapper {
+.login__wrapper {
   height: 100vh;
   background: linear-gradient(132deg, #fffcfc, #9fb4f8);
   display: flex;

@@ -17,53 +17,28 @@
             <span>篩選器</span>
           </div>
         </template>
-        <a-form
-          ref="formRef"
-          name="filter"
-          class="filter-form"
-          :model="formState"
-        >
-          <a-row :gutter="{ xs: 8, sm: 16, md: 24 }">
-            <template v-for="item in formState" :key="item.key">
-              <a-col :span="8">
-                <a-form-item :name="item.name" :label="item.name">
-                  <a-input
-                    v-model:value="formValues[item.key]"
-                    placeholder="請輸入"
-                    @keyup.enter="handleSearch"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-            </template>
-            <a-col :span="8">
-              <button
-                type="button"
-                class="btn btn-primary me-2"
-                @click="handleSearch"
-              >
-                查詢
-              </button>
-              <button type="button" class="btn btn-light" @click="handleReset">
-                重置
-              </button>
-            </a-col>
-          </a-row></a-form
-        >
+        <slot name="form" />
+        <div class="filter-buttons">
+          <a-button class="custom-button-primary" @click="handleSearch">
+            查詢
+          </a-button>
+
+          <a-button class="custom-button-gray" @click="handleReset">
+            重置
+          </a-button>
+        </div>
       </a-collapse-panel>
     </a-collapse>
   </div>
 </template>
 <script>
-import { defineComponent, reactive, ref, watch } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import "vxe-table/lib/style.css";
 import { UpOutlined, SearchOutlined } from "@ant-design/icons-vue";
 // Modal
-import { Form, Row, Col, Collapse } from "ant-design-vue";
+import { Collapse } from "ant-design-vue";
 export default defineComponent({
   components: {
-    AForm: Form,
-    ARow: Row,
-    ACol: Col,
     ACollapse: Collapse,
     ACollapsePanel: Collapse.Panel,
     UpOutlined,
@@ -81,24 +56,13 @@ export default defineComponent({
 
     // 查詢
     function handleSearch() {
-      emit("search", formValues);
+      emit("search");
     }
 
     // 重置
     function handleReset() {
-      Object.keys(formValues).forEach((key) => {
-        formValues[key] = ""; // 清空輸入框
-      });
       emit("reset");
     }
-
-    // 當父層傳入的 filterValue 改變時，更新 formValues
-    watch(
-      () => props.filterValue,
-      (newVal) => {
-        Object.assign(formValues, newVal);
-      }
-    );
 
     return {
       activeKey,
@@ -109,3 +73,18 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+:deep(.ant-collapse-content-box) {
+  display: flex;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.custom-button-primary {
+  margin: 0;
+}
+</style>
