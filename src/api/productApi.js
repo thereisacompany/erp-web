@@ -1,6 +1,6 @@
 import { server } from "@/api";
 import { message } from "ant-design-vue";
-
+import { filterNullValues } from "@/utils/common";
 // 產品類別
 export function getCategoryList() {
   let url = `/materialCategory/getMaterialCategoryTree?id=`;
@@ -64,6 +64,23 @@ export function deleteCategory(id) {
       return res
     } else {
       message.warning('請先將子類別刪除')
+    }
+  })
+}
+
+// 商品列表
+export function getProductsList(currentPage, pageSize, data) {
+  let url = `/material/list?currentPage=${currentPage}&pageSize=${pageSize}`;
+
+  // 過濾為空的篩選參數
+  const params = filterNullValues(data)
+  if (Object.keys(params).length !== 0) {
+    url += `&search=${encodeURIComponent(params)}`
+  }
+
+  return server.get(url).then((res) => {
+    if (res.status === 200 && res.data.data.message === '成功') {
+      return res.data.data
     }
   })
 }

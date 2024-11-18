@@ -22,7 +22,7 @@
         </div>
       </template>
     </PageHeader>
-
+    filterValue/{{ filterValue }}
     <!-- Filter -->
     <Filter v-if="formState" @search="handleSearch" @reset="handleReset">
       <template #form>
@@ -34,20 +34,44 @@
           style="width: 80%"
         >
           <a-row style="gap: 10px">
-            <a-col :span="10">
-              <a-form-item label="全部類別" name="allCategory">
+            <a-col :span="7" v-for="item in formState" :key="item.key">
+              <a-form-item :label="item.label" :name="item.key">
+                <!-- 全部類別 -->
+                <a-tree-select
+                  v-if="item.key == 'allCategory'"
+                  v-model:value="filterValue[item.key]"
+                  show-search
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                  placeholder="請選擇"
+                  allow-clear
+                  tree-default-expand-all
+                  :tree-data="allCategoryOptions"
+                  tree-node-filter-prop="title"
+                  @change="handleSearch"
+                >
+                </a-tree-select>
+                <!-- 全部客戶 -->
                 <a-select
+                  v-else-if="item.key == 'allCustomer'"
                   ref="select"
-                  v-model:value="value"
-                  style="width: 120px"
-                  :options="options"
-                  :field-names="{
-                    label: 'name',
+                  v-model:value="filterValue[item.key]"
+                  style="width: 100%"
+                  placeholder="請選擇"
+                  :options="allCustomerOptions"
+                  :fieldNames="{
+                    label: 'supplier',
                     value: 'id',
-                    options: 'children',
                   }"
-                  @change="handleChange"
+                  @change="handleSearch"
                 ></a-select>
+                <!-- 關鍵字 -->
+                <a-input
+                  v-else
+                  v-model:value="filterValue[item.key]"
+                  placeholder="請輸入關鍵字(名稱/規格/型號)"
+                  @keyup.enter="handleSearch"
+                ></a-input>
               </a-form-item>
             </a-col> </a-row
         ></a-form>
@@ -55,7 +79,7 @@
     </Filter>
 
     <!-- Product List -->
-    <div class="product-management__wrapper py-5 px-5">
+    <div class="product-management__wrapper px-1 py-3">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
@@ -66,23 +90,16 @@
           </p> -->
 
           <vxe-table
-            border="inner"
+            border="full"
             ref="tableRef"
             :column-config="{ resizable: true }"
-            :tree-config="{
-              transform: true,
-              rowField: 'id',
-              parentField: 'parentId',
-            }"
             :data="tableData"
           >
-            <vxe-column
-              type="seq"
-              width="15%"
-              title="#"
-              align="center"
-              tree-node
-            ></vxe-column>
+            <vxe-column type="seq" width="5%" title="#" tree-node>
+              <template #default="{ rowIndex }">
+                {{ (currentPage - 1) * pageSize + rowIndex + 1 }}
+              </template>
+            </vxe-column>
             <vxe-column
               v-for="column in tableColumn"
               :key="column"
@@ -90,8 +107,18 @@
               :title="column.title"
               :width="column.width"
             >
-              <template #default="{ row }" v-if="column.field == 'action'">
-                <div class="table__action d-flex align-items-center gap-2">
+              <template #default="{ column, row }">
+                <div
+                  v-if="column.field == 'enabled'"
+                  class="table__action d-flex flex-column align-items-center gap-2"
+                >
+                  <a-tag v-if="row.enabled" color="green">啟用</a-tag>
+                  <a-tag v-else color="red">停用</a-tag>
+                </div>
+                <div
+                  v-else-if="column.field == 'action'"
+                  class="table__action d-flex flex-column align-items-center gap-2"
+                >
                   <button
                     type="button"
                     class="btn btn-success"
@@ -107,6 +134,7 @@
                     刪除
                   </button>
                 </div>
+                <span v-else>{{ row[column.field] }}</span>
               </template>
             </vxe-column>
           </vxe-table>
@@ -114,7 +142,7 @@
             v-model:currentPage="currentPage"
             v-model:pageSize="pageSize"
             :total="total"
-            @page-change="fetchData()"
+            @page-change="fetchData"
           >
           </vxe-pager>
         </div>
@@ -131,46 +159,49 @@ import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import ImportFile from "@/components/importFile.vue";
-
+import { productsTableColumn } from "./component/data";
 // Modal
-import { Modal } from "ant-design-vue";
+import { Modal, TreeSelect, Tag } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import CategoryModal from "./component/categoryModal.vue";
-import {
-  getCategoryList,
-  flattenData,
-  deleteCategory,
-} from "@/api/productApi.js";
+import { getCategoryList, getProductsList } from "@/api/productApi.js";
+import { getAllCustomerList } from "@/api/companyInfoApi.js";
+
 export default defineComponent({
   components: {
     Layout,
     PageHeader,
     CategoryModal,
     ImportFile,
+    ATreeSelect: TreeSelect,
+    ATag: Tag,
   },
   setup() {
     // filter
-    const filterValue = reactive({ loginName: undefined, userName: undefined });
+    const filterValue = reactive({
+      allCategory: null,
+      allCustomer: null,
+      keyword: null,
+    });
     const formState = reactive([
       {
-        name: "角色名稱",
-        key: "name",
+        label: "全部類別",
+        key: "allCategory",
       },
       {
-        name: "備註",
-        key: "description",
+        label: "全部客戶",
+        key: "allCustomer",
+      },
+      {
+        label: "關鍵字",
+        key: "keyword",
       },
     ]);
+    const allCategoryOptions = ref([]);
+    const allCustomerOptions = ref([]);
     // table
     const tableRef = ref(null);
-    const tableColumn = reactive([
-      { field: "title", title: "類別名稱", width: "60%" },
-      {
-        field: "action",
-        title: "操作",
-        width: "25%",
-      },
-    ]);
+    const tableColumn = reactive(productsTableColumn);
     const tableData = ref([]);
     const currentPage = ref(1);
     const pageSize = ref(10);
@@ -180,13 +211,34 @@ export default defineComponent({
     const modalRef = ref(null);
 
     // table data
-    function fetchData() {
-      getCategoryList().then((result) => {
-        console.log("fetchData", result);
-        total.value = result.length;
-        tableData.value = flattenData(result);
-        loading.value = false;
+    async function fetchData() {
+      // 全部類別 下拉選單
+      await getCategoryList().then((result) => {
+        allCategoryOptions.value = result;
       });
+
+      // 全部客戶 下拉選單
+      const customerParams = {
+        currentPage: 1,
+        pageSize: 1000,
+        type: '{"type":"客戶"}',
+      };
+      await getAllCustomerList(customerParams).then((result) => {
+        allCustomerOptions.value = result;
+      });
+      console.log("currentPage", currentPage.value);
+      console.log("pageSize", pageSize.value);
+      // 商品列表
+      await getProductsList(
+        currentPage.value,
+        pageSize.value,
+        filterValue
+      ).then((result) => {
+        console.log("result", result);
+        tableData.value = result.rows;
+        total.value = result.total;
+      });
+      loading.value = false;
     }
 
     // 刷新table資料
@@ -211,11 +263,7 @@ export default defineComponent({
           { class: "reset-password d-flex flex-column" },
           `請確認是否要刪除類別：${rowData.title}`
         ),
-        async onOk() {
-          await deleteCategory(rowData.id).then(() => {
-            fetchData();
-          });
-        },
+        async onOk() {},
       });
     }
 
@@ -238,6 +286,9 @@ export default defineComponent({
       handleDeleteCategory,
       filterValue,
       formState,
+      allCategoryOptions,
+      allCustomerOptions,
+      fetchData,
     };
   },
 });
@@ -268,5 +319,9 @@ export default defineComponent({
 :deep(.vxe-pager .vxe-pager--wrapper) {
   text-align: center;
   margin-top: 18px;
+}
+
+:deep(.vxe-table--render-default .vxe-tree-cell) {
+  padding: 0;
 }
 </style>

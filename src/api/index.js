@@ -34,14 +34,13 @@ server.interceptors.response.use(function (response) {
     // 可以在這裡拿到 response error 做處理
     //console.log(error);
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
-    const errorMessage = error.response.data;
-    alert('API錯誤:' + errorMessage)
+    // const errorMessage = error.response.data;
+    // alert('API錯誤:' + errorMessage)
     //console.log(errorMessage);
-    if (errorMessage == "loginOut") {
-        localStorage.removeItem("user");
-        localStorage.removeItem("user_authList")
-        window.location.reload()
-    }
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("user_authList")
+    window.location.reload()
     return Promise.reject(error);
 });
 
