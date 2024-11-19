@@ -1,6 +1,5 @@
 import { server } from "@/api";
 import { message } from "ant-design-vue";
-import { filterNullValues } from "@/utils/common";
 // 產品類別
 export function getCategoryList() {
   let url = `/materialCategory/getMaterialCategoryTree?id=`;
@@ -72,10 +71,18 @@ export function deleteCategory(id) {
 export function getProductsList(currentPage, pageSize, data) {
   let url = `/material/list?currentPage=${currentPage}&pageSize=${pageSize}`;
 
-  // 過濾為空的篩選參數
-  const params = filterNullValues(data)
+  // 篩選參數字串處理
+  const filterArray = Object.entries(data)
+  let params = {}
+  filterArray.forEach((item) => {
+    if (item[1] !== null) {
+      params[`${item[0]}`] = `${item[1]}`
+    }
+  })
+
   if (Object.keys(params).length !== 0) {
-    url += `&search=${encodeURIComponent(params)}`
+    url += `&search=${encodeURIComponent(`${JSON.stringify(params)}`)}`
+
   }
 
   return server.get(url).then((res) => {

@@ -22,23 +22,23 @@
         </div>
       </template>
     </PageHeader>
-    filterValue/{{ filterValue }}
+
     <!-- Filter -->
-    <Filter v-if="formState" @search="handleSearch" @reset="handleReset">
+    <Filter v-if="formState" @search="fetchData" @reset="handleReset">
       <template #form>
         <a-form
           ref="formRef"
           name="filter"
           class="filter-form"
           :model="formState"
-          style="width: 80%"
+          style="width: 70%"
         >
-          <a-row style="gap: 10px">
+          <a-row style="gap: 20px">
             <a-col :span="7" v-for="item in formState" :key="item.key">
               <a-form-item :label="item.label" :name="item.key">
                 <!-- 全部類別 -->
                 <a-tree-select
-                  v-if="item.key == 'allCategory'"
+                  v-if="item.key == 'categoryId'"
                   v-model:value="filterValue[item.key]"
                   show-search
                   style="width: 100%"
@@ -48,12 +48,12 @@
                   tree-default-expand-all
                   :tree-data="allCategoryOptions"
                   tree-node-filter-prop="title"
-                  @change="handleSearch"
+                  @change="fetchData"
                 >
                 </a-tree-select>
                 <!-- 全部客戶 -->
                 <a-select
-                  v-else-if="item.key == 'allCustomer'"
+                  v-else-if="item.key == 'organId'"
                   ref="select"
                   v-model:value="filterValue[item.key]"
                   style="width: 100%"
@@ -63,14 +63,14 @@
                     label: 'supplier',
                     value: 'id',
                   }"
-                  @change="handleSearch"
+                  @change="fetchData"
                 ></a-select>
                 <!-- 關鍵字 -->
                 <a-input
                   v-else
                   v-model:value="filterValue[item.key]"
-                  placeholder="請輸入關鍵字(名稱/規格/型號)"
-                  @keyup.enter="handleSearch"
+                  placeholder="關鍵字(名稱/規格/型號)"
+                  @keyup.enter="fetchData"
                 ></a-input>
               </a-form-item>
             </a-col> </a-row
@@ -160,6 +160,7 @@ import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import ImportFile from "@/components/importFile.vue";
 import { productsTableColumn } from "./component/data";
+import { filterNullValues } from "@/utils/common";
 // Modal
 import { Modal, TreeSelect, Tag } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
@@ -179,22 +180,22 @@ export default defineComponent({
   setup() {
     // filter
     const filterValue = reactive({
-      allCategory: null,
-      allCustomer: null,
-      keyword: null,
+      categoryId: null,
+      organId: null,
+      materialParam: null,
     });
     const formState = reactive([
       {
         label: "全部類別",
-        key: "allCategory",
+        key: "categoryId",
       },
       {
         label: "全部客戶",
-        key: "allCustomer",
+        key: "organId",
       },
       {
         label: "關鍵字",
-        key: "keyword",
+        key: "materialParam",
       },
     ]);
     const allCategoryOptions = ref([]);
@@ -226,19 +227,31 @@ export default defineComponent({
       await getAllCustomerList(customerParams).then((result) => {
         allCustomerOptions.value = result;
       });
-      console.log("currentPage", currentPage.value);
-      console.log("pageSize", pageSize.value);
+
+      // 若有篩選值，將currentPage改為第一頁
+      const filterParams = filterNullValues(filterValue);
+      if (Object.keys(filterParams).length !== 0) {
+        currentPage.value = 1;
+      }
       // 商品列表
       await getProductsList(
         currentPage.value,
         pageSize.value,
-        filterValue
+        filterParams
       ).then((result) => {
-        console.log("result", result);
+        console.log("商品列表", result);
         tableData.value = result.rows;
         total.value = result.total;
       });
       loading.value = false;
+    }
+
+    // 重置篩選欄位
+    function handleReset() {
+      filterValue.categoryId = null;
+      filterValue.organId = null;
+      filterValue.materialParam = null;
+      fetchData();
     }
 
     // 刷新table資料
@@ -289,6 +302,7 @@ export default defineComponent({
       allCategoryOptions,
       allCustomerOptions,
       fetchData,
+      handleReset,
     };
   },
 });

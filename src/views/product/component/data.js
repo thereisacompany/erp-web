@@ -13,12 +13,12 @@ export const productsTableColumn = [
   {
     field: "standard",
     title: "規格",
-    width: "6%",
+    width: "5%",
   },
   {
     field: "model",
     title: "型號",
-    width: "8%",
+    width: "10%",
   },
   {
     field: "length",
@@ -43,7 +43,7 @@ export const productsTableColumn = [
   {
     field: "categoryName",
     title: "類別",
-    width: "8%",
+    width: "6%",
   },
   {
     field: "counter",
