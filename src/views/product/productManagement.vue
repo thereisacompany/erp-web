@@ -50,7 +50,7 @@ export default {
         number: "",
         barcode: "",
         counter: "",
-        organId: "",
+        organId: undefined,
       },
       modelInfo: {
         title: "",
@@ -87,6 +87,9 @@ export default {
     formData: {
       name: {
         required: helpers.withMessage("請輸入品名", required),
+      },
+      organId: {
+        required: helpers.withMessage("請選擇客戶", required),
       },
     },
   },
@@ -606,7 +609,9 @@ export default {
                     type="text"
                     v-model="formData.name"
                     class="form-control"
-                    :class="{ 'is-invalid': submitted && v$.formData.$error }"
+                    :class="{
+                      'is-invalid': submitted && v$.formData.name.$error,
+                    }"
                   />
                   <div
                     v-if="submitted && v$.formData.name.$error"
@@ -760,10 +765,12 @@ export default {
                     class="form-select"
                     v-model="formData.organId"
                     :disabled="modelInfo.type == 'edit'"
+                    :class="{
+                      'is-invalid': submitted && v$.formData.organId.$error,
+                    }"
                   >
                     <option
                       :value="u1.id"
-                      selected
                       v-for="u1 in supplierlist"
                       :key="'formData_organId' + u1.id"
                       :disabled="!u1.enabled"
@@ -771,6 +778,15 @@ export default {
                       {{ u1.idname }}
                     </option>
                   </select>
+
+                  <div
+                    v-if="submitted && v$.formData.organId.$error"
+                    class="invalid-feedback"
+                  >
+                    <span v-if="v$.formData.organId.required.$message">{{
+                      v$.formData.organId.required.$message
+                    }}</span>
+                  </div>
                 </div>
 
                 <div class="col-sm-12 col-md-4 col-lg-3">

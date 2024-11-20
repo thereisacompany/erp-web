@@ -1,9 +1,13 @@
 <script>
+import { createVNode } from "vue";
 import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
+import JSZip from "jszip";
+import axios from "axios";
+import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 
 import { server } from "@/api";
 import common from "@/api/common";
@@ -16,6 +20,7 @@ import {
   Button,
   Select,
   SelectOption,
+  message,
 } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
@@ -1659,10 +1664,10 @@ export default {
           } else {
             // console.log("res", res)
             if (res != null && res.data != null) {
-              // console.log(123123)
+              console.log("res.data", res.data);
               var fileURL = window.URL.createObjectURL(
                 new Blob([res.data], {
-                  type: "application/octet-stream",
+                  type: res.data.type,
                 })
               );
               // console.log("fileURL", fileURL);
@@ -1670,7 +1675,7 @@ export default {
               fileLink.href = fileURL;
               fileLink.download = `${dayjs().format(
                 "YYYYMMDDHHmmss"
-              )}配送單-揀貨總表.xlsx`;
+              )}配送單-揀貨總表`;
               // fileLink.setAttribute(
               //   "download",
               //   `批次匯出揀貨單_${dayjs().format("YYYYMMDD_HHmmss")}.xlsx`
@@ -1708,41 +1713,39 @@ export default {
         item.operNumber = item.stock;
       }
     },
-    downloadAllFiles(fileList) {
-      fileList.forEach((url) => {
-        // const fileUrl = this.GetAccessFile1(url);
-        // console.log("fileUrl", fileUrl);
-        this.downloadFile(url);
-      });
+    // 全部下載
+    async downloadAllFiles(fileList) {
+      const zip = new JSZip();
+
+      try {
+        // 依次處理每個文件 URL
+        for (let i = 0; i < fileList.length; i++) {
+          const url = fileList[i];
+          const response = await axios.get(url, {
+            responseType: "blob", // 以 Blob 格式獲取文件數據
+          });
+
+          // 將文件加入到 ZIP 中
+          const filename = url.split("/").pop(); // 從 URL 中提取文件名
+          zip.file(filename, response.data);
+        }
+
+        // 生成 ZIP 文件並下載
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const downloadUrl = URL.createObjectURL(zipBlob);
+        const fileName = `${this.customers.defaultNumber}附件`;
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = fileName || "files.zip";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.error("下載 ZIP 檔案失敗：", error);
+      }
     },
-    // 下載文件的方法
-    // 下載文件的方法
-    downloadFile(url) {
-      fetch(url)
-        .then((response) => {
-          // 检查响应是否成功
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.blob(); // 将响应转换为 Blob
-        })
-        .then((blob) => {
-          const fileURL = window.URL.createObjectURL(blob);
-          const fileLink = document.createElement("a");
-          fileLink.href = fileURL;
-          fileLink.setAttribute("download", `${url.split("/").pop()}`); // 获取文件名
-          document.body.appendChild(fileLink);
-          fileLink.click();
-          fileLink.remove(); // 清理 DOM
-          window.URL.revokeObjectURL(fileURL); // 释放对象 URL
-        })
-        .catch((error) => {
-          console.error(
-            "There has been a problem with your fetch operation:",
-            error
-          );
-        });
-    },
+
     // 直接跳轉至司機派單及回報
     directToDriverTab(number, id) {
       this.EditShow({ number, id });
@@ -1766,6 +1769,35 @@ export default {
           (subId) => subId !== item.subId
         );
       }
+    },
+    // 作廢
+    async handleSetInvalid(id) {
+      Modal.confirm({
+        title: "請確認",
+        icon: createVNode(ExclamationCircleOutlined),
+        content: createVNode(
+          "span",
+          { style: "" },
+          `是否要作廢單號： ${this.customers.defaultNumber}`
+        ),
+        okText: "確認",
+        cancelText: "取消",
+        onOk: async () => {
+          const apiUrl = `/depotHead/setInvalid/${id}`;
+          try {
+            const result = await server.post(apiUrl);
+            console.log("handleSetInvalid result", result);
+            if (result.data.code == 200 && result.data.data.message == "成功") {
+              message.success("作廢成功");
+              this.SubView = 0;
+              this.selectedTab = 0;
+              this.GetData();
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        },
+      });
     },
   },
 };
@@ -3310,11 +3342,17 @@ export default {
         >
         <a
           href="#"
+          class="btn btn-danger"
+          @click="handleSetInvalid(customers.id)"
+          v-if="SubView == 2 && driver.status != 7"
+          >作廢</a
+        >
+        <a
+          href="#"
           class="btn btn-secondary"
           @click="
             SubView = 0;
             selectedTab = 0;
-
             GetData();
           "
           v-if="SubView != 0"
