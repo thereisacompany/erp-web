@@ -1207,9 +1207,9 @@ export default {
                 </div>
               </div>
               <div class="row my-3">
-                <!-- <div
+                <div
                   class="col-sm-12 d-flex align-items-center"
-                  v-if="SubView == 1 || SubView == 2"
+                  v-if="SubView == 1"
                 >
                   <b-button
                     variant="light"
@@ -1232,9 +1232,10 @@ export default {
                     multiple
                     v-on:change="handleFileUpload()"
                   />
-                </div> -->
-                <div class="col-sm-12 mt-1">
-                  <label for="name" v-if="SubView == 3">上傳檔案</label>
+                </div>
+                <div class="col-sm-12 mt-1" v-if="SubView == 3">
+                  <label for="name">上傳檔案</label>
+                  <div v-if="filelist.length == 0">目前無檔案</div>
                   <div
                     v-for="(f1, fidx) in filelist"
                     :key="'file-' + fidx"
