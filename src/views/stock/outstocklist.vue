@@ -1485,46 +1485,52 @@ export default {
           return;
         });
     },
-    ExcelIn() {
-      let file1 = this.$refs.fileexcelin.files[0];
-
-      let APIUrl = `depotHead/importExcel`;
-
-      if (file1.size > this.MaxFileSize) {
-        return;
-      }
-      const formData = new FormData();
-      //formData.append('biz', "biz");
-      formData.append("file", file1);
-      server
-        .post(APIUrl, formData)
-        .then((res) => {
-          console.log("res", res);
-          if (res != null && res.data != null && res.data.code == 200) {
-            //let jshdata = res.data;
-            let dataMsg = res.data.data;
-            console.log("dataMsg", dataMsg);
-            //console.log(jshdata.data)
-            //callback(jshdata.data)
-            // {    "code": 200,
-            // "data": "匯入成功, 匯入失敗列數:\nExcel文件第1列->此筆資料重覆匯入(客單編號:20231025, 原始編號:1)\nExcel文件第2列->此筆資料重覆匯入(客單編號:20231025-1, 原始編號:2)\nExcel文件第3列->發單日未填寫\n"}
-            alert(common.replaceAll(dataMsg, "'", ""));
-
-            setTimeout(() => {
-              this.GetData();
-            }, 3000);
-          } else if (res != null && res.data != null && res.data.code != 200) {
-            console.log("else if file", res.data.data);
-            alert(res.data.data);
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-          alert(error);
-          //callback(null)
-          return;
-        });
+    // 匯入成功
+    importSuccess() {
+      setTimeout(() => {
+        this.GetData();
+      }, 3000);
     },
+    // ExcelIn() {
+    //   let file1 = this.$refs.fileexcelin.files[0];
+
+    //   let APIUrl = `depotHead/importExcel`;
+
+    //   if (file1.size > this.MaxFileSize) {
+    //     return;
+    //   }
+    //   const formData = new FormData();
+    //   //formData.append('biz', "biz");
+    //   formData.append("file", file1);
+    //   server
+    //     .post(APIUrl, formData)
+    //     .then((res) => {
+    //       console.log("res", res);
+    //       if (res != null && res.data != null && res.data.code == 200) {
+    //         //let jshdata = res.data;
+    //         let dataMsg = res.data.data;
+    //         console.log("dataMsg", dataMsg);
+    //         //console.log(jshdata.data)
+    //         //callback(jshdata.data)
+    //         // {    "code": 200,
+    //         // "data": "匯入成功, 匯入失敗列數:\nExcel文件第1列->此筆資料重覆匯入(客單編號:20231025, 原始編號:1)\nExcel文件第2列->此筆資料重覆匯入(客單編號:20231025-1, 原始編號:2)\nExcel文件第3列->發單日未填寫\n"}
+    //         alert(common.replaceAll(dataMsg, "'", ""));
+
+    //         setTimeout(() => {
+    //           this.GetData();
+    //         }, 3000);
+    //       } else if (res != null && res.data != null && res.data.code != 200) {
+    //         console.log("else if file", res.data.data);
+    //         alert(res.data.data);
+    //       }
+    //     })
+    //     .catch(function (error) {
+    //       console.log("error", error);
+    //       alert(error);
+    //       //callback(null)
+    //       return;
+    //     });
+    // },
     handleFileUpload: function () {
       for (let i = 0; i < this.$refs.file2.files.length; i++) {
         //this.filelist.push(this.$refs.file2.files[i]);
@@ -2049,7 +2055,7 @@ export default {
                   <ImportFile
                     :buttonName="'匯入配送單'"
                     :apiLink="'depotHead/importExcel'"
-                    @importSuccess="setData"
+                    @importSuccess="importSuccess"
                     class="import-delivery"
                   />
 
@@ -2063,7 +2069,7 @@ export default {
                   <ImportFile
                     :buttonName="'匯入門市取貨派送'"
                     :apiLink="'depotHead/importPickupExcel'"
-                    @importSuccess="setData"
+                    @importSuccess="importSuccess"
                     class="import-pickup"
                   />
                   <button

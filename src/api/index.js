@@ -32,10 +32,10 @@ server.interceptors.response.use(function (response) {
 }, function (error) {
     // 回傳的 status code 不在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response error 做處理
-    //console.log(error);
+    console.log('api錯誤', error);
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
     const errorMessage = error.response.data;
-    alert('API錯誤:' + errorMessage)
+    // alert('API錯誤:' + errorMessage)
     //console.log(errorMessage);
     if (errorMessage == "loginOut") {
         localStorage.removeItem("user");
