@@ -75,3 +75,26 @@ export function resetUserPassword(data) {
       return false;
     });
 }
+
+// 登出
+export function fetchLoginOut() {
+  let url = `/user/logout`;
+  console.log('登出')
+  return server
+    .get(url)
+    .then((res) => {
+      if (res.status === 200) {
+        alert('登出成功')
+        localStorage.removeItem("user");
+        localStorage.removeItem("user_authList");
+        window.location = '/login'
+        return
+      } else {
+        console.log("error from fetch data != 200");
+      }
+    })
+    .catch(function (error) {
+      console.log("error from fetch data", error);
+      return;
+    });
+}
