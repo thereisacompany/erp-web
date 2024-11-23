@@ -207,12 +207,12 @@ const routes = [
 		path: '/logout',
 		name: 'logout',
 		component: Logout,
-		meta: {
-			beforeResolve(routeTo, routeFrom, next) {
-				store.dispatch('auth/logOut');
-				next(routeFrom);
-			}, authRequired: true
-		},
+		// meta: {
+		// 	beforeResolve(routeTo, routeFrom, next) {
+		// 		store.dispatch('auth/logOut');
+		// 		next(routeFrom);
+		// 	}, authRequired: true
+		// },
 	},
 	// 404 頁面
 	{

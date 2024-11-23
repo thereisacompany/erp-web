@@ -6,7 +6,7 @@ const server = axios.create({
 
 server.interceptors.request.use(function (config) {
     // 在送出 request 之前可以在這裡攔截處理
-    //console.log(config)
+
 
     let user = localStorage.getItem('user')
     if (user) {
@@ -15,7 +15,7 @@ server.interceptors.request.use(function (config) {
             config.headers['X-Access-Token'] = token // 讓每個請求攜帶自定義 token 請根據實際情況自行修改
         }
     }
-
+    console.log('config', config)
     return config;
 }, function (error) {
     // 如果 request 出現 error
@@ -32,15 +32,14 @@ server.interceptors.response.use(function (response) {
 }, function (error) {
     // 回傳的 status code 不在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response error 做處理
-    //console.log(error);
+    console.log('api錯誤', error);
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
-    // const errorMessage = error.response.data;
+    const errorMessage = error.response.data;
     // alert('API錯誤:' + errorMessage)
     //console.log(errorMessage);
-
-    localStorage.removeItem("user");
-    localStorage.removeItem("user_authList")
-    window.location.reload()
+    if (errorMessage == "loginOut") {
+        window.location = '/logout'
+    }
     return Promise.reject(error);
 });
 

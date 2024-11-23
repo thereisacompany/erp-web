@@ -61,6 +61,7 @@ export default {
               console.log("dataMsg", dataMsg);
 
               alert(common.replaceAll(dataMsg, "'", ""));
+
               emit("importSuccess");
               event.target.value = "";
             } else if (
@@ -68,13 +69,13 @@ export default {
               res.data != null &&
               res.data.code != 200
             ) {
-              console.log("else if file api", res.data.data);
-              alert(res.data.data);
+              console.log("匯入失敗", res.data.data);
+              alert(common.replaceAll(res.data.data, "'", ""));
               event.target.value = "";
             }
           })
           .catch(function (error) {
-            console.log("error", error);
+            console.log("匯入失敗 error", error);
             alert(error);
             //callback(null)
             return;
