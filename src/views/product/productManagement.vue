@@ -117,22 +117,24 @@
                 </div>
                 <div
                   v-else-if="column.field == 'action'"
-                  class="table__action d-flex flex-column align-items-center gap-2"
+                  class="table__action d-flex flex-row align-items-center gap-2"
                 >
-                  <button
+                  <a-button
                     type="button"
-                    class="btn btn-success"
-                    @click="openCategoryModal('edit', row.id)"
+                    class="btn btn-success d-flex flex-row align-items-center"
+                    value="small"
+                    @click="openCategoryModal('edit', row)"
                   >
                     編輯
-                  </button>
-                  <button
+                  </a-button>
+                  <a-button
                     type="button"
-                    class="btn btn-danger"
+                    class="btn btn-danger d-flex flex-row align-items-center"
+                    value="small"
                     @click="handleDeleteCategory(row)"
                   >
                     刪除
-                  </button>
+                  </a-button>
                 </div>
                 <span v-else>{{ row[column.field] }}</span>
               </template>
@@ -148,7 +150,7 @@
         </div>
 
         <!-- Modals -->
-        <CategoryModal ref="modalRef" @reload="reload" />
+        <ProductModal ref="modalRef" @reload="reload" />
       </div>
     </div>
   </Layout>
@@ -164,7 +166,7 @@ import { filterNullValues } from "@/utils/common";
 // Modal
 import { Modal, TreeSelect, Tag } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
-import CategoryModal from "./component/categoryModal.vue";
+import ProductModal from "./component/productModal.vue";
 import { getCategoryList, getProductsList } from "@/api/productApi.js";
 import { getAllCustomerList } from "@/api/companyInfoApi.js";
 
@@ -172,7 +174,7 @@ export default defineComponent({
   components: {
     Layout,
     PageHeader,
-    CategoryModal,
+    ProductModal,
     ImportFile,
     ATreeSelect: TreeSelect,
     ATag: Tag,
@@ -233,6 +235,7 @@ export default defineComponent({
       if (Object.keys(filterParams).length !== 0) {
         currentPage.value = 1;
       }
+
       // 商品列表
       await getProductsList(
         currentPage.value,
@@ -243,6 +246,7 @@ export default defineComponent({
         tableData.value = result.rows;
         total.value = result.total;
       });
+
       loading.value = false;
     }
 
@@ -256,12 +260,13 @@ export default defineComponent({
 
     // 刷新table資料
     function reload() {
+      loading.value = true;
       fetchData();
     }
 
     // 開啟modal
-    function openCategoryModal(type, id) {
-      modalRef.value.openModal(type, id);
+    function openCategoryModal(type, data) {
+      modalRef.value.openModal(type, data);
     }
 
     // 刪除類別

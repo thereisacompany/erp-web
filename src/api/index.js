@@ -15,7 +15,7 @@ server.interceptors.request.use(function (config) {
             config.headers['X-Access-Token'] = token // 讓每個請求攜帶自定義 token 請根據實際情況自行修改
         }
     }
-    console.log('config', config)
+    // console.log('config', config)
     return config;
 }, function (error) {
     // 如果 request 出現 error

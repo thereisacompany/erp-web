@@ -142,12 +142,9 @@ export default defineComponent({
     }
 
     function resetForm() {
-      formData.loginName = null;
-      formData.username = null;
-      formData.roleId = null;
-      formData.position = null;
-      formData.description = null;
-      formData.phonenum = null;
+      Object.keys(formData).forEach((key) => {
+        formData[key] = null;
+      });
     }
 
     // 保存

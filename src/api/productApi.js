@@ -91,3 +91,24 @@ export function getProductsList(currentPage, pageSize, data) {
     }
   })
 }
+
+// 新增商品
+export function addNewProduct(params) {
+  let url = `/material/add`;
+  return server.post(url, params).then((res) => {
+    if (res.status === 200) {
+      console.log('res', res)
+      return res
+    }
+  })
+}
+
+// 編輯商品
+export function editProduct(params) {
+  let url = `/material/update`;
+  return server.put(url, params).then((res) => {
+    if (res.status === 200) {
+      return res
+    }
+  })
+}
