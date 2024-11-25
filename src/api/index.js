@@ -1,13 +1,12 @@
 import axios from 'axios';
 import common from "@/api/common.js";
 const server = axios.create({
-    baseURL: import.meta.env.VITE_APP_API_URL //http://jslerp.ddns.net:9999/jshERP-boot/
+    baseURL: import.meta.env.VITE_APP_API_URL, //http://jslerp.ddns.net:9999/jshERP-boot/
+    timeout: 3000,
 });
 
 server.interceptors.request.use(function (config) {
     // 在送出 request 之前可以在這裡攔截處理
-
-
     let user = localStorage.getItem('user')
     if (user) {
         let token = JSON.parse(user).token
@@ -15,12 +14,15 @@ server.interceptors.request.use(function (config) {
             config.headers['X-Access-Token'] = token // 讓每個請求攜帶自定義 token 請根據實際情況自行修改
         }
     }
-    console.log('config', config)
+    console.log('Base URL:', import.meta.env.VITE_APP_API_URL);
+    console.log('完整請求 URL:', config.baseURL + config.url);
+
     return config;
 }, function (error) {
     // 如果 request 出現 error
     // 可以在這裡攔截處理
-    console.log(error)
+    console.error('Request Error:', error.message); // 簡要錯誤資訊
+    console.error('Error Config:', error.config);
     return Promise.reject(error);
 });
 
@@ -32,7 +34,9 @@ server.interceptors.response.use(function (response) {
 }, function (error) {
     // 回傳的 status code 不在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response error 做處理
-    console.log('api錯誤', error);
+    console.error('API 呼叫錯誤:', error.response);
+
+    console.error('完整的錯誤物件:', error); // Axios 錯誤物件
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
     const errorMessage = error.response.data;
     // alert('API錯誤:' + errorMessage)
@@ -40,6 +44,7 @@ server.interceptors.response.use(function (response) {
     if (errorMessage == "loginOut") {
         window.location = '/logout'
     }
+    console.log('response error', error)
     return Promise.reject(error);
 });
 
@@ -234,4 +239,5 @@ server.GetLog = function (wObj, callback) {
         });
 
 }
+
 export { server };
