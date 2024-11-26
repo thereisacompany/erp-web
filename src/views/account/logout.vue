@@ -1,8 +1,9 @@
 <script>
-import router from "@/router/index";
+import { fetchLoginOut } from "@/api/systemApi";
 export default {
-  created() {
-    router.push("/login");
+  async created() {
+    console.log("/logout");
+    await fetchLoginOut();
   },
 };
 </script>
