@@ -2,7 +2,7 @@
 <template>
   <a-modal
     v-model:open="open"
-    :title="type == 'add' ? '新增商品' : '編輯商品'"
+    :title="type == 'add' ? '新增客戶' : '編輯客戶'"
     centered
     @ok="handleOk"
     @cancel="closeModal"

@@ -1,23 +1,23 @@
-<!-- 商品管理新版, 改寫完成 -->
+<!-- 客戶管理新版, 改寫中 -->
 <template>
   <Layout>
-    <PageHeader title="商品管理">
+    <PageHeader title="客戶管理">
       <template #actions>
         <!-- actions -->
         <div class="actions d-flex justify-content-end">
           <ImportFile
-            :buttonName="'匯入商品列表'"
-            :apiLink="'/material/importExcel'"
+            :buttonName="'匯入客戶列表'"
+            :apiLink="'/supplier/importCustomer'"
             @importSuccess="setData"
           />
 
           <a-button
             type="primary"
             class="custom-button-primary"
-            @click="openProductModal('add', null)"
+            @click="openCustomerModal('add', null)"
           >
             <i class="mdi mdi-plus fs-3"></i>
-            <span class="">新增商品</span></a-button
+            <span class="">新增客戶</span></a-button
           >
         </div>
       </template>
@@ -36,42 +36,10 @@
           <a-row style="gap: 20px">
             <a-col :span="7" v-for="item in formState" :key="item.key">
               <a-form-item :label="item.label" :name="item.key">
-                <!-- 全部類別 -->
-                <a-tree-select
-                  v-if="item.key == 'categoryId'"
-                  v-model:value="filterValue[item.key]"
-                  show-search
-                  style="width: 100%"
-                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                  placeholder="請選擇"
-                  allow-clear
-                  tree-default-expand-all
-                  :tree-data="allCategoryOptions"
-                  tree-node-filter-prop="title"
-                  @change="fetchData"
-                >
-                </a-tree-select>
-                <!-- 全部客戶 -->
-                <a-select
-                  v-else-if="item.key == 'organId'"
-                  ref="select"
-                  v-model:value="filterValue[item.key]"
-                  style="width: 100%"
-                  placeholder="請選擇"
-                  :options="allCustomerOptions"
-                  :fieldNames="{
-                    label: 'supplier',
-                    value: 'id',
-                  }"
-                  show-search
-                  option-filter-prop="supplier"
-                  @change="fetchData"
-                ></a-select>
                 <!-- 關鍵字 -->
                 <a-input
-                  v-else
                   v-model:value="filterValue[item.key]"
-                  placeholder="關鍵字(名稱/規格/型號)"
+                  placeholder="請輸入"
                   @keyup.enter="fetchData"
                 ></a-input>
               </a-form-item>
@@ -80,17 +48,12 @@
       </template>
     </Filter>
 
-    <!-- Product List -->
-    <div class="product-management__wrapper px-1 py-3">
+    <!-- Customer List -->
+    <div class="customer-management__wrapper px-1 py-3">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="category__table">
-          <!-- <p>
-            <vxe-button @click="expandAllEvent">展开所有</vxe-button>
-            <vxe-button @click="claseExpandEvent">关闭所有</vxe-button>
-          </p> -->
-
           <vxe-table
             border="full"
             ref="tableRef"
@@ -126,18 +89,18 @@
                     type="button"
                     class="btn btn-success d-flex flex-row align-items-center"
                     value="small"
-                    @click="openProductModal('edit', row)"
+                    @click="openCustomerModal('edit', row)"
                   >
                     編輯
                   </a-button>
-                  <a-button
+                  <!-- <a-button
                     type="button"
                     class="btn btn-danger d-flex flex-row align-items-center"
                     value="small"
                     @click="handleDeleteProduct(row)"
                   >
                     刪除
-                  </a-button>
+                  </a-button> -->
                 </div>
                 <span v-else>{{ row[column.field] }}</span>
               </template>
@@ -154,7 +117,7 @@
       </div>
     </div>
     <!-- Modals -->
-    <ProductModal ref="modalRef" @reload="reload" />
+    <CustomerModal ref="modalRef" @reload="reload" />
   </Layout>
 </template>
 <script>
@@ -168,7 +131,7 @@ import { filterNullValues } from "@/utils/common";
 // Modal
 import { Modal, TreeSelect, Tag, message } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
-import ProductModal from "./component/productModal.vue";
+import CustomerModal from "./component/customerModal.vue";
 import { getProductsList, deleteProduct } from "@/api/productApi.js";
 import { useProductStore } from "@/stores/useProductStore";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
@@ -177,7 +140,7 @@ export default defineComponent({
   components: {
     Layout,
     PageHeader,
-    ProductModal,
+    CustomerModal,
     ImportFile,
     ATreeSelect: TreeSelect,
     ATag: Tag,
@@ -185,22 +148,22 @@ export default defineComponent({
   setup() {
     // filter
     const filterValue = reactive({
-      categoryId: null,
-      organId: null,
-      materialParam: null,
+      supplier: null,
+      telephone: null,
+      phoneNum: null,
     });
     const formState = reactive([
       {
-        label: "全部類別",
-        key: "categoryId",
+        label: "客戶名稱",
+        key: "supplier",
       },
       {
-        label: "全部客戶",
-        key: "organId",
+        label: "手機號碼",
+        key: "telephone",
       },
       {
-        label: "關鍵字",
-        key: "materialParam",
+        label: "聯絡電話",
+        key: "phoneNum",
       },
     ]);
     const allCategoryOptions = ref([]);
@@ -261,7 +224,7 @@ export default defineComponent({
     }
 
     // 開啟modal
-    function openProductModal(type, data) {
+    function openCustomerModal(type, data) {
       modalRef.value.openModal(type, data);
     }
 
@@ -302,7 +265,7 @@ export default defineComponent({
       modalRef,
       tableRef,
       tableColumn,
-      openProductModal,
+      openCustomerModal,
       loading,
       reload,
       handleDeleteProduct,
@@ -321,7 +284,7 @@ export default defineComponent({
   gap: 10px;
 }
 
-.product-management__wrapper {
+.customer-management__wrapper {
   border-radius: 8px;
   background-color: #fff;
 

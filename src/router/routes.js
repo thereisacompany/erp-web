@@ -1,6 +1,7 @@
 import store from '@/state/store';
 import Home from '@/views/home/home.vue';
-import CustomerList from '@/views/user/customerList.vue';
+// import CustomerList from '@/views/user/customerList.vue';
+import CustomerList from '@/views/companyInfo/customerManagement.vue';
 import DriverList from '@/views/user/driverList.vue';
 import Vehicle from '@/views/stock/vehicleList.vue';
 import ProductManagement from '@/views/product/productManagement.vue';
