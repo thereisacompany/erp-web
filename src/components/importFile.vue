@@ -32,7 +32,7 @@ export default {
     buttonName: String,
     apiLink: String,
   },
-  emits: ["importSuccess"],
+  emits: ["importSuccess", "loading"],
   setup(props, { emit }) {
     const importFile = ref(null);
     // 按鈕名稱
@@ -40,11 +40,11 @@ export default {
 
     function handleOpenFile() {
       importFile.value.click();
-      console.log("handleOpenFile");
     }
 
     // 上傳檔案
     async function handleUpload(event) {
+      emit("loading");
       let fileList = importFile.value.files[0];
       const formData = new FormData();
       formData.append("file", fileList);
@@ -62,7 +62,6 @@ export default {
 
               alert(common.replaceAll(dataMsg, "'", ""));
 
-              emit("importSuccess");
               event.target.value = "";
             } else if (
               res != null &&
@@ -80,6 +79,8 @@ export default {
             //callback(null)
             return;
           });
+
+        emit("importSuccess");
       } catch (error) {
         console.log("error", error);
       }

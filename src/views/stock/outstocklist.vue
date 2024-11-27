@@ -1,5 +1,5 @@
 <script>
-import { createVNode } from "vue";
+import { createVNode, h } from "vue";
 import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
@@ -21,6 +21,7 @@ import {
   Select,
   SelectOption,
   message,
+  Spin,
 } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
@@ -29,6 +30,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 // import "./style.css";
 import { Navigation } from "swiper/modules";
+import { LoadingOutlined } from "@ant-design/icons-vue";
 
 /**
  * Customers component
@@ -51,6 +53,7 @@ export default {
     ASelectOption: SelectOption,
     Swiper,
     SwiperSlide,
+    ASpin: Spin,
   },
   data() {
     return {
@@ -200,6 +203,15 @@ export default {
         { value: 6, name: "配送異常" },
         { value: 7, name: "作廢" },
       ],
+      indicator: h(LoadingOutlined, {
+        style: {
+          fontSize: "54px",
+          marginBottom: "15px",
+        },
+        spin: true,
+      }),
+      loading: true,
+      loadingTip: "載入中...",
     };
   },
   computed: {
@@ -252,6 +264,7 @@ export default {
     },
   },
   mounted() {
+    this.loading = true;
     this.$nextTick(() => {
       this.setData();
     });
@@ -303,6 +316,7 @@ export default {
       // this.GetCounterList();//儲位別
       this.GetMaxFileSize();
       this.GetData();
+      this.loading = false;
     },
     GetDriverDay(iStatus) {
       if (this.driver == null || this.driver.deliveryStatusList == null)
@@ -1407,6 +1421,8 @@ export default {
               this.directToDriverTab(number, id);
             }
           }, 100);
+
+          this.loading = false;
         })
         .catch(function (error) {
           console.log("error", error);
@@ -2056,6 +2072,10 @@ export default {
                     :buttonName="'匯入配送單'"
                     :apiLink="'depotHead/importExcel'"
                     @importSuccess="importSuccess"
+                    @loading="
+                      loading = true;
+                      loadingTip = '匯入中...';
+                    "
                     class="import-delivery"
                   />
 
@@ -2070,6 +2090,10 @@ export default {
                     :buttonName="'匯入門市取貨派送'"
                     :apiLink="'depotHead/importPickupExcel'"
                     @importSuccess="importSuccess"
+                    @loading="
+                      loading = true;
+                      loadingTip = '匯入中...';
+                    "
                     class="import-pickup"
                   />
                   <button
@@ -2112,8 +2136,13 @@ export default {
               </div>
               <!-- end col-->
             </div>
+
             <div class="table-responsive">
-              <table class="table table-centered table-nowrap align-middle">
+              <a-spin :indicator="indicator" v-if="loading" :tip="loadingTip" />
+              <table
+                class="table table-centered table-nowrap align-middle"
+                v-else
+              >
                 <thead>
                   <tr>
                     <th width="5px">
@@ -2385,7 +2414,13 @@ export default {
                   </div>
                   <div class="row py-1">
                     <div class="col-sm-12">
-                      <div class="table-responsive detail-table">
+                      <a-spin :indicator="indicator" v-if="loading" />
+
+                      <div
+                        class="table-responsive detail-table"
+                        tip="載入中..."
+                        v-else
+                      >
                         <table
                           class="table table-centered table-bordered table-nowrap align-middle"
                         >
@@ -3556,5 +3591,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+:deep(.ant-spin) {
+  width: 100%;
+  margin: 50px 0;
 }
 </style>
