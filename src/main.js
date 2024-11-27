@@ -1,4 +1,6 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia';
+
 import App from '@/App.vue'
 import router from "@/router";
 import BootstrapVue3 from 'bootstrap-vue-3';
@@ -32,6 +34,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_APPId,
   measurementId: import.meta.env.VITE_APP_MEASUREMENTID
 };
+const pinia = createPinia();
 
 if (import.meta.env.VITE_APP_DEFAULT_AUTH === "firebase") {
   initFirebaseBackend(firebaseConfig);
@@ -59,4 +62,5 @@ createApp(App)
   .use(Table)
   .use(Column)
   .use(Antd)
+  .use(pinia)
   .mount('#app')

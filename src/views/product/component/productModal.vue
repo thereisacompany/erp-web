@@ -45,6 +45,8 @@
                 label: 'supplier',
                 value: 'id',
               }"
+              option-filter-prop="supplier"
+              show-search
             >
             </a-select>
             <a-tree-select
@@ -97,13 +99,10 @@ import {
   message,
 } from "ant-design-vue";
 import { filterNullToEmptyString, assignFilteredKeys } from "@/utils/common";
-import {
-  getCategoryList,
-  editProduct,
-  addNewProduct,
-} from "@/api/productApi.js";
-import { getAllCustomerList } from "@/api/companyInfoApi.js";
+import { useProductStore } from "@/stores/useProductStore";
+import { editProduct, addNewProduct } from "@/api/productApi.js";
 import { productFormItem } from "./data";
+import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
 export default defineComponent({
   components: {
@@ -154,6 +153,9 @@ export default defineComponent({
     ]);
     const allCategoryOptions = ref([]);
     const allCustomerOptions = ref([]);
+    // store
+    const productStore = useProductStore();
+    const companyInfoStore = useCompanyInfoStore();
 
     // 開啟modal
     async function openModal(modalType, rowData) {
@@ -183,7 +185,6 @@ export default defineComponent({
     async function handleOk() {
       let result = {};
       const params = filterNullToEmptyString(formData);
-      console.log("params", params);
       // 新增類別
       if (type.value == "add") {
         params.id = null;
@@ -191,7 +192,6 @@ export default defineComponent({
       } else {
         result = await editProduct(params);
       }
-      console.log("result", result);
       if (result.data.code == 200 && result.data.data.message == "成功") {
         message.success(
           `成功${type.value == "add" ? "新增" : "編輯"}商品： ${params.name}`
@@ -217,9 +217,8 @@ export default defineComponent({
 
     onMounted(async () => {
       // 全部類別 下拉選單
-      await getCategoryList().then((result) => {
-        allCategoryOptions.value = result;
-      });
+      await productStore.fetchProductCategory();
+      allCategoryOptions.value = productStore.getProductCategoryList;
 
       // 全部客戶 下拉選單
       const customerParams = {
@@ -227,9 +226,12 @@ export default defineComponent({
         pageSize: 1000,
         type: '{"type":"客戶"}',
       };
-      await getAllCustomerList(customerParams).then((result) => {
-        allCustomerOptions.value = result;
-      });
+      await companyInfoStore.fetchAllCustomer(customerParams);
+      allCustomerOptions.value = companyInfoStore.getAllCustomerList;
+      // await getAllCustomerList(customerParams).then((result) => {
+      //   allCustomerOptions.value = result;
+      // });
+      console.log("onMounted");
     });
 
     return {

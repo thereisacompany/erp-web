@@ -592,25 +592,27 @@ export default {
                         <table
                           class="table table-centered table-nowrap align-middle subtable"
                         >
-                          <tr>
-                            <th class="text-center" width="40%">倉庫</th>
-                            <th class="text-center" width="30%">儲位</th>
-                            <th class="text-center" width="30%">
-                              數量
-                              <i
-                                class="bx bxs-hide"
-                                @click="SubItem.IsSubStock = 0"
-                              ></i>
-                            </th>
-                          </tr>
-                          <tr
-                            v-for="(ss1, ssidx) in SubItem.SubStockList"
-                            :key="'SubStockList' + ssidx"
-                          >
-                            <td class="text-center">{{ ss1.depotName }}</td>
-                            <td class="text-center">{{ ss1.counterName }}</td>
-                            <td class="text-center">{{ ss1.stock }}</td>
-                          </tr>
+                          <tbody>
+                            <tr>
+                              <th class="text-center" width="40%">倉庫</th>
+                              <th class="text-center" width="30%">儲位</th>
+                              <th class="text-center" width="30%">
+                                數量
+                                <i
+                                  class="bx bxs-hide"
+                                  @click="SubItem.IsSubStock = 0"
+                                ></i>
+                              </th>
+                            </tr>
+                            <tr
+                              v-for="(ss1, ssidx) in SubItem.SubStockList"
+                              :key="'SubStockList' + ssidx"
+                            >
+                              <td class="text-center">{{ ss1.depotName }}</td>
+                              <td class="text-center">{{ ss1.counterName }}</td>
+                              <td class="text-center">{{ ss1.stock }}</td>
+                            </tr>
+                          </tbody>
                         </table>
                       </td>
                     </tr>

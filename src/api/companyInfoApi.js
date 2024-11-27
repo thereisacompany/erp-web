@@ -1,5 +1,4 @@
 import { server } from "@/api";
-import { message } from "ant-design-vue";
 
 // 客戶列表
 export function getAllCustomerList(params) {

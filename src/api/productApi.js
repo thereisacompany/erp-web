@@ -112,3 +112,11 @@ export function editProduct(params) {
     }
   })
 }
+
+// 刪除商品
+export function deleteProduct(id) {
+  let url = `/material/delete?id=${id}`;
+  return server.delete(url).then((res) => {
+    return res
+  })
+}

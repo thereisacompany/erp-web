@@ -63,6 +63,8 @@
                     label: 'supplier',
                     value: 'id',
                   }"
+                  show-search
+                  option-filter-prop="supplier"
                   @change="fetchData"
                 ></a-select>
                 <!-- 關鍵字 -->
@@ -94,6 +96,7 @@
             ref="tableRef"
             :column-config="{ resizable: true }"
             :data="tableData"
+            align="center"
           >
             <vxe-column type="seq" width="5%" title="#" tree-node>
               <template #default="{ rowIndex }">
@@ -131,7 +134,7 @@
                     type="button"
                     class="btn btn-danger d-flex flex-row align-items-center"
                     value="small"
-                    @click="handleDeleteCategory(row)"
+                    @click="handleDeleteProduct(row)"
                   >
                     刪除
                   </a-button>
@@ -148,11 +151,10 @@
           >
           </vxe-pager>
         </div>
-
-        <!-- Modals -->
-        <ProductModal ref="modalRef" @reload="reload" />
       </div>
     </div>
+    <!-- Modals -->
+    <ProductModal ref="modalRef" @reload="reload" />
   </Layout>
 </template>
 <script>
@@ -164,11 +166,12 @@ import ImportFile from "@/components/importFile.vue";
 import { productsTableColumn } from "./component/data";
 import { filterNullValues } from "@/utils/common";
 // Modal
-import { Modal, TreeSelect, Tag } from "ant-design-vue";
+import { Modal, TreeSelect, Tag, message } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
 import ProductModal from "./component/productModal.vue";
-import { getCategoryList, getProductsList } from "@/api/productApi.js";
-import { getAllCustomerList } from "@/api/companyInfoApi.js";
+import { getProductsList, deleteProduct } from "@/api/productApi.js";
+import { useProductStore } from "@/stores/useProductStore";
+import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
 export default defineComponent({
   components: {
@@ -212,24 +215,18 @@ export default defineComponent({
     const loading = ref(false);
     // Modal
     const modalRef = ref(null);
+    // store
+    const productStore = useProductStore();
+    const companyInfoStore = useCompanyInfoStore();
 
     // table data
     async function fetchData() {
+      console.log("fetchData");
       // 全部類別 下拉選單
-      await getCategoryList().then((result) => {
-        allCategoryOptions.value = result;
-      });
-
+      allCategoryOptions.value = productStore.getProductCategoryList;
       // 全部客戶 下拉選單
-      const customerParams = {
-        currentPage: 1,
-        pageSize: 1000,
-        type: '{"type":"客戶"}',
-      };
-      await getAllCustomerList(customerParams).then((result) => {
-        allCustomerOptions.value = result;
-      });
-
+      allCustomerOptions.value = companyInfoStore.getAllCustomerList;
+      console.log("allCustomerOptions", allCustomerOptions.value);
       // 若有篩選值，將currentPage改為第一頁
       const filterParams = filterNullValues(filterValue);
       if (Object.keys(filterParams).length !== 0) {
@@ -242,7 +239,6 @@ export default defineComponent({
         pageSize.value,
         filterParams
       ).then((result) => {
-        console.log("商品列表", result);
         tableData.value = result.rows;
         total.value = result.total;
       });
@@ -270,24 +266,32 @@ export default defineComponent({
     }
 
     // 刪除類別
-    function handleDeleteCategory(rowData) {
+    function handleDeleteProduct(rowData) {
       Modal.confirm({
-        title: "刪除類別",
+        title: "刪除商品",
         okText: "確認",
         cancelText: "取消",
         icon: createVNode(ExclamationCircleOutlined),
         content: createVNode(
           "div",
           { class: "reset-password d-flex flex-column" },
-          `請確認是否要刪除類別：${rowData.title}`
+          `請確認是否要刪除商品：${rowData.name}`
         ),
-        async onOk() {},
+        async onOk() {
+          const result = await deleteProduct(rowData.id);
+          if (result.data.code === 200 && result.data.data.message == "成功") {
+            message.success(`刪除 ${rowData.name} 成功`);
+            reload();
+          }
+        },
       });
     }
 
     onMounted(() => {
       loading.value = true;
-      fetchData();
+      setTimeout(() => {
+        fetchData();
+      }, 500);
     });
 
     return {
@@ -301,7 +305,7 @@ export default defineComponent({
       openCategoryModal,
       loading,
       reload,
-      handleDeleteCategory,
+      handleDeleteProduct,
       filterValue,
       formState,
       allCategoryOptions,
