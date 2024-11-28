@@ -1380,7 +1380,7 @@ export default {
       // ) {
       //   this.currentPage = 1;
       // }
-      console.log("currentPage", this.currentPage);
+      // console.log("currentPage", this.currentPage);
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server
@@ -1394,7 +1394,7 @@ export default {
           ) {
             let jshdata = res.data.data;
             this.customersData = JSON.parse(JSON.stringify(jshdata.rows));
-            console.log("this.customersData", this.customersData);
+            // console.log("this.customersData", this.customersData);
             this.totalRows = JSON.parse(JSON.stringify(jshdata.total));
             this.maxPage =
               Math.ceil(this.totalRows / this.pageSize) == 0
@@ -1503,6 +1503,8 @@ export default {
     },
     // 匯入成功
     importSuccess() {
+      console.log("匯入成功");
+      this.loading = false;
       setTimeout(() => {
         this.GetData();
       }, 3000);

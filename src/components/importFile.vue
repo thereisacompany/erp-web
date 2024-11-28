@@ -55,32 +55,37 @@ export default {
         server
           .post(props.apiLink, formData)
           .then((res) => {
-            console.log("res", res);
+            // console.log("res", res);
+            emit("importSuccess");
             if (res != null && res.data != null && res.data.code == 200) {
               let dataMsg = res.data.data;
-              console.log("dataMsg", dataMsg);
-
-              alert(common.replaceAll(dataMsg, "'", ""));
-
+              // console.log("dataMsg", dataMsg);
               event.target.value = "";
+              setTimeout(() => {
+                alert(common.replaceAll(dataMsg, "'", ""));
+              }, 100);
             } else if (
               res != null &&
               res.data != null &&
               res.data.code != 200
             ) {
-              console.log("匯入失敗", res.data.data);
-              alert(common.replaceAll(res.data.data, "'", ""));
+              // console.log("匯入失敗", res.data.data);
               event.target.value = "";
+              setTimeout(() => {
+                alert(common.replaceAll(res.data.data, "'", ""));
+              }, 100);
             }
           })
           .catch(function (error) {
             console.log("匯入失敗 error", error);
-            alert(error);
+
+            setTimeout(() => {
+              alert(error);
+            }, 100);
+
             //callback(null)
             return;
           });
-
-        emit("importSuccess");
       } catch (error) {
         console.log("error", error);
       }
