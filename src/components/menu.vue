@@ -135,7 +135,7 @@ export default defineComponent({
           .post(url, params)
           .then((res) => {
             menuLists.value = res.data;
-            console.log("menuLists", menuLists.value);
+            // console.log("menuLists", menuLists.value);
             setData();
           })
           .catch((error) => {

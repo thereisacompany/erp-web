@@ -14,8 +14,8 @@ server.interceptors.request.use(function (config) {
             config.headers['X-Access-Token'] = token // 讓每個請求攜帶自定義 token 請根據實際情況自行修改
         }
     }
-    console.log('Base URL:', import.meta.env.VITE_APP_API_URL);
-    console.log('完整請求 URL:', config.baseURL + config.url);
+    // console.log('Base URL:', import.meta.env.VITE_APP_API_URL);
+    // console.log('完整請求 URL:', config.baseURL + config.url);
 
     return config;
 }, function (error) {
