@@ -212,6 +212,7 @@ export default {
       }),
       loading: true,
       loadingTip: "載入中...",
+      editStatus: false,
     };
   },
   computed: {
@@ -296,6 +297,17 @@ export default {
         if (newVal !== oldVal) {
           this.currentPage = 1;
           this.GetData();
+        }
+      },
+    },
+    // 監聽切換tab
+    selectedTab: {
+      handler(newVal, oldVal) {
+        if (newVal == 1 && this.editStatus) {
+          message.error("已編輯過欄位，請點擊保存再進行下一步");
+          this.$nextTick(() => {
+            this.selectedTab = oldVal; // 延遲回滾
+          });
         }
       },
     },
@@ -609,6 +621,8 @@ export default {
               alert(res.data.data.message);
               //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
             }
+
+            this.editStatus = false;
           }
           this.IsGetDataing = false;
         })
@@ -1482,18 +1496,21 @@ export default {
         .put(APIUrl, data1)
         .then((res) => {
           if (res != null && res.data != null) {
+            console.log("編輯api", res);
             if (res.data.code == 200) {
               this.showModal = false;
               this.$nextTick(() => {
                 this.SubView = 0;
                 this.GetData();
               });
+              alert("編輯成功！");
             } else {
               alert(res.data.data.message);
               //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
             }
           }
           this.IsGetDataing = false;
+          this.editStatus = false;
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1823,6 +1840,10 @@ export default {
         },
       });
     },
+    // 監聽欄位有變更
+    handleChengeItem(event) {
+      console.log("修改", event.target.value);
+    },
   },
 };
 </script>
@@ -1833,7 +1854,6 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
-
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
