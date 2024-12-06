@@ -1135,10 +1135,10 @@ export default {
         });
     },
 
-    GetDetailList(headerId) {
+    async GetDetailList(headerId) {
       ///jshERP-boot/depotItem/getDetailList?headerId=289&mpList=%E5%88%B6%E9%80%A0%E5%95%86,%E8%87%AA%E5%AE%9A%E4%B9%891,%E8%87%AA%E5%AE%9A%E4%B9%892,%E8%87%AA%E5%AE%9A%E4%B9%893&linkType=basic&isReadOnly=1
       let APIUrl = `/depotItem/getDetailList?headerId=${headerId}&mpList=3&linkType=basic&isReadOnly=1`;
-      server
+      await server
         .get(APIUrl)
         .then((res) => {
           if (res != null && res.data != null && res.status == 200) {
@@ -1148,6 +1148,8 @@ export default {
               this.customersItem[i].number = this.customersItem[i].MNumber;
             }
             this.customersItem.pop();
+
+            console.log("明細", this.customersItem);
           }
         })
         .catch(function (error) {
@@ -2438,7 +2440,6 @@ export default {
                   <div class="row py-1">
                     <div class="col-sm-12">
                       <a-spin :indicator="indicator" v-if="loading" />
-
                       <div
                         class="table-responsive detail-table"
                         tip="載入中..."
@@ -2493,7 +2494,7 @@ export default {
                                   </select>
                                 </div>
                                 <div v-else>
-                                  {{ customers.subType }}
+                                  {{ SubItem.depotName }}
                                 </div>
                               </td>
                               <td>
@@ -2538,7 +2539,7 @@ export default {
                                     </option>
                                   </datalist> -->
                                 </div>
-                                <div v-else>-</div>
+                                <div v-else>{{ SubItem.MNumber }}</div>
                               </td>
                               <td>
                                 <div v-if="IsPickup1">
