@@ -1833,6 +1833,7 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
+
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
@@ -3396,6 +3397,7 @@ export default {
           @click="
             SubView = 0;
             selectedTab = 0;
+            customers.id = '';
             GetData();
           "
           v-if="SubView != 0"
