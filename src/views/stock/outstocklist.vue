@@ -1833,7 +1833,7 @@ export default {
       :title="title + (SubView == 0 ? '列表' : '明細')"
       :items="items"
     />
-    this.customers.id/{{ this.customers.id }}
+
     <div class="row my-1" v-show="SubView == 0">
       <div class="col-12">
         <div class="card">
