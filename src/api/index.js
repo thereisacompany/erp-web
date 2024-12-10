@@ -2,7 +2,7 @@ import axios from 'axios';
 import common from "@/api/common.js";
 const server = axios.create({
     baseURL: import.meta.env.VITE_APP_API_URL, //http://jslerp.ddns.net:9999/jshERP-boot/
-    timeout: 3000,
+    timeout: 60000,
 });
 
 server.interceptors.request.use(function (config) {

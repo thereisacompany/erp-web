@@ -32,7 +32,7 @@ export default {
     buttonName: String,
     apiLink: String,
   },
-  emits: ["importSuccess"],
+  emits: ["importSuccess", "loading"],
   setup(props, { emit }) {
     const importFile = ref(null);
     // 按鈕名稱
@@ -40,11 +40,11 @@ export default {
 
     function handleOpenFile() {
       importFile.value.click();
-      console.log("handleOpenFile");
     }
 
     // 上傳檔案
     async function handleUpload(event) {
+      emit("loading");
       let fileList = importFile.value.files[0];
       const formData = new FormData();
       formData.append("file", fileList);
@@ -55,28 +55,34 @@ export default {
         server
           .post(props.apiLink, formData)
           .then((res) => {
-            console.log("res", res);
+            // console.log("res", res);
+            emit("importSuccess");
             if (res != null && res.data != null && res.data.code == 200) {
               let dataMsg = res.data.data;
-              console.log("dataMsg", dataMsg);
-
-              alert(common.replaceAll(dataMsg, "'", ""));
-
-              emit("importSuccess");
+              // console.log("dataMsg", dataMsg);
               event.target.value = "";
+              setTimeout(() => {
+                alert(common.replaceAll(dataMsg, "'", ""));
+              }, 100);
             } else if (
               res != null &&
               res.data != null &&
               res.data.code != 200
             ) {
-              console.log("匯入失敗", res.data.data);
-              alert(common.replaceAll(res.data.data, "'", ""));
+              // console.log("匯入失敗", res.data.data);
               event.target.value = "";
+              setTimeout(() => {
+                alert(common.replaceAll(res.data.data, "'", ""));
+              }, 100);
             }
           })
           .catch(function (error) {
             console.log("匯入失敗 error", error);
-            alert(error);
+
+            setTimeout(() => {
+              alert(error);
+            }, 100);
+
             //callback(null)
             return;
           });

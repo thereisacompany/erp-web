@@ -1,5 +1,5 @@
 <script>
-import { createVNode } from "vue";
+import { createVNode, h } from "vue";
 import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
@@ -21,6 +21,7 @@ import {
   Select,
   SelectOption,
   message,
+  Spin,
 } from "ant-design-vue";
 import ImportFile from "@/components/importFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
@@ -29,6 +30,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 // import "./style.css";
 import { Navigation } from "swiper/modules";
+import { LoadingOutlined } from "@ant-design/icons-vue";
 
 /**
  * Customers component
@@ -51,6 +53,7 @@ export default {
     ASelectOption: SelectOption,
     Swiper,
     SwiperSlide,
+    ASpin: Spin,
   },
   data() {
     return {
@@ -200,6 +203,16 @@ export default {
         { value: 6, name: "配送異常" },
         { value: 7, name: "作廢" },
       ],
+      indicator: h(LoadingOutlined, {
+        style: {
+          fontSize: "54px",
+          marginBottom: "15px",
+        },
+        spin: true,
+      }),
+      loading: true,
+      loadingTip: "載入中...",
+      editStatus: false,
     };
   },
   computed: {
@@ -252,6 +265,7 @@ export default {
     },
   },
   mounted() {
+    this.loading = true;
     this.$nextTick(() => {
       this.setData();
     });
@@ -286,6 +300,17 @@ export default {
         }
       },
     },
+    // 監聽切換tab
+    selectedTab: {
+      handler(newVal, oldVal) {
+        if (newVal == 1 && this.editStatus) {
+          message.error("已編輯過欄位，請點擊保存再進行下一步");
+          this.$nextTick(() => {
+            this.selectedTab = oldVal; // 延遲回滾
+          });
+        }
+      },
+    },
   },
   methods: {
     setData() {
@@ -303,6 +328,7 @@ export default {
       // this.GetCounterList();//儲位別
       this.GetMaxFileSize();
       this.GetData();
+      this.loading = false;
     },
     GetDriverDay(iStatus) {
       if (this.driver == null || this.driver.deliveryStatusList == null)
@@ -595,6 +621,8 @@ export default {
               alert(res.data.data.message);
               //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
             }
+
+            this.editStatus = false;
           }
           this.IsGetDataing = false;
         })
@@ -1107,10 +1135,10 @@ export default {
         });
     },
 
-    GetDetailList(headerId) {
+    async GetDetailList(headerId) {
       ///jshERP-boot/depotItem/getDetailList?headerId=289&mpList=%E5%88%B6%E9%80%A0%E5%95%86,%E8%87%AA%E5%AE%9A%E4%B9%891,%E8%87%AA%E5%AE%9A%E4%B9%892,%E8%87%AA%E5%AE%9A%E4%B9%893&linkType=basic&isReadOnly=1
       let APIUrl = `/depotItem/getDetailList?headerId=${headerId}&mpList=3&linkType=basic&isReadOnly=1`;
-      server
+      await server
         .get(APIUrl)
         .then((res) => {
           if (res != null && res.data != null && res.status == 200) {
@@ -1120,6 +1148,8 @@ export default {
               this.customersItem[i].number = this.customersItem[i].MNumber;
             }
             this.customersItem.pop();
+
+            console.log("明細", this.customersItem);
           }
         })
         .catch(function (error) {
@@ -1366,7 +1396,7 @@ export default {
       // ) {
       //   this.currentPage = 1;
       // }
-      console.log("currentPage", this.currentPage);
+      // console.log("currentPage", this.currentPage);
       let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}`;
       APIParameter += `&search=${encodeURIComponent(queryStr)}`;
       server
@@ -1380,7 +1410,7 @@ export default {
           ) {
             let jshdata = res.data.data;
             this.customersData = JSON.parse(JSON.stringify(jshdata.rows));
-            console.log("this.customersData", this.customersData);
+            // console.log("this.customersData", this.customersData);
             this.totalRows = JSON.parse(JSON.stringify(jshdata.total));
             this.maxPage =
               Math.ceil(this.totalRows / this.pageSize) == 0
@@ -1407,6 +1437,8 @@ export default {
               this.directToDriverTab(number, id);
             }
           }, 100);
+
+          this.loading = false;
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1466,18 +1498,21 @@ export default {
         .put(APIUrl, data1)
         .then((res) => {
           if (res != null && res.data != null) {
+            console.log("編輯api", res);
             if (res.data.code == 200) {
               this.showModal = false;
               this.$nextTick(() => {
                 this.SubView = 0;
                 this.GetData();
               });
+              alert("編輯成功！");
             } else {
               alert(res.data.data.message);
               //{"code":8000021,"data":{"message":"客單編號/原始客編重覆建立"}}
             }
           }
           this.IsGetDataing = false;
+          this.editStatus = false;
         })
         .catch(function (error) {
           console.log("error", error);
@@ -1487,6 +1522,8 @@ export default {
     },
     // 匯入成功
     importSuccess() {
+      console.log("匯入成功");
+      this.loading = false;
       setTimeout(() => {
         this.GetData();
       }, 3000);
@@ -1805,6 +1842,10 @@ export default {
         },
       });
     },
+    // 監聽欄位有變更
+    handleChengeItem(event) {
+      console.log("修改", event.target.value);
+    },
   },
 };
 </script>
@@ -2056,6 +2097,10 @@ export default {
                     :buttonName="'匯入配送單'"
                     :apiLink="'depotHead/importExcel'"
                     @importSuccess="importSuccess"
+                    @loading="
+                      loading = true;
+                      loadingTip = '匯入中...';
+                    "
                     class="import-delivery"
                   />
 
@@ -2070,6 +2115,10 @@ export default {
                     :buttonName="'匯入門市取貨派送'"
                     :apiLink="'depotHead/importPickupExcel'"
                     @importSuccess="importSuccess"
+                    @loading="
+                      loading = true;
+                      loadingTip = '匯入中...';
+                    "
                     class="import-pickup"
                   />
                   <button
@@ -2112,8 +2161,13 @@ export default {
               </div>
               <!-- end col-->
             </div>
+
             <div class="table-responsive">
-              <table class="table table-centered table-nowrap align-middle">
+              <a-spin :indicator="indicator" v-if="loading" :tip="loadingTip" />
+              <table
+                class="table table-centered table-nowrap align-middle"
+                v-else
+              >
                 <thead>
                   <tr>
                     <th width="5px">
@@ -2385,7 +2439,12 @@ export default {
                   </div>
                   <div class="row py-1">
                     <div class="col-sm-12">
-                      <div class="table-responsive detail-table">
+                      <a-spin :indicator="indicator" v-if="loading" />
+                      <div
+                        class="table-responsive detail-table"
+                        tip="載入中..."
+                        v-else
+                      >
                         <table
                           class="table table-centered table-bordered table-nowrap align-middle"
                         >
@@ -2435,7 +2494,7 @@ export default {
                                   </select>
                                 </div>
                                 <div v-else>
-                                  {{ customers.subType }}
+                                  {{ SubItem.depotName }}
                                 </div>
                               </td>
                               <td>
@@ -2480,7 +2539,7 @@ export default {
                                     </option>
                                   </datalist> -->
                                 </div>
-                                <div v-else>-</div>
+                                <div v-else>{{ SubItem.MNumber }}</div>
                               </td>
                               <td>
                                 <div v-if="IsPickup1">
@@ -3359,6 +3418,7 @@ export default {
           @click="
             SubView = 0;
             selectedTab = 0;
+            customers.id = '';
             GetData();
           "
           v-if="SubView != 0"
@@ -3556,5 +3616,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+:deep(.ant-spin) {
+  width: 100%;
+  margin: 50px 0;
 }
 </style>
