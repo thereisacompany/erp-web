@@ -8,7 +8,7 @@
           <ImportFile
             :buttonName="'匯入客戶列表'"
             :apiLink="'/supplier/importCustomer'"
-            @importSuccess="setData"
+            @importSuccess="reload"
           />
 
           <a-button
@@ -49,17 +49,18 @@
     </Filter>
 
     <!-- Customer List -->
-    <div class="customer-management__wrapper px-1 py-3">
+    <div class="customer-management__wrapper p-3">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="category__table">
           <vxe-table
-            border="full"
+            border="inner"
             ref="tableRef"
             :column-config="{ resizable: true }"
             :data="tableData"
             align="left"
+            size="small"
           >
             <vxe-column type="seq" width="5%" title="#" tree-node>
               <template #default="{ rowIndex }">
@@ -76,7 +77,7 @@
               <template #default="{ column, row }">
                 <div
                   v-if="column.field == 'enabled'"
-                  class="table__action d-flex flex-column align-items-center gap-2"
+                  class="table__action d-flex flex-column align-items-start gap-2"
                 >
                   <a-tag v-if="row.enabled" color="green">啟用</a-tag>
                   <a-tag v-else color="red">停用</a-tag>
@@ -116,12 +117,13 @@
         </div>
       </div>
     </div>
+
     <!-- Modals -->
     <CustomerModal ref="modalRef" @reload="reload" />
   </Layout>
 </template>
 <script>
-import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
+import { defineComponent, reactive, ref, onMounted } from "vue";
 import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
@@ -129,11 +131,8 @@ import ImportFile from "@/components/importFile.vue";
 import { productsTableColumn } from "./component/data";
 import { filterNullValues } from "@/utils/common";
 // Modal
-import { Modal, TreeSelect, Tag, message } from "ant-design-vue";
-import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
+import { Tag } from "ant-design-vue";
 import CustomerModal from "./component/customerModal.vue";
-import { getProductsList, deleteProduct } from "@/api/productApi.js";
-import { useProductStore } from "@/stores/useProductStore";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
 export default defineComponent({
@@ -142,7 +141,6 @@ export default defineComponent({
     PageHeader,
     CustomerModal,
     ImportFile,
-    ATreeSelect: TreeSelect,
     ATag: Tag,
   },
   setup() {
@@ -150,7 +148,7 @@ export default defineComponent({
     const filterValue = reactive({
       supplier: null,
       telephone: null,
-      phoneNum: null,
+      phonenum: null,
     });
     const formState = reactive([
       {
@@ -163,7 +161,7 @@ export default defineComponent({
       },
       {
         label: "聯絡電話",
-        key: "phoneNum",
+        key: "phonenum",
       },
     ]);
     const allCategoryOptions = ref([]);
@@ -179,41 +177,33 @@ export default defineComponent({
     // Modal
     const modalRef = ref(null);
     // store
-    const productStore = useProductStore();
     const companyInfoStore = useCompanyInfoStore();
 
     // table data
     async function fetchData() {
-      console.log("fetchData");
-      // 全部類別 下拉選單
-      allCategoryOptions.value = productStore.getProductCategoryList;
-      // 全部客戶 下拉選單
-      allCustomerOptions.value = companyInfoStore.getAllCustomerList;
-      console.log("allCustomerOptions", allCustomerOptions.value);
       // 若有篩選值，將currentPage改為第一頁
       const filterParams = filterNullValues(filterValue);
       if (Object.keys(filterParams).length !== 0) {
         currentPage.value = 1;
       }
-
-      // 商品列表
-      await getProductsList(
-        currentPage.value,
-        pageSize.value,
-        filterParams
-      ).then((result) => {
-        tableData.value = result.rows;
-        total.value = result.total;
-      });
-
+      filterParams["type"] = "客戶";
+      // 客戶列表
+      const customerParams = {
+        currentPage: currentPage.value,
+        pageSize: pageSize.value,
+        filter: JSON.stringify(filterParams),
+      };
+      await companyInfoStore.fetchAllCustomer(customerParams);
+      tableData.value = companyInfoStore.getAllCustomerList;
+      total.value = companyInfoStore.getCustomerTotal;
       loading.value = false;
     }
 
     // 重置篩選欄位
     function handleReset() {
-      filterValue.categoryId = null;
-      filterValue.organId = null;
-      filterValue.materialParam = null;
+      filterValue.supplier = null;
+      filterValue.telephone = null;
+      filterValue.phonenum = null;
       fetchData();
     }
 
@@ -226,28 +216,6 @@ export default defineComponent({
     // 開啟modal
     function openCustomerModal(type, data) {
       modalRef.value.openModal(type, data);
-    }
-
-    // 刪除類別
-    function handleDeleteProduct(rowData) {
-      Modal.confirm({
-        title: "刪除商品",
-        okText: "確認",
-        cancelText: "取消",
-        icon: createVNode(ExclamationCircleOutlined),
-        content: createVNode(
-          "div",
-          { class: "reset-password d-flex flex-column" },
-          `請確認是否要刪除商品：${rowData.name}`
-        ),
-        async onOk() {
-          const result = await deleteProduct(rowData.id);
-          if (result.data.code === 200 && result.data.data.message == "成功") {
-            message.success(`刪除 ${rowData.name} 成功`);
-            reload();
-          }
-        },
-      });
     }
 
     onMounted(() => {
@@ -268,7 +236,6 @@ export default defineComponent({
       openCustomerModal,
       loading,
       reload,
-      handleDeleteProduct,
       filterValue,
       formState,
       allCategoryOptions,

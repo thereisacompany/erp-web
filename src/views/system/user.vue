@@ -48,7 +48,7 @@
         <div class="user__table">
           <vxe-table
             ref="vxeTableRef"
-            border
+            border="inner"
             :row-config="{ isHover: true }"
             :data="tableData"
             :checkbox-config="{ highlight: true }"

@@ -18,16 +18,13 @@
       class="mt-3 p-3"
     >
       <a-row style="gap: 15px">
-        <a-col :span="7" v-for="item in formItemStatus" :key="item.key">
+        <a-col :span="11" v-for="item in formItemStatus" :key="item.key">
           <a-form-item
             :label="item.label"
             :rules="[
               {
                 required: item.required,
-                message:
-                  item.key == name
-                    ? `請輸入${item.label}`
-                    : `請選擇${item.label}`,
+                message: `請輸入${item.label}`,
               },
             ]"
           >
@@ -37,71 +34,31 @@
               checked-children="啟用"
               un-checked-children="停用"
             />
-            <a-select
-              v-else-if="item.field == 'organId'"
-              v-model:value="formData[item.field]"
-              placeholder="請選擇客戶"
-              :options="allCustomerOptions"
-              :fieldNames="{
-                label: 'supplier',
-                value: 'id',
-              }"
-              option-filter-prop="supplier"
-              show-search
-            >
-            </a-select>
-            <a-tree-select
-              v-else-if="item.field == 'categoryId'"
-              v-model:value="formData[item.field]"
-              show-search
-              allow-clear
-              placeholder="請選擇類別"
-              tree-default-expand-all
-              tree-node-filter-prop="title"
-              :tree-data="allCategoryOptions"
-              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-              @change="fetchData"
-            >
-            </a-tree-select>
             <a-input
               v-else
               v-model:value="formData[item.field]"
-              :placeholder="
-                item.key == 'number' ? '系統自動產生' : `請輸入${item.label}`
-              "
-              :disabled="item.key == 'number' || item.key == 'volume'"
+              :placeholder="`請輸入${item.label}`"
               @change="handleChange(item.key)"
-            />
-            <span v-if="item.key == 'number'" class="note"
-              >* 需要手動修改可告知</span
-            >
-            <span v-else-if="item.key == 'volume'" class="note"
-              >* 材積=(長*寬*高)/27826</span
-            >
-          </a-form-item></a-col
-        >
+            /> </a-form-item
+        ></a-col>
       </a-row>
     </a-form>
   </a-modal>
 </template>
 
 <script>
-import { defineComponent, ref, reactive, onMounted } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 import {
   Modal,
   Form,
   FormItem,
   Input,
   Switch,
-  Select,
-  TreeSelect,
   Row,
   Col,
   message,
 } from "ant-design-vue";
 import { filterNullToEmptyString, assignFilteredKeys } from "@/utils/common";
-import { useProductStore } from "@/stores/useProductStore";
-import { editProduct, addNewProduct } from "@/api/productApi.js";
 import { productFormItem } from "./data";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
@@ -113,8 +70,6 @@ export default defineComponent({
     AForm: Form,
     AFormItem: FormItem,
     AInput: Input,
-    ASelect: Select,
-    ATreeSelect: TreeSelect,
     ASwitch: Switch,
   },
   emits: ["reload"],
@@ -122,24 +77,20 @@ export default defineComponent({
     const type = ref();
     const open = ref(false);
     const formItemStatus = reactive(productFormItem);
-    const labelCol = { style: { width: "50px" } };
+    const labelCol = { style: { width: "100px" } };
     const wrapperCol = { span: 24 };
     const formData = reactive({
       id: null,
-      name: null, //品名
-      standard: null, // 規格
-      model: null, // 型號
-      categoryId: null, // 類別
-      length: null, // 長
-      width: null, // 寬
-      high: null, // 高
-      volume: null, // 材積
-      number: null, // 品號
+      supplier: null, // 客戶名稱
+      supplierall: null, // 客戶全名
+      taxid: null, // 統一編號
+      contacts: null, // 聯絡人
+      telephone: null, // 手機號碼
+      phoneNum: null, // 聯絡電話
+      email: null, // 電子信箱
+      address: null, // 地址
       enabled: true, // 狀態
-      counter: null, // 儲位
-      organId: null, // 客戶
-      base: null,
-      barcode: null,
+      type: "客戶",
     });
 
     const enabledOptions = reactive([
@@ -152,10 +103,7 @@ export default defineComponent({
         label: "disabled",
       },
     ]);
-    const allCategoryOptions = ref([]);
-    const allCustomerOptions = ref([]);
     // store
-    const productStore = useProductStore();
     const companyInfoStore = useCompanyInfoStore();
 
     // 開啟modal
@@ -185,55 +133,24 @@ export default defineComponent({
     // 確認
     async function handleOk() {
       let result = {};
-      const params = filterNullToEmptyString(formData);
+      const data = filterNullToEmptyString(formData);
       // 新增類別
       if (type.value == "add") {
-        params.id = null;
-        result = await addNewProduct(params);
+        data.id = null;
+        result = await companyInfoStore.addCustomer(data);
       } else {
-        result = await editProduct(params);
+        result = await companyInfoStore.editCustomer(data);
       }
       if (result.data.code == 200 && result.data.data.message == "成功") {
         message.success(
-          `成功${type.value == "add" ? "新增" : "編輯"}商品： ${params.name}`
+          `成功${type.value == "add" ? "新增" : "編輯"}客戶成功： ${
+            data.supplier
+          }`
         );
         emit("reload");
         closeModal();
       }
     }
-
-    // 計算材積
-    function handleChange(field) {
-      if (field == "length" || field == "width" || field == "high") {
-        const value = Number(formData[field]);
-        if (isNaN(value)) {
-          message.error("請輸入數字");
-        } else {
-          const volume =
-            (formData.length * formData.width * formData.high) / 27826;
-          formData.volume = parseFloat(volume.toFixed(3));
-        }
-      }
-    }
-
-    onMounted(async () => {
-      // 全部類別 下拉選單
-      await productStore.fetchProductCategory();
-      allCategoryOptions.value = productStore.getProductCategoryList;
-
-      // 全部客戶 下拉選單
-      const customerParams = {
-        currentPage: 1,
-        pageSize: 1000,
-        type: '{"type":"客戶"}',
-      };
-      await companyInfoStore.fetchAllCustomer(customerParams);
-      allCustomerOptions.value = companyInfoStore.getAllCustomerList;
-      // await getAllCustomerList(customerParams).then((result) => {
-      //   allCustomerOptions.value = result;
-      // });
-      console.log("onMounted");
-    });
 
     return {
       open,
@@ -246,9 +163,6 @@ export default defineComponent({
       enabledOptions,
       type,
       formItemStatus,
-      allCategoryOptions,
-      allCustomerOptions,
-      handleChange,
     };
   },
 });

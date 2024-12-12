@@ -29,7 +29,7 @@
           </p> -->
 
           <vxe-table
-            border="full"
+            border="inner"
             ref="tableRef"
             :column-config="{ resizable: true }"
             :tree-config="{

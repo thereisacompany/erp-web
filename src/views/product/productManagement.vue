@@ -81,7 +81,7 @@
     </Filter>
 
     <!-- Product List -->
-    <div class="product-management__wrapper px-1 py-3">
+    <div class="product-management__wrapper p-3">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
@@ -92,13 +92,15 @@
           </p> -->
 
           <vxe-table
-            border="full"
+            border="inner"
             ref="tableRef"
             :column-config="{ resizable: true }"
             :data="tableData"
             align="left"
+            size="small"
+            cell-class-name="table-cell"
           >
-            <vxe-column type="seq" width="5%" title="#" tree-node>
+            <vxe-column type="seq" width="4%" title="#" tree-node>
               <template #default="{ rowIndex }">
                 {{ (currentPage - 1) * pageSize + rowIndex + 1 }}
               </template>
@@ -131,6 +133,7 @@
                     編輯
                   </a-button>
                   <a-button
+                    v-if="showDelete"
                     type="button"
                     class="btn btn-danger d-flex flex-row align-items-center"
                     value="small"
@@ -213,6 +216,7 @@ export default defineComponent({
     const pageSize = ref(10);
     const total = ref(0);
     const loading = ref(false);
+    const showDelete = ref(false);
     // Modal
     const modalRef = ref(null);
     // store
@@ -221,12 +225,10 @@ export default defineComponent({
 
     // table data
     async function fetchData() {
-      console.log("fetchData");
       // 全部類別 下拉選單
       allCategoryOptions.value = productStore.getProductCategoryList;
       // 全部客戶 下拉選單
       allCustomerOptions.value = companyInfoStore.getAllCustomerList;
-      console.log("allCustomerOptions", allCustomerOptions.value);
       // 若有篩選值，將currentPage改為第一頁
       const filterParams = filterNullValues(filterValue);
       if (Object.keys(filterParams).length !== 0) {
@@ -289,6 +291,9 @@ export default defineComponent({
 
     onMounted(() => {
       loading.value = true;
+      const user = localStorage.getItem("user");
+      const role = JSON.parse(user).roleName;
+      showDelete.value = role == "超級管理者";
       setTimeout(() => {
         fetchData();
       }, 500);
@@ -312,6 +317,7 @@ export default defineComponent({
       allCustomerOptions,
       fetchData,
       handleReset,
+      showDelete,
     };
   },
 });
@@ -346,5 +352,9 @@ export default defineComponent({
 
 :deep(.vxe-table--render-default .vxe-tree-cell) {
   padding: 0;
+}
+
+:deep(.table-cell) {
+  padding: 8px 0;
 }
 </style>

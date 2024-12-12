@@ -2,11 +2,27 @@ import { server } from "@/api";
 
 // 客戶列表
 export function getAllCustomerList(params) {
-  let url = `/supplier/list?currentPage=${params.currentPage}&pageSize=${params.pageSize}&search=${encodeURIComponent(params.type)}`;
+  let url = `/supplier/list?currentPage=${params.currentPage}&pageSize=${params.pageSize}&search=${encodeURIComponent(params.filter)}`;
 
   return server.get(url).then((res) => {
     if (res.status === 200 && res.data.data.message == '成功') {
-      return res.data.data.rows
+      return res.data.data
     }
+  })
+}
+
+// 新增客戶
+export function addCustomer(data) {
+  let url = `/supplier/add`;
+  return server.post(url, data).then((res) => {
+    return res
+  })
+}
+
+// 編輯客戶
+export function editCustomer(data) {
+  let url = `/supplier/update`;
+  return server.put(url, data).then((res) => {
+    return res
   })
 }

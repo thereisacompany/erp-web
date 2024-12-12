@@ -44,7 +44,7 @@ export const productsTableColumn = [
   {
     field: "categoryName",
     title: "類別",
-    width: "6%",
+    width: "7%",
   },
   {
     field: "counter",
