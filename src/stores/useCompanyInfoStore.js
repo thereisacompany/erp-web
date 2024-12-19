@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAllCustomerList, addCustomer, editCustomer } from "@/api/companyInfoApi.js";
+import { getAllMemberList, addMember, editMember } from "@/api/companyInfoApi.js";
 
 export const useCompanyInfoStore = defineStore('company-info', {
   state: () => ({
@@ -7,29 +7,29 @@ export const useCompanyInfoStore = defineStore('company-info', {
     customerTotal: 0, // 客戶列表總數
   }),
   getters: {
-    getAllCustomerList() {
+    getAllMemberList() {
       return this.allCustomerList
     },
-    getCustomerTotal() {
+    getListTotal() {
       return this.customerTotal
     }
   },
   actions: {
-    // 客戶列表
-    async fetchAllCustomer(params) {
-      const result = await getAllCustomerList(params);
+    // 客戶列表 or 人事列表
+    async fetchAllMember(params) {
+      const result = await getAllMemberList(params);
       this.allCustomerList = result.rows;
       this.customerTotal = result.total
     },
     // 新增客戶
-    async addCustomer(data) {
-      const result = await addCustomer(data)
+    async addMember(data) {
+      const result = await addMember(data)
       return result
     },
     // 編輯客戶
-    async editCustomer(data) {
-      const result = await editCustomer(data)
+    async editMember(data) {
+      const result = await editMember(data)
       return result
-    }
+    },
   },
 });

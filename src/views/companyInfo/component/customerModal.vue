@@ -137,9 +137,9 @@ export default defineComponent({
       // 新增類別
       if (type.value == "add") {
         data.id = null;
-        result = await companyInfoStore.addCustomer(data);
+        result = await companyInfoStore.addMember(data);
       } else {
-        result = await companyInfoStore.editCustomer(data);
+        result = await companyInfoStore.editMember(data);
       }
       if (result.data.code == 200 && result.data.data.message == "成功") {
         message.success(

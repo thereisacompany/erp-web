@@ -1,4 +1,4 @@
-<!-- 客戶管理新版, 改寫中 -->
+<!-- 客戶管理新版, 改寫完成 -->
 <template>
   <Layout>
     <PageHeader title="客戶管理">
@@ -36,7 +36,6 @@
           <a-row style="gap: 20px">
             <a-col :span="7" v-for="item in formState" :key="item.key">
               <a-form-item :label="item.label" :name="item.key">
-                <!-- 關鍵字 -->
                 <a-input
                   v-model:value="filterValue[item.key]"
                   placeholder="請輸入"
@@ -53,7 +52,7 @@
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
-        <div class="category__table">
+        <div class="customer__table">
           <vxe-table
             border="inner"
             ref="tableRef"
@@ -186,6 +185,7 @@ export default defineComponent({
       if (Object.keys(filterParams).length !== 0) {
         currentPage.value = 1;
       }
+
       filterParams["type"] = "客戶";
       // 客戶列表
       const customerParams = {
@@ -193,9 +193,9 @@ export default defineComponent({
         pageSize: pageSize.value,
         filter: JSON.stringify(filterParams),
       };
-      await companyInfoStore.fetchAllCustomer(customerParams);
-      tableData.value = companyInfoStore.getAllCustomerList;
-      total.value = companyInfoStore.getCustomerTotal;
+      await companyInfoStore.fetchAllMember(customerParams);
+      tableData.value = companyInfoStore.getAllMemberList;
+      total.value = companyInfoStore.getListTotal;
       loading.value = false;
     }
 

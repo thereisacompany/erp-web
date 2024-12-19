@@ -38,3 +38,9 @@ export function assignFilteredKeys(target, source) {
   return target;
 }
 
+// 檢查obj中是否只有存在特定的item
+export function containsOnlySpecificItems(obj, allowedKeys) {
+  const keys = Object.keys(obj);
+  return keys.length === allowedKeys.length && keys.every(key => allowedKeys.includes(key));
+}
+

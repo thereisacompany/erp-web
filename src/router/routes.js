@@ -2,7 +2,8 @@ import store from '@/state/store';
 import Home from '@/views/home/home.vue';
 // import CustomerList from '@/views/user/customerList.vue';
 import CustomerList from '@/views/companyInfo/customerManagement.vue';
-import DriverList from '@/views/user/driverList.vue';
+// import DriverList from '@/views/user/driverList.vue';
+import HRManagement from '@/views/companyInfo/HRManagement.vue';
 import Vehicle from '@/views/stock/vehicleList.vue';
 import ProductManagement from '@/views/product/productManagement.vue';
 // import productCategory from '@/views/product/productCategory.vue';
@@ -59,9 +60,9 @@ const routes = [
 			// 人事管理
 			{
 				path: 'member',
-				name: 'driverList',
+				name: 'HRManagement',
 				meta: { authRequired: true },
-				component: DriverList,
+				component: HRManagement,
 			},
 			// 車輛管理
 			{

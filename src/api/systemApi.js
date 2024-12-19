@@ -105,7 +105,7 @@ export function fetchLoginOut() {
     .get(url)
     .then((res) => {
       if (res.status === 200) {
-        alert('登出成功')
+        message.success('登出成功')
         localStorage.removeItem("user");
         localStorage.removeItem("user_authList");
         window.location = '/login'

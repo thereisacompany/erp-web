@@ -225,14 +225,10 @@ export default defineComponent({
       const customerParams = {
         currentPage: 1,
         pageSize: 1000,
-        type: '{"type":"客戶"}',
+        filter: '{"type":"客戶"}',
       };
-      await companyInfoStore.fetchAllCustomer(customerParams);
-      allCustomerOptions.value = companyInfoStore.getAllCustomerList;
-      // await getAllCustomerList(customerParams).then((result) => {
-      //   allCustomerOptions.value = result;
-      // });
-      console.log("onMounted");
+      await companyInfoStore.fetchAllMember(customerParams);
+      allCustomerOptions.value = companyInfoStore.getAllMemberList;
     });
 
     return {
