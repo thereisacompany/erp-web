@@ -334,3 +334,188 @@ export const typeOptions = (haveAll) => {
   }
   return array
 }
+
+// 車輛列表 table
+export const carTableColumn = [
+  { field: "licensePlateNumber", title: "車牌號碼", width: "10%" },
+  {
+    field: "brandModel",
+    title: "品牌型號",
+    width: "10%",
+  },
+  {
+    field: "driverName",
+    title: "司機",
+    width: "10%",
+  },
+  {
+    field: "color",
+    title: "車身顏色",
+    width: "10%",
+  },
+  {
+    field: "mileage",
+    title: "里程數(公里)",
+    width: "10%",
+  },
+  {
+    field: "engineNumber",
+    title: "引擎號碼",
+    width: "10%",
+  },
+  {
+    field: "manufacture",
+    title: "出廠日期",
+    width: "10%",
+  },
+  {
+    field: "testDate",
+    title: "驗車日",
+    width: "10%",
+  },
+  {
+    field: "insuranceDate",
+    title: "保險日期",
+    width: "10%",
+  },
+  {
+    field: "emissions",
+    title: "排放量(c.c.)",
+    width: "10%",
+  },
+  {
+    field: "price",
+    title: "車價",
+    width: "10%",
+  },
+  // 1白牌 2綠牌
+  {
+    field: "status",
+    title: "車輛狀態",
+    width: "8%",
+  },
+  {
+    field: "ownership",
+    title: "歸屬",
+    width: "8%",
+  },
+  // 1公司 2私人 3租用
+  {
+    field: "remark",
+    title: "備註",
+    width: "15%",
+  },
+  {
+    field: "action",
+    title: "操作",
+    width: "8%",
+  }
+]
+
+// 新增、編輯車輛 form
+export const carFormItem = [
+  {
+    field: 'licensePlateNumber',
+    key: 'licensePlateNumber',
+    label: '車牌號碼',
+    required: true,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'brandModel',
+    key: 'brandModel',
+    label: '品牌型號',
+    required: true,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'driverName',
+    key: 'driverName',
+    label: '司機',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'color',
+    key: 'color',
+    label: '車身顏色',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'mileage',
+    key: 'mileage',
+    label: '里程數(公里)',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'engineNumber',
+    key: 'engineNumber',
+    label: '引擎號碼',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'manufacture',
+    key: 'manufacture',
+    label: '出廠日期',
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: 'testDate',
+    key: 'testDate',
+    label: '驗車日',
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: 'insuranceDate',
+    key: 'insuranceDate',
+    label: '保險日期',
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: 'price',
+    key: 'price',
+    label: '車價',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'status',
+    key: 'status',
+    label: '車輛狀態',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'ownership',
+    key: 'ownership',
+    label: '歸屬',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
+    field: 'remark',
+    key: 'remark',
+    label: '備註',
+    required: false,
+    span: 12,
+    showDataPicker: false
+  },
+]

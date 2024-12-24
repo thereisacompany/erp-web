@@ -27,3 +27,13 @@ export function editMember(data) {
   })
 }
 
+// 車輛列表
+export function getAllCarList(params) {
+  let url = `/vehicle/list?currentPage=${params.currentPage}&pageSize=${params.pageSize}&search=${encodeURIComponent(params.filter)}`;
+  return server.get(url).then((res) => {
+    if (res.status === 200 && res.data.data.message == '成功') {
+      return res.data.data
+    }
+  })
+}
+

@@ -4,7 +4,8 @@ import Home from '@/views/home/home.vue';
 import CustomerList from '@/views/companyInfo/customerManagement.vue';
 // import DriverList from '@/views/user/driverList.vue';
 import HRManagement from '@/views/companyInfo/HRManagement.vue';
-import Vehicle from '@/views/stock/vehicleList.vue';
+// import Vehicle from '@/views/stock/vehicleList.vue';
+import CarManagement from '@/views/companyInfo/carManagement.vue';
 import ProductManagement from '@/views/product/productManagement.vue';
 // import productCategory from '@/views/product/productCategory.vue';
 import Category from '@/views/product/category.vue';
@@ -67,9 +68,9 @@ const routes = [
 			// 車輛管理
 			{
 				path: 'vehicle',
-				name: 'vehicleList',
+				name: 'CarManagement',
 				meta: { authRequired: true },
-				component: Vehicle,
+				component: CarManagement,
 			},
 		]
 	},

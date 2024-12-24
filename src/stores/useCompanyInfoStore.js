@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia';
-import { getAllMemberList, addMember, editMember } from "@/api/companyInfoApi.js";
+import { getAllMemberList, addMember, editMember, getAllCarList } from "@/api/companyInfoApi.js";
 
 export const useCompanyInfoStore = defineStore('company-info', {
   state: () => ({
     allCustomerList: [], // 客戶列表
     customerTotal: 0, // 客戶列表總數
+    allCarList: [], // 車輛列表
   }),
   getters: {
     getAllMemberList() {
@@ -12,7 +13,13 @@ export const useCompanyInfoStore = defineStore('company-info', {
     },
     getListTotal() {
       return this.customerTotal
-    }
+    },
+    getAllCarList() {
+      return this.allCarList
+    },
+    getAllCarTotal() {
+      return this.allCarTotal
+    },
   },
   actions: {
     // 客戶列表 or 人事列表
@@ -30,6 +37,12 @@ export const useCompanyInfoStore = defineStore('company-info', {
     async editMember(data) {
       const result = await editMember(data)
       return result
+    },
+    // 車輛列表
+    async fetchAllCar(params) {
+      const result = await getAllCarList(params);
+      this.allCarList = result.rows;
+      this.allCarTotal = result.total;
     },
   },
 });

@@ -1,23 +1,23 @@
-<!-- 人事管理新版, 改寫完成 -->
+<!-- 車輛管理新版, 改寫中 -->
 <template>
   <Layout>
-    <PageHeader title="人事管理">
+    <PageHeader title="車輛管理">
       <template #actions>
         <!-- actions -->
         <div class="actions d-flex justify-content-end">
           <ImportFile
-            :buttonName="'匯入人事列表'"
-            :apiLink="'/supplier/importMember'"
+            :buttonName="'匯入車輛列表'"
+            :apiLink="'/vehicle/importExcel'"
             @importSuccess="reload"
           />
 
           <a-button
             type="primary"
             class="custom-button-primary"
-            @click="openHRModal('add', null)"
+            @click="openCarModal('add', null)"
           >
             <i class="mdi mdi-plus fs-3"></i>
-            <span class="">新增人事</span></a-button
+            <span class="">新增車輛</span></a-button
           >
         </div>
       </template>
@@ -31,27 +31,23 @@
           name="filter"
           class="filter-form"
           :model="formState"
-          style="width: 100%"
+          style="width: 70%"
         >
           <a-row style="gap: 20px">
-            <a-col
-              :span="item.key == 'type' ? 4 : 6"
-              v-for="item in formState"
-              :key="item.key"
-            >
+            <a-col :span="7" v-for="item in formState" :key="item.key">
               <a-form-item :label="item.label" :name="item.key">
                 <a-select
-                  v-if="item.key == 'type'"
+                  v-if="item.key == 'driver'"
                   ref="select"
                   v-model:value="filterValue[item.key]"
                   style="width: 100%"
                   placeholder="請選擇"
                   show-search
-                  option-filter-prop="type"
-                  :options="typeOptions(true)"
+                  option-filter-prop="supplier"
+                  :options="allDriverOptions"
                   :fieldNames="{
-                    label: 'type',
-                    value: 'value',
+                    label: 'supplier',
+                    value: 'id',
                   }"
                   @change="fetchData"
                 ></a-select>
@@ -67,12 +63,12 @@
       </template>
     </Filter>
 
-    <!--  人事列表 -->
-    <div class="HR-management__wrapper p-3">
+    <!-- Car List -->
+    <div class="customer-management__wrapper p-3">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
-        <div class="HR__table">
+        <div class="customer__table">
           <vxe-table
             border="inner"
             ref="tableRef"
@@ -95,11 +91,23 @@
             >
               <template #default="{ column, row }">
                 <div
-                  v-if="column.field == 'enabled'"
+                  v-if="column.field == 'status'"
                   class="table__action d-flex flex-column align-items-start gap-2"
                 >
-                  <a-tag v-if="row.enabled" color="green">啟用</a-tag>
-                  <a-tag v-else color="red">停用</a-tag>
+                  <a-tag v-if="row.status == 1" color="default">白牌</a-tag>
+                  <a-tag v-else-if="row.status == 2" color="green">綠牌</a-tag>
+                </div>
+                <div
+                  v-else-if="column.field == 'ownership'"
+                  class="table__action d-flex flex-column align-items-start gap-2"
+                >
+                  <a-tag v-if="row.ownership == 1" color="blue">公司</a-tag>
+                  <a-tag v-else-if="row.ownership == 2" color="orange"
+                    >私人</a-tag
+                  >
+                  <a-tag v-else-if="row.ownership == 3" color="purple"
+                    >租用</a-tag
+                  >
                 </div>
                 <div
                   v-else-if="column.field == 'action'"
@@ -109,10 +117,18 @@
                     type="button"
                     class="btn btn-success d-flex flex-row align-items-center"
                     value="small"
-                    @click="openHRModal('edit', row)"
+                    @click="openCarModal('edit', row)"
                   >
                     編輯
                   </a-button>
+                  <!-- <a-button
+                    type="button"
+                    class="btn btn-danger d-flex flex-row align-items-center"
+                    value="small"
+                    @click="handleDeleteProduct(row)"
+                  >
+                    刪除
+                  </a-button> -->
                 </div>
                 <span v-else>{{ row[column.field] }}</span>
               </template>
@@ -130,7 +146,7 @@
     </div>
 
     <!-- Modals -->
-    <MemberModal ref="modalRef" @reload="reload" />
+    <CarModal ref="modalRef" @reload="reload" />
   </Layout>
 </template>
 <script>
@@ -139,53 +155,46 @@ import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import ImportFile from "@/components/importFile.vue";
-import { HRTableColumn, typeOptions } from "./component/data";
-import { filterNullValues, containsOnlySpecificItems } from "@/utils/common";
+import { carTableColumn } from "./component/data";
+import { filterNullValues } from "@/utils/common";
 // Modal
-import { Select, Tag } from "ant-design-vue";
-import MemberModal from "./component/memberModal.vue";
+import { Tag } from "ant-design-vue";
+import CarModal from "./component/carModal.vue";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
 export default defineComponent({
   components: {
     Layout,
     PageHeader,
-    MemberModal,
+    CarModal,
     ImportFile,
     ATag: Tag,
-    ASelect: Select,
   },
   setup() {
     // filter
     const filterValue = reactive({
-      type: "1",
-      supplier: null,
-      telephone: null,
-      phonenum: null,
+      driver: null,
+      licensePlateNumber: null,
+      brandModel: null,
     });
     const formState = reactive([
       {
-        label: "類別",
-        key: "type",
+        label: "司機名稱",
+        key: "driver",
       },
       {
-        label: "搜尋姓名",
-        key: "supplier",
+        label: "車牌號碼",
+        key: "licensePlateNumber",
       },
       {
-        label: "手機號碼",
-        key: "telephone",
-      },
-
-      {
-        label: "聯絡電話",
-        key: "phonenum",
+        label: "品牌型號",
+        key: "brandModel",
       },
     ]);
-
+    const allDriverOptions = ref([]);
     // table
     const tableRef = ref(null);
-    const tableColumn = reactive(HRTableColumn);
+    const tableColumn = reactive(carTableColumn);
     const tableData = ref([]);
     const currentPage = ref(1);
     const pageSize = ref(10);
@@ -200,33 +209,27 @@ export default defineComponent({
     async function fetchData() {
       // 若有篩選值，將currentPage改為第一頁
       const filterParams = filterNullValues(filterValue);
-      if (filterParams.type == "1") {
-        delete filterParams.type;
-        filterParams["filter"] = "1";
-      }
-      // 檢查是否還有其他的篩選條件
-      if (!containsOnlySpecificItems(filterParams, ["filter"])) {
+      if (Object.keys(filterParams).length !== 0) {
         currentPage.value = 1;
       }
 
-      // 人事列表
-      const params = {
+      // 車輛列表
+      const customerParams = {
         currentPage: currentPage.value,
         pageSize: pageSize.value,
         filter: JSON.stringify(filterParams),
       };
-      await companyInfoStore.fetchAllMember(params);
-      tableData.value = companyInfoStore.getAllMemberList;
-      total.value = companyInfoStore.getListTotal;
+      await companyInfoStore.fetchAllCar(customerParams);
+      tableData.value = companyInfoStore.getAllCarList;
+      total.value = companyInfoStore.getAllCarTotal;
       loading.value = false;
     }
 
     // 重置篩選欄位
     function handleReset() {
-      filterValue.type = "1";
-      filterValue.supplier = null;
-      filterValue.telephone = null;
-      filterValue.phonenum = null;
+      filterValue.driver = null;
+      filterValue.licensePlateNumber = null;
+      filterValue.brandModel = null;
       fetchData();
     }
 
@@ -237,13 +240,23 @@ export default defineComponent({
     }
 
     // 開啟modal
-    function openHRModal(type, data) {
+    function openCarModal(type, data) {
       modalRef.value.openModal(type, data);
     }
 
-    onMounted(() => {
+    onMounted(async () => {
       loading.value = true;
-      console.log("人事管理");
+
+      const params = {
+        currentPage: 1,
+        pageSize: 1000,
+        filter: JSON.stringify({ type: "家電-司機" }),
+      };
+      await companyInfoStore.fetchAllMember(params);
+      const result = companyInfoStore.getAllMemberList;
+      result.unshift({ supplier: "全部司機", id: null });
+      allDriverOptions.value = result;
+
       setTimeout(() => {
         fetchData();
       }, 500);
@@ -257,12 +270,12 @@ export default defineComponent({
       modalRef,
       tableRef,
       tableColumn,
-      openHRModal,
+      openCarModal,
       loading,
       reload,
       filterValue,
       formState,
-      typeOptions,
+      allDriverOptions,
       fetchData,
       handleReset,
     };
@@ -274,7 +287,7 @@ export default defineComponent({
   gap: 10px;
 }
 
-.HR-management__wrapper {
+.customer-management__wrapper {
   border-radius: 8px;
   background-color: #fff;
 
