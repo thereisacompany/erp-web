@@ -1,11 +1,7 @@
 <script>
-import Layout from "@/router/layouts/main.vue";
 import appConfig from "@/app.config";
 import PageHeader from "@/components/page-header.vue";
 
-/**
- * Dashboard Component
- */
 export default {
   page: {
     title: "HOME",
@@ -17,20 +13,31 @@ export default {
     ],
   },
   components: {
-    Layout,
     PageHeader,
+  },
+  data() {
+    return {
+      title: "首頁",
+      items: [
+        {
+          text: "Dashboard",
+        },
+        {
+          text: "首頁",
+          active: true,
+        },
+      ],
+    };
   },
 };
 </script>
 
 <template>
-  <Layout>
-    <PageHeader :title="title" :items="items" />
-    <div class="row home-page">
-      <div class="title">鉅生物流</div>
-    </div>
-    <!-- end row -->
-  </Layout>
+  <PageHeader :title="title" :items="items" />
+  <div class="row home-page">
+    <div class="title">鉅生物流</div>
+  </div>
+  <!-- end row -->
 </template>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <!-- 新版角色管理 -->
 <template>
-  <Layout>
+  <div>
     <PageHeader title="角色管理">
       <template #actions>
         <!-- actions -->
@@ -149,11 +149,10 @@
         />
       </div>
     </div>
-  </Layout>
+  </div>
 </template>
 <script>
 import { defineComponent, reactive, ref, onMounted, createVNode, h } from "vue";
-import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import {
@@ -172,7 +171,6 @@ import { server } from "@/api";
 import { filterNullValues } from "@/utils/common";
 export default defineComponent({
   components: {
-    Layout,
     PageHeader,
     AddModal,
     TipsModal,

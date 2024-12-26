@@ -245,7 +245,7 @@ export default defineComponent({
     }
 
     li.active {
-      background-color: #3449b1;
+      background-color: #383838;
     }
   }
 }

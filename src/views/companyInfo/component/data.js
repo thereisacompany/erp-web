@@ -487,6 +487,70 @@ export const carFormItem = [
     showDataPicker: true
   },
   {
+    field: "insuranceDateEnd",
+    key: "insuranceDateEnd",
+    label: "車險迄止日",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: "takeOver",
+    key: "takeOver",
+    label: "車輛接手日",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: "loanDue",
+    key: "loanDue",
+    label: "貸款到期日",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: "contractExpired",
+    key: "contractExpired",
+    label: "司機合約到期日",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: "renewalDate",
+    key: "renewalDate",
+    label: "補換照日(行照)",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: "licenseValid",
+    key: "licenseValid",
+    label: "行照有效日",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: "cargoInsuranceDue",
+    key: "cargoInsuranceDue",
+    label: "貨物險到期日",
+    required: false,
+    span: 6,
+    showDataPicker: true
+  },
+  {
+    field: 'emissions',
+    key: 'emissions',
+    label: '排放量(c.c.)',
+    required: false,
+    span: 6,
+    showDataPicker: false
+  },
+  {
     field: 'price',
     key: 'price',
     label: '車價',

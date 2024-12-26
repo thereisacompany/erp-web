@@ -1,13 +1,9 @@
 import store from '@/state/store';
-import Home from '@/views/home/home.vue';
-// import CustomerList from '@/views/user/customerList.vue';
-import CustomerList from '@/views/companyInfo/customerManagement.vue';
-// import DriverList from '@/views/user/driverList.vue';
+import Home from '@/views//home/home.vue';
+import CustomerManagement from '../views/companyInfo/CustomerManagement.vue';
 import HRManagement from '@/views/companyInfo/HRManagement.vue';
-// import Vehicle from '@/views/stock/vehicleList.vue';
-import CarManagement from '@/views/companyInfo/carManagement.vue';
+import CarManagement from '@/views/companyInfo/CarManagement.vue';
 import ProductManagement from '@/views/product/productManagement.vue';
-// import productCategory from '@/views/product/productCategory.vue';
 import Category from '@/views/product/category.vue';
 import DepotList from '@/views/stock/depotList.vue';
 import InStockList from '@/views/stock/inStockList.vue';
@@ -16,179 +12,190 @@ import MoveStockList from '@/views/stock/moveStockList.vue';
 import ReturnStockList from '@/views/stock/returnStockList.vue';
 import InOutStockReport from '@/views/report/inOutStockReport.vue';
 import DriverStockReport from '@/views/report/driverStockReport.vue';
-import User from '@/views/system/user.vue';
-import Role from '@/views/system/role.vue';
+import User from '@/views/system/User.vue';
+import Role from '@/views/system/Role.vue';
 import ChangePassword from '@/views/user/changePassword.vue';
 import Login from '@/views/account/login.vue';
 import Logout from '@/views/account/logout.vue';
 import ErrorPage from '@/views/utility/404.vue';
+import Layout from '../layouts/index.vue';
 
-// 路由定義
 const routes = [
-	{
-		path: '/',
-		redirect: '/dashboard/analysis',
-	},
 	// 預設頁面
 	{
 		path: '/',
-		name: 'home',
+		redirect: '/dashboard/analysis', // 修改 redirect 指向 /dashboard
 		meta: { authRequired: true },
-		component: Home,
 	},
-	// 首頁
+	// 首頁 (修改為 /dashboard 的子路由)
 	{
-		path: '/dashboard/analysis',
-		name: 'home',
+		path: '/dashboard',
+		component: Layout,
 		meta: { authRequired: true },
-		component: Home,
+		children: [
+			{
+				path: 'analysis',
+				name: 'home',
+				label: '首頁',
+				component: Home,
+				meta: { authRequired: true, keepAlive: true },
+			}
+		]
 	},
-	// 供應商管理
-	// { path: "/user/vendorlist", name: "vendorlist", meta: { authRequired: true }, component: () => import('@/views/user/vendorlist') },
 	// 公司資料管理
 	{
 		path: '/system',
-		name: 'driverList',
+		component: Layout,
+		name: 'system',
+		label: '公司資料管理',
 		meta: { authRequired: true },
 		children: [
-			// 客戶管理
 			{
 				path: 'customer',
-				name: 'customer',
-				meta: { authRequired: true },
-				component: CustomerList
+				name: 'CustomerManagement',
+				label: '客戶管理',
+				component: CustomerManagement,
+				meta: { keepAlive: true }
 			},
-			// 人事管理
 			{
 				path: 'member',
 				name: 'HRManagement',
-				meta: { authRequired: true },
+				label: '人事管理',
 				component: HRManagement,
+				meta: { keepAlive: true }
 			},
-			// 車輛管理
 			{
 				path: 'vehicle',
 				name: 'CarManagement',
-				meta: { authRequired: true },
+				label: '車輛管理',
 				component: CarManagement,
+				meta: { keepAlive: true }
 			},
-		]
+		],
 	},
 	// 商品管理
 	{
 		path: '/material',
-		name: 'product',
+		name: 'material',
+		label: '商品管理',
+		component: Layout,
 		meta: { authRequired: true },
 		children: [
-			// 商品管理
 			{
 				path: 'material',
-				name: 'customerList',
-				meta: { authRequired: true },
+				name: 'ProductManagement',
+				label: '商品管理',
 				component: ProductManagement,
+				meta: { keepAlive: true }
 			},
-			// 商品類別
 			{
 				path: 'material_category',
-				name: 'productCategory',
-				meta: { authRequired: true },
+				name: 'Category',
+				label: '商品類別',
 				component: Category,
+				meta: { keepAlive: true }
 			},
-		]
+		],
 	},
 	// 倉庫管理
 	{
 		path: '/depot',
-		name: 'depotList',
+		name: 'depot',
+		component: Layout,
 		meta: { authRequired: true },
 		children: [
-			// 倉庫別管理
 			{
-				path: 'depot',
-				name: 'depot',
-				meta: { authRequired: true },
+				path: 'list',
+				name: 'DepotList',
+				label: '倉庫別管理',
 				component: DepotList,
+				meta: { keepAlive: true }
 			},
-			// 進貨單
 			{
 				path: 'stock_in',
-				name: 'inStockList',
-				meta: { authRequired: true },
+				name: 'InStockList',
+				label: '進貨單',
 				component: InStockList,
+				meta: { keepAlive: true }
 			},
-			// 配送單
 			{
 				path: 'stock_out',
-				name: 'outStockList',
-				meta: { authRequired: true },
+				name: 'OutStockList',
+				label: '配送單',
 				component: OutStockList,
+				meta: { keepAlive: true }
 			},
-			// 移倉管理
 			{
 				path: 'move',
-				name: 'move',
-				meta: { authRequired: true },
+				name: 'MoveStockList',
+				label: '移倉管理',
 				component: MoveStockList,
+				meta: { keepAlive: true }
 			},
-			// 退貨單
 			{
 				path: 'stock_back',
-				name: 'returnStockList',
-				meta: { authRequired: true },
+				name: 'ReturnStockList',
+				label: '退貨單',
 				component: ReturnStockList,
+				meta: { keepAlive: true }
 			},
-		]
+		],
 	},
 	// 報表查詢
 	{
 		path: '/report',
-		name: 'inOutStockReport',
+		name: 'report',
+		label: '報表查詢',
+		component: Layout,
 		meta: { authRequired: true },
 		children: [
-			// 進銷存統計
 			{
 				path: 'in_out_stock',
-				name: 'inOutStockReport',
-				meta: { authRequired: true },
+				name: 'InOutStockReport',
+				label: '進銷存統計',
 				component: InOutStockReport,
+				meta: { keepAlive: true }
 			},
-			// 司機配送統計表
 			{
 				path: 'driver_out',
-				name: 'driverStockReport',
-				meta: { authRequired: true },
+				name: 'DriverStockReport',
+				label: '司機配送統計表',
 				component: DriverStockReport,
+				meta: { keepAlive: true }
 			},
-		]
+		],
 	},
 	// 系統管理
 	{
 		path: '/system',
-		name: 'userList',
+		name: 'systemManagement',
+		label: '系統管理',
+		component: Layout,
 		meta: { authRequired: true },
 		children: [
-			// 用戶管理
 			{
 				path: 'user',
-				name: 'userList',
-				meta: { authRequired: true },
+				name: 'User',
+				label: '用戶管理',
 				component: User,
+				meta: { keepAlive: true }
 			},
-			// 角色管理
 			{
 				path: 'role',
-				name: 'role',
-				meta: { authRequired: true },
+				name: 'Role',
+				label: '角色管理',
 				component: Role,
+				meta: { keepAlive: true }
 			},
-		]
+		],
 	},
 	// 修改密碼
 	{
 		path: '/user/changepassword',
-		name: 'changePassword',
-		meta: { authRequired: true },
+		name: 'ChangePassword',
+		label: '修改密碼',
 		component: ChangePassword,
+		meta: { authRequired: true, keepAlive: true }
 	},
 	// 登入
 	{
@@ -197,34 +204,17 @@ const routes = [
 		component: Login,
 		meta: {
 			beforeResolve(routeTo, routeFrom, next) {
-				if (store.getters['auth/loggedIn']) {
-					next({ name: 'home' });
-				} else {
-					next();
-				}
+				if (store.getters['auth/loggedIn']) next({ name: 'home' });
+				else next();
 			},
 		},
 	},
 	// 登出
-	{
-		path: '/logout',
-		name: 'logout',
-		component: Logout,
-		// meta: {
-		// 	beforeResolve(routeTo, routeFrom, next) {
-		// 		store.dispatch('auth/logOut');
-		// 		next(routeFrom);
-		// 	}, authRequired: true
-		// },
-	},
+	{ path: '/logout', name: 'logout', component: Logout },
 	// 404 頁面
-	{
-		path: '/404',
-		name: '404',
-		component: ErrorPage,
-	},
+	{ path: '/404', name: '404', component: ErrorPage },
+	// 匹配所有未知路徑的 404
+	{ path: '/:pathMatch(.*)*', redirect: '/404' },
 ];
 
 export default routes;
-
-

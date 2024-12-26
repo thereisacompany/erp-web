@@ -1,6 +1,6 @@
 <!-- 人事管理新版, 改寫完成 -->
 <template>
-  <Layout>
+  <div>
     <PageHeader title="人事管理">
       <template #actions>
         <!-- actions -->
@@ -131,11 +131,10 @@
 
     <!-- Modals -->
     <MemberModal ref="modalRef" @reload="reload" />
-  </Layout>
+  </div>
 </template>
 <script>
 import { defineComponent, reactive, ref, onMounted } from "vue";
-import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import ImportFile from "@/components/importFile.vue";
@@ -143,12 +142,11 @@ import { HRTableColumn, typeOptions } from "./component/data";
 import { filterNullValues, containsOnlySpecificItems } from "@/utils/common";
 // Modal
 import { Select, Tag } from "ant-design-vue";
-import MemberModal from "./component/memberModal.vue";
+import MemberModal from "./component/MemberModal.vue";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
 export default defineComponent({
   components: {
-    Layout,
     PageHeader,
     MemberModal,
     ImportFile,

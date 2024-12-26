@@ -3,7 +3,7 @@
 import "vue3-carousel/dist/carousel.css";
 import { Carousel, Slide } from "vue3-carousel";
 
-import Layout from "@/router/layouts/main.vue";
+import Layout from "@/layouts/index.vue";
 import PageHeader from "@/components/page-header.vue";
 import appConfig from "@/app.config";
 

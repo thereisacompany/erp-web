@@ -1,6 +1,6 @@
 <script>
 import { createVNode } from "vue";
-import Layout from "@/router/layouts/main.vue";
+import Layout from "@/layouts/index.vue";
 import PageHeader from "@/components/page-header.vue";
 import dayjs from "dayjs";
 import { required, helpers } from "@vuelidate/validators";

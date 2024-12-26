@@ -1,6 +1,6 @@
 <!-- 商品類別新版, 改寫完成 -->
 <template>
-  <Layout>
+  <div>
     <PageHeader title="商品類別">
       <template #actions>
         <!-- actions -->
@@ -86,11 +86,10 @@
         <CategoryModal ref="modalRef" @reload="reload" />
       </div>
     </div>
-  </Layout>
+  </div>
 </template>
 <script>
 import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
-import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 // Modal
@@ -104,7 +103,6 @@ import {
 } from "@/api/productApi.js";
 export default defineComponent({
   components: {
-    Layout,
     PageHeader,
     CategoryModal,
   },

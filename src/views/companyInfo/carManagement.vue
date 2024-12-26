@@ -1,6 +1,6 @@
 <!-- 車輛管理新版, 改寫中 -->
 <template>
-  <Layout>
+  <div>
     <PageHeader title="車輛管理">
       <template #actions>
         <!-- actions -->
@@ -147,11 +147,10 @@
 
     <!-- Modals -->
     <CarModal ref="modalRef" @reload="reload" />
-  </Layout>
+  </div>
 </template>
 <script>
 import { defineComponent, reactive, ref, onMounted } from "vue";
-import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import ImportFile from "@/components/importFile.vue";
@@ -159,12 +158,11 @@ import { carTableColumn } from "./component/data";
 import { filterNullValues } from "@/utils/common";
 // Modal
 import { Tag } from "ant-design-vue";
-import CarModal from "./component/carModal.vue";
+import CarModal from "./component/CarModal.vue";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 
 export default defineComponent({
   components: {
-    Layout,
     PageHeader,
     CarModal,
     ImportFile,
@@ -290,6 +288,10 @@ export default defineComponent({
 .customer-management__wrapper {
   border-radius: 8px;
   background-color: #fff;
+
+  .wrapper {
+    max-width: 1200px;
+  }
 
   :deep(.ant-spin) {
     width: 100%;

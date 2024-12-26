@@ -107,6 +107,14 @@ export default defineComponent({
       manufacture: null, // 出廠日期
       testDate: null, // 驗車日
       insuranceDate: null, // 保險日期
+      insuranceDateEnd: null, // 車險迄止日
+      takeOver: null, // 車輛接手日
+      loanDue: null, // 貸款到期日
+      contractExpired: null, // 司機合約到期日
+      renewalDate: null, // 補換照日(行照)
+      licenseValid: null, // 行照有效日
+      cargoInsuranceDue: null, // 貨物險到期日
+
       emissions: null, // 排放量(c.c.)
       price: null, // 車價
       status: null, // 車輛狀態

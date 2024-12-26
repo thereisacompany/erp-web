@@ -42,7 +42,7 @@
 .navbar-brand-box {
   padding: 0 10px;
   text-align: center;
-  width: 200px;
+  width: 220px;
 }
 
 .logo {
@@ -277,7 +277,7 @@ body[data-layout="horizontal"] .page-content {
   position: absolute;
   left: 0;
   color: #74788d;
-  right: 200px;
+  right: 220px;
   height: 60px;
   background-color: #f2f2f5;
 }
@@ -389,7 +389,7 @@ body[data-layout="horizontal"] .footer {
 }
 
 .vertical-menu {
-  width: 200px;
+  width: 220px;
   z-index: 1001;
   background: #ffffff;
   bottom: 0;
@@ -912,7 +912,7 @@ body[data-sidebar="colored"].vertical-collpsed
   ul
   li.mm-active
   .active {
-  color: #556ee6 !important;
+  color: #383838 !important;
 }
 
 body[data-sidebar="colored"].vertical-collpsed

@@ -1,5 +1,5 @@
 <script>
-import Layout from "../../../layouts/main";
+import Layout from "../../../layouts/index";
 import appConfig from "@/app.config";
 import PageHeader from "@/components/page-header.vue";
 

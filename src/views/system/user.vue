@@ -1,6 +1,6 @@
 <!-- 用戶管理新版, 改寫完成 -->
 <template>
-  <Layout>
+  <div>
     <PageHeader title="用戶管理">
       <template #actions>
         <!-- actions -->
@@ -54,6 +54,8 @@
             :checkbox-config="{ highlight: true }"
             :scroll-x="{ enabled: false }"
             :loading="loading"
+            auto-resize
+            style="width: 100%"
           >
             <vxe-column type="seq" width="5%" title="#"></vxe-column>
             <vxe-column
@@ -96,11 +98,10 @@
         <UserModal ref="modalRef" @openTips="openTips" @submit="reload" />
       </div>
     </div>
-  </Layout>
+  </div>
 </template>
 <script>
 import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
-import Layout from "@/router/layouts/main.vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
@@ -112,7 +113,6 @@ import { getUserList, resetUserPassword } from "@/api/systemApi.js";
 import { filterNullValues } from "@/utils/common";
 export default defineComponent({
   components: {
-    Layout,
     PageHeader,
     Filter,
     UserModal,
@@ -144,7 +144,7 @@ export default defineComponent({
     const currentPage = ref(1);
     const pageSize = ref(10);
     const total = ref(0);
-
+    const loading = ref(false);
     // Modal
     const modalRef = ref(null);
     // filter
@@ -164,6 +164,7 @@ export default defineComponent({
 
     // 取得data
     function fetchData() {
+      loading.value = true;
       // 串接api
       getUserList(currentPage.value, pageSize.value, searchParams.value).then(
         (apiResult) => {
@@ -171,6 +172,10 @@ export default defineComponent({
           tableData.value = apiResult.rows;
         }
       );
+
+      setTimeout(() => {
+        loading.value = false;
+      }, 300);
     }
 
     // 篩選器查詢
@@ -279,6 +284,7 @@ export default defineComponent({
       total,
       modalRef,
       reload,
+      loading,
     };
   },
 });
@@ -305,6 +311,10 @@ export default defineComponent({
 .user {
   border-radius: 8px;
   background-color: #fff;
+  width: 100%;
+  .wrapper {
+    max-width: 1200px;
+  }
 
   :deep(.ant-spin) {
     width: 100%;

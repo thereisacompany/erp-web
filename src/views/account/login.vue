@@ -184,13 +184,13 @@ export default defineComponent({
 }
 .login__wrapper {
   height: 100vh;
-  background: linear-gradient(132deg, #fffcfc, #9fb4f8);
+  // background: linear-gradient(132deg, #fffcfc, #9fb4f8);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   position: relative;
   color: #606266;
-
+  background: #f5f5f5;
   .wrapper {
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
