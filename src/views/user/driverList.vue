@@ -9,7 +9,7 @@ import { server } from "@/api";
 import common from "@/api/common";
 
 import appConfig from "@/app.config";
-import ImportFile from "@/components/importFile.vue";
+import ImportFile from "@/components/ImportFile.vue";
 /**
  * Customers component
  */

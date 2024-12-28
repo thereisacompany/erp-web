@@ -388,10 +388,6 @@ export default defineComponent({
   //   }
   // }
 }
-
-.popover-menu {
-  border: 1px solid red;
-}
 </style>
 
 

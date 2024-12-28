@@ -82,7 +82,7 @@
 
     <!-- Product List -->
     <div class="product-management__wrapper main-wrapper">
-      <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
+      <Loading v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="category__table">
@@ -164,7 +164,8 @@
 import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
-import ImportFile from "@/components/importFile.vue";
+import ImportFile from "@/components/ImportFile.vue";
+import Loading from "@/components/Loading.vue";
 import { productsTableColumn } from "./component/data";
 import { filterNullValues } from "@/utils/common";
 // Modal
@@ -183,6 +184,7 @@ export default defineComponent({
     ASelect: Select,
     ATreeSelect: TreeSelect,
     ATag: Tag,
+    Loading,
   },
   setup() {
     // filter

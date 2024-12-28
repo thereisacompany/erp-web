@@ -108,11 +108,7 @@ export default {
 <template>
   <div>
     <div id="layout-wrapper">
-      <Sidebar
-        :isOpen="isOpen"
-        :activeTab="activeTab"
-        @openNewTab="openNewTab"
-      />
+      <Sidebar :isOpen="isOpen" :activeTab="activeTab" />
       <Navbar
         :tabs="tabs"
         :activeTab="activeTab"

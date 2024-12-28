@@ -49,7 +49,7 @@
 
     <!-- Customer List -->
     <div class="customer-management__wrapper main-wrapper">
-      <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
+      <Loading v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="customer__table">
@@ -126,9 +126,11 @@
 import { defineComponent, reactive, ref, onMounted } from "vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
-import ImportFile from "@/components/importFile.vue";
+import ImportFile from "@/components/ImportFile.vue";
 import { productsTableColumn } from "./component/data";
 import { filterNullValues } from "@/utils/common";
+import Filter from "@/components/Filter.vue";
+import Loading from "@/components/Loading.vue";
 // Modal
 import { Tag } from "ant-design-vue";
 import CustomerModal from "./component/CustomerModal.vue";
@@ -140,6 +142,8 @@ export default defineComponent({
     CustomerModal,
     ImportFile,
     ATag: Tag,
+    Filter,
+    Loading,
   },
   setup() {
     // filter

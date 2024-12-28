@@ -19,7 +19,8 @@
 
     <!-- Product Category List -->
     <div class="product-category__wrapper main-wrapper">
-      <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
+      <Loading v-if="loading" />
+
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="category__table">
@@ -92,6 +93,7 @@
 import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
+import Loading from "@/components/Loading.vue";
 // Modal
 import { Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
@@ -105,6 +107,7 @@ export default defineComponent({
   components: {
     PageHeader,
     CategoryModal,
+    Loading,
   },
   setup() {
     // table

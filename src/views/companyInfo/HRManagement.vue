@@ -69,7 +69,7 @@
 
     <!--  人事列表 -->
     <div class="HR-management__wrapper main-wrapper">
-      <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
+      <Loading v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="HR__table">
@@ -137,9 +137,11 @@
 import { defineComponent, reactive, ref, onMounted } from "vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
-import ImportFile from "@/components/importFile.vue";
+import ImportFile from "@/components/ImportFile.vue";
 import { HRTableColumn, typeOptions } from "./component/data";
 import { filterNullValues, containsOnlySpecificItems } from "@/utils/common";
+import Filter from "@/components/Filter.vue";
+import Loading from "@/components/Loading.vue";
 // Modal
 import { Select, Tag } from "ant-design-vue";
 import MemberModal from "./component/MemberModal.vue";
@@ -152,6 +154,8 @@ export default defineComponent({
     ImportFile,
     ATag: Tag,
     ASelect: Select,
+    Filter,
+    Loading,
   },
   setup() {
     // filter

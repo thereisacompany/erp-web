@@ -23,7 +23,7 @@ import {
   message,
   Spin,
 } from "ant-design-vue";
-import ImportFile from "@/components/importFile.vue";
+import ImportFile from "@/components/ImportFile.vue";
 import { InfoCircleOutlined } from "@ant-design/icons-vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
@@ -2163,7 +2163,7 @@ export default {
             </div>
 
             <div class="table-responsive">
-              <a-spin :indicator="indicator" v-if="loading" :tip="loadingTip" />
+              <a-spin size="large" v-if="loading" :tip="loadingTip" />
               <table
                 class="table table-centered table-nowrap align-middle"
                 v-else
@@ -2439,7 +2439,7 @@ export default {
                   </div>
                   <div class="row py-1">
                     <div class="col-sm-12">
-                      <a-spin :indicator="indicator" v-if="loading" />
+                      <a-spin size="large" v-if="loading" />
                       <div
                         class="table-responsive detail-table"
                         tip="載入中..."

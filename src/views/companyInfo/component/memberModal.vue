@@ -96,7 +96,7 @@ import { filterNullToEmptyString, assignFilteredKeys } from "@/utils/common";
 import { memberFormItem, typeOptions } from "./data";
 import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
 import locale from "ant-design-vue/es/date-picker/locale/zh_TW";
-import UploadPicture from "@/components/uploadPicture.vue";
+import UploadPicture from "@/components/UploadPicture.vue";
 import { getUploadFileSizeLimit } from "@/api/commonApi";
 import dayjs, { Dayjs } from "dayjs";
 export default defineComponent({

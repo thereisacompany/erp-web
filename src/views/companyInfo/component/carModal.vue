@@ -31,14 +31,28 @@
             ]"
           >
             <a-select
-              v-if="item.field == 'type'"
+              v-if="item.field == 'driver'"
               v-model:value="formData[item.field]"
               placeholder="請選擇"
-              :options="typeOptions(false)"
-              :field-names="{
-                label: 'type',
-                value: 'value',
+              :options="driverList"
+              show-search
+              option-filter-prop="supplier"
+              :fieldNames="{
+                label: 'supplier',
+                value: 'id',
               }"
+            >
+            </a-select>
+
+            <a-select
+              v-else-if="item.field == 'status' || item.field == 'ownership'"
+              v-model:value="formData[item.field]"
+              placeholder="請選擇"
+              :options="
+                item.field == 'status'
+                  ? cartModalStatusOption
+                  : cartModalOwnerOption
+              "
             >
             </a-select>
 
@@ -74,10 +88,16 @@ import {
   DatePicker,
 } from "ant-design-vue";
 import { filterNullToEmptyString, assignFilteredKeys } from "@/utils/common";
-import { carFormItem, typeOptions } from "./data";
-import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
+import {
+  carFormItem,
+  cartModalStatusOption,
+  cartModalOwnerOption,
+} from "./data";
+import { addNewCar, updateCarInfo } from "@/api/companyInfoApi.js";
 import locale from "ant-design-vue/es/date-picker/locale/zh_TW";
 import dayjs, { Dayjs } from "dayjs";
+import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
+
 export default defineComponent({
   components: {
     ARow: Row,
@@ -100,7 +120,7 @@ export default defineComponent({
       id: null,
       licensePlateNumber: null, // 車牌號碼
       brandModel: null, // 品牌型號
-      driverName: null, // 司機
+      driver: null, // 司機
       color: null, // 車身顏色
       mileage: null, // 里程數(公里)
       engineNumber: null, // 引擎號碼
@@ -114,7 +134,6 @@ export default defineComponent({
       renewalDate: null, // 補換照日(行照)
       licenseValid: null, // 行照有效日
       cargoInsuranceDue: null, // 貨物險到期日
-
       emissions: null, // 排放量(c.c.)
       price: null, // 車價
       status: null, // 車輛狀態
@@ -123,13 +142,12 @@ export default defineComponent({
     });
     // 用來存儲原始日期對象
     const rawDate = reactive({});
-
+    // store
+    const companyInfoStore = useCompanyInfoStore();
     // 上傳檔案大小限制
     const fileSizeLimit = ref(null);
     const isUpload = ref(false);
-    // store
-    const companyInfoStore = useCompanyInfoStore();
-
+    const driverList = ref();
     // 車輛類型選擇司機或師傅才顯示帳號密碼欄位
     const showForm = (field) => {
       let show = true;
@@ -147,18 +165,21 @@ export default defineComponent({
       if (rowData) {
         // 只留下formData中有的值
         assignFilteredKeys(formData, rowData);
-        console.log("formData.license0", formData.license);
-        // 出廠日期
-        rawDate.manufacture = formData.manufacture
-          ? dayjs(formData.manufacture)
-          : null;
-        // 驗車日
-        rawDate.testDate = formData.testDate ? dayjs(formData.testDate) : null;
-        // 保險日期
-        rawDate.insuranceDate = formData.insuranceDate
-          ? dayjs(formData.insuranceDate)
-          : null;
+        carFormItem.forEach((item) => {
+          if (item.showDataPicker) {
+            rawDate[item.key] = formData[item.key]
+              ? dayjs(formData[item.key])
+              : null;
+          }
+        });
+
+        console.log("rawDate", rawDate);
+        formData.status = formData.status == 0 ? null : formData.status;
+        formData.ownership =
+          formData.ownership == 0 ? null : formData.ownership;
       }
+
+      console.log("formData", formData);
     }
 
     // 關閉modal
@@ -183,14 +204,14 @@ export default defineComponent({
       if (type.value == "add") {
         data.id = 0;
         data.supplierall = data.supplier;
-        result = await companyInfoStore.addMember(data);
+        result = await addNewCar(data);
       } else {
-        result = await companyInfoStore.editMember(data);
+        result = await updateCarInfo(data);
       }
       if (result.data.code == 200 && result.data.data.message == "成功") {
         message.success(
           `成功${type.value == "add" ? "新增" : "編輯"}車輛成功： ${
-            data.supplier
+            data.driver
           }`
         );
 
@@ -218,7 +239,16 @@ export default defineComponent({
       { deep: true } // 深度監控
     );
 
-    onMounted(() => {});
+    onMounted(async () => {
+      const params = {
+        currentPage: 1,
+        pageSize: 1000,
+        filter: JSON.stringify({ type: "家電-司機" }),
+      };
+      await companyInfoStore.fetchAllMember(params);
+      const result = companyInfoStore.getAllMemberList;
+      driverList.value = result;
+    });
 
     return {
       open,
@@ -230,12 +260,14 @@ export default defineComponent({
       wrapperCol,
       type,
       formItemStatus,
-      typeOptions,
       showForm,
       locale,
       fileSizeLimit,
       Dayjs,
       rawDate,
+      cartModalStatusOption,
+      cartModalOwnerOption,
+      driverList,
     };
   },
 });

@@ -6,7 +6,7 @@ import common from "@/api/common";
 import Swal from "sweetalert2";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
-import ImportFile from "@/components/importFile.vue";
+import ImportFile from "@/components/ImportFile.vue";
 
 export default {
   components: { Layout, PageHeader, ImportFile },

@@ -431,8 +431,8 @@ export const carFormItem = [
     showDataPicker: false
   },
   {
-    field: 'driverName',
-    key: 'driverName',
+    field: 'driver',
+    key: 'driver',
     label: '司機',
     required: false,
     span: 6,
@@ -582,4 +582,32 @@ export const carFormItem = [
     span: 12,
     showDataPicker: false
   },
+]
+
+// 車輛管理 modal 車輛狀態選項
+export const cartModalStatusOption = [
+  {
+    label: '白牌',
+    value: 1
+  },
+  {
+    label: '綠牌',
+    value: 2
+  }
+]
+
+// 車輛管理 modal 歸屬選項
+export const cartModalOwnerOption = [
+  {
+    label: '公司',
+    value: 1
+  },
+  {
+    label: '私人',
+    value: 2
+  },
+  {
+    label: '租用',
+    value: 3
+  }
 ]

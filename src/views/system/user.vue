@@ -42,7 +42,7 @@
     ></Filter>
     <!-- User Data List -->
     <div class="user-management__wrapper main-wrapper">
-      <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
+      <Loading v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="user__table">
@@ -105,7 +105,8 @@ import { defineComponent, reactive, ref, onMounted, createVNode } from "vue";
 import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import { ExclamationCircleOutlined } from "@ant-design/icons-vue";
-import Filter from "@/components/filter.vue";
+import Filter from "@/components/Filter.vue";
+import Loading from "@/components/Loading.vue";
 // Modal
 import UserModal from "./component/UserModal.vue";
 import { Modal, message } from "ant-design-vue";
@@ -116,6 +117,7 @@ export default defineComponent({
     PageHeader,
     Filter,
     UserModal,
+    Loading,
   },
   setup() {
     // table

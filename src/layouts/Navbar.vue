@@ -88,7 +88,7 @@ export default defineComponent({
   },
   emits: ["handleSwitchTab", "handleCloseTab", "handleToggleOpenSidebar"],
   setup(_, { emit }) {
-    const openStatus = ref(null);
+    const openStatus = ref(true);
     function switchTab(name) {
       emit("handleSwitchTab", name);
     }

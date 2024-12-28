@@ -9,7 +9,7 @@
       <span class="">{{ name }}</span></a-button
     >
     <input
-      ref="importFile"
+      ref="ImportFile"
       type="file"
       class="d-none"
       accept=".xls,.xlsx"
@@ -34,18 +34,18 @@ export default {
   },
   emits: ["importSuccess", "loading"],
   setup(props, { emit }) {
-    const importFile = ref(null);
+    const ImportFile = ref(null);
     // 按鈕名稱
     const name = ref(props.buttonName);
 
     function handleOpenFile() {
-      importFile.value.click();
+      ImportFile.value.click();
     }
 
     // 上傳檔案
     async function handleUpload(event) {
       emit("loading");
-      let fileList = importFile.value.files[0];
+      let fileList = ImportFile.value.files[0];
       const formData = new FormData();
       formData.append("file", fileList);
       // console.log("handleUpload formData", formData);
@@ -94,7 +94,7 @@ export default {
     return {
       name,
       handleUpload,
-      importFile,
+      ImportFile,
       handleOpenFile,
     };
   },

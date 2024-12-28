@@ -46,7 +46,7 @@
     </Filter>
 
     <div class="role-management__wrapper main-wrapper">
-      <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
+      <Loading v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
         <div class="role__table">
@@ -159,8 +159,8 @@ import {
   ExclamationCircleOutlined,
   LoadingOutlined,
 } from "@ant-design/icons-vue";
-import Filter from "@/components/filter.vue";
-
+import Filter from "@/components/Filter.vue";
+import Loading from "@/components/Loading.vue";
 // Modal
 import AddModal from "./component/AddModal.vue";
 import TipsModal from "./component/TipsModal.vue";
@@ -179,6 +179,7 @@ export default defineComponent({
     ARow: Row,
     ACol: Col,
     Filter,
+    Loading,
   },
   setup() {
     const filterValue = reactive({ name: undefined, description: undefined });
