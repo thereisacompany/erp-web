@@ -115,7 +115,7 @@ export default {
       />
       <div
         class="wrapper__page-content"
-        :style="{ width: `calc(100vw - 36px - ${isOpen ? '220' : '60'}px)` }"
+        :style="{ width: `calc(100vw - 36px - ${isOpen ? '220' : '80'}px)` }"
       >
         <Navbar
           :tabs="tabs"

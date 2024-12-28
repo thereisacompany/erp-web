@@ -307,7 +307,7 @@ export default defineComponent({
           }
 
           button:hover {
-            background: #f7a100;
+            background: #f77c00;
           }
         }
       }
@@ -324,6 +324,8 @@ export default defineComponent({
     height: 32px;
     font-size: 16px;
     color: #606266;
+    padding: 0 12px;
+    background: transparent;
   }
 
   :deep(.ant-form-item-label label) {

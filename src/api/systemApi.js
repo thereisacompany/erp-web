@@ -99,7 +99,7 @@ export function userLogin(data) {
 // 登出
 export function fetchLoginOut() {
   let url = `/user/logout`;
-  console.log('登出')
+
 
   return server
     .get(url)
@@ -108,6 +108,9 @@ export function fetchLoginOut() {
         message.success('登出成功')
         localStorage.removeItem("user");
         localStorage.removeItem("user_authList");
+        localStorage.removeItem("openSidebar");
+        localStorage.removeItem("tabs");
+        localStorage.removeItem("activeTab");
         window.location = '/login'
         return
       } else {
@@ -118,6 +121,9 @@ export function fetchLoginOut() {
       console.log("error from fetchLoginOut", error);
       localStorage.removeItem("user");
       localStorage.removeItem("user_authList");
+      localStorage.removeItem("openSidebar");
+      localStorage.removeItem("tabs");
+      localStorage.removeItem("activeTab");
       window.location = '/login'
       return;
     });

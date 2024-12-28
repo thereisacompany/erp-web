@@ -90,6 +90,14 @@
 }
 
 .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #f77b00;
-  border-color: #f77b00;
+  background-color: #f77b00 !important;
+  border-color: #f77b00 !important;
+}
+
+.ant-checkbox-checked:after {
+  border-color: #f77b00 !important;
+}
+
+.remember-me:hover .ant-checkbox-inner {
+  border-color: #f77b00 !important;
 }
