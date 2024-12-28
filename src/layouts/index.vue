@@ -9,7 +9,7 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
-
+    const isOpen = ref(null);
     // 安全加载 tabs 数据
     let storedTabs;
     try {
@@ -24,25 +24,24 @@ export default {
     const tabs = ref(storedTabs); // 确保 tabs 是数组
     const activeTab = ref(localStorage.getItem("activeTab") || null);
 
-    // 动态计算需要缓存的组件
+    // 動態計算緩存的組件
     const cachedComponents = computed(() => tabs.value.map((tab) => tab.name));
 
-    // 打开新 Tab
+    // 開啟新的Tab
     function openTab(name, label = name) {
       if (!tabs.value.some((tab) => tab.name === name)) {
         tabs.value.push({ name, label });
       }
       switchTab(name);
-      console.log("openTab", tabs.value);
     }
 
-    // 切换 Tab
+    // 切換Tab
     function switchTab(name) {
       activeTab.value = name;
       router.push({ name });
     }
 
-    // 关闭 Tab
+    // 關閉Tab
     function closeTab(name) {
       const index = tabs.value.findIndex((tab) => tab.name === name);
       if (index !== -1) {
@@ -61,8 +60,16 @@ export default {
     }
 
     function handleSwitchTab(name) {
-      console.log("handleSwitchTab", name);
       switchTab(name);
+    }
+
+    function handleCloseTab(name) {
+      closeTab(name);
+    }
+
+    // 切換開關Sidebar
+    function handleToggleOpenSidebar() {
+      isOpen.value = localStorage.getItem("openSidebar") == "true";
     }
 
     // 保存 tabs 和 activeTab 到 localStorage
@@ -77,12 +84,9 @@ export default {
       (newActiveTab) => localStorage.setItem("activeTab", newActiveTab)
     );
 
-    // 初始化页面
     onMounted(() => {
-      console.log("route", route);
-
       if (route.name) {
-        openTab(route.name, route.meta.title || route.name); // 打开当前路由
+        openTab(route.name, route.meta.label || route.name); // 打开当前路由
       }
     });
 
@@ -93,6 +97,9 @@ export default {
       openTab,
       closeTab,
       handleSwitchTab,
+      handleCloseTab,
+      handleToggleOpenSidebar,
+      isOpen,
     };
   },
 };
@@ -101,12 +108,24 @@ export default {
 <template>
   <div>
     <div id="layout-wrapper">
-      <Sidebar :type="'open'" :activeTab="activeTab" @openNewTab="openNewTab" />
-      <div class="wrapper__page-content">
-        <Navbar :tabs="tabs" @handleSwitchTab="handleSwitchTab" />
-        activeTab/{{ activeTab }} , tabs / {{ tabs }}
+      <Sidebar
+        :isOpen="isOpen"
+        :activeTab="activeTab"
+        @openNewTab="openNewTab"
+      />
+      <div
+        class="wrapper__page-content"
+        :style="{ width: `calc(100vw - 36px - ${isOpen ? '220' : '60'}px)` }"
+      >
+        <Navbar
+          :tabs="tabs"
+          :activeTab="activeTab"
+          @handleSwitchTab="handleSwitchTab"
+          @handleCloseTab="handleCloseTab"
+          @handleToggleOpenSidebar="handleToggleOpenSidebar"
+        />
         <router-view v-slot="{ Component }">
-          <div v-if="Component">
+          <div v-if="Component" class="component-layout">
             <keep-alive :include="cachedComponents">
               <component :is="Component" :key="Component.name" />
             </keep-alive>
@@ -124,9 +143,14 @@ export default {
   gap: 12px;
   .wrapper {
     &__page-content {
-      // border: 1px solid red;
-      width: calc(100vw - 36px - 220px);
+      position: fixed;
+      right: 12px;
     }
   }
+}
+
+.component-layout {
+  width: 100%;
+  min-width: 1200px;
 }
 </style>

@@ -36,9 +36,8 @@ const routes = [
 			{
 				path: 'analysis',
 				name: 'home',
-				label: '首頁',
 				component: Home,
-				meta: { authRequired: true, keepAlive: true },
+				meta: { label: '首頁', authRequired: true, keepAlive: true },
 			}
 		]
 	},
@@ -47,29 +46,25 @@ const routes = [
 		path: '/system',
 		component: Layout,
 		name: 'system',
-		label: '公司資料管理',
-		meta: { authRequired: true },
+		meta: { label: '公司資料管理', authRequired: true },
 		children: [
 			{
 				path: 'customer',
 				name: 'CustomerManagement',
-				label: '客戶管理',
 				component: CustomerManagement,
-				meta: { keepAlive: true }
+				meta: { label: '客戶管理', keepAlive: true }
 			},
 			{
 				path: 'member',
 				name: 'HRManagement',
-				label: '人事管理',
 				component: HRManagement,
-				meta: { keepAlive: true }
+				meta: { label: '人事管理', keepAlive: true }
 			},
 			{
 				path: 'vehicle',
 				name: 'CarManagement',
-				label: '車輛管理',
 				component: CarManagement,
-				meta: { keepAlive: true }
+				meta: { label: '車輛管理', keepAlive: true }
 			},
 		],
 	},
@@ -77,23 +72,20 @@ const routes = [
 	{
 		path: '/material',
 		name: 'material',
-		label: '商品管理',
 		component: Layout,
-		meta: { authRequired: true },
+		meta: { label: '商品管理', authRequired: true },
 		children: [
 			{
 				path: 'material',
 				name: 'ProductManagement',
-				label: '商品管理',
 				component: ProductManagement,
-				meta: { keepAlive: true }
+				meta: { label: '商品管理', keepAlive: true }
 			},
 			{
 				path: 'material_category',
 				name: 'Category',
-				label: '商品類別',
 				component: Category,
-				meta: { keepAlive: true }
+				meta: { label: '商品類別', keepAlive: true }
 			},
 		],
 	},
@@ -102,42 +94,37 @@ const routes = [
 		path: '/depot',
 		name: 'depot',
 		component: Layout,
-		meta: { authRequired: true },
+		meta: { label: '倉庫管理', authRequired: true },
 		children: [
 			{
 				path: 'list',
 				name: 'DepotList',
-				label: '倉庫別管理',
 				component: DepotList,
-				meta: { keepAlive: true }
+				meta: { label: '倉庫別管理', keepAlive: true }
 			},
 			{
 				path: 'stock_in',
 				name: 'InStockList',
-				label: '進貨單',
 				component: InStockList,
-				meta: { keepAlive: true }
+				meta: { label: '進貨單', keepAlive: true }
 			},
 			{
 				path: 'stock_out',
 				name: 'OutStockList',
-				label: '配送單',
 				component: OutStockList,
-				meta: { keepAlive: true }
+				meta: { label: '配送單', keepAlive: true }
 			},
 			{
 				path: 'move',
 				name: 'MoveStockList',
-				label: '移倉管理',
 				component: MoveStockList,
-				meta: { keepAlive: true }
+				meta: { label: '移倉管理', keepAlive: true }
 			},
 			{
 				path: 'stock_back',
 				name: 'ReturnStockList',
-				label: '退貨單',
 				component: ReturnStockList,
-				meta: { keepAlive: true }
+				meta: { label: '退貨單', keepAlive: true }
 			},
 		],
 	},
@@ -145,23 +132,20 @@ const routes = [
 	{
 		path: '/report',
 		name: 'report',
-		label: '報表查詢',
 		component: Layout,
-		meta: { authRequired: true },
+		meta: { label: '報表查詢', authRequired: true },
 		children: [
 			{
 				path: 'in_out_stock',
 				name: 'InOutStockReport',
-				label: '進銷存統計',
 				component: InOutStockReport,
-				meta: { keepAlive: true }
+				meta: { label: '進銷存統計', keepAlive: true }
 			},
 			{
 				path: 'driver_out',
 				name: 'DriverStockReport',
-				label: '司機配送統計表',
 				component: DriverStockReport,
-				meta: { keepAlive: true }
+				meta: { label: '司機配送統計表', keepAlive: true }
 			},
 		],
 	},
@@ -169,33 +153,36 @@ const routes = [
 	{
 		path: '/system',
 		name: 'systemManagement',
-		label: '系統管理',
 		component: Layout,
-		meta: { authRequired: true },
+		meta: { label: '系統管理', authRequired: true },
 		children: [
 			{
 				path: 'user',
 				name: 'User',
-				label: '用戶管理',
 				component: User,
-				meta: { keepAlive: true }
+				meta: { label: '用戶管理', keepAlive: true }
 			},
 			{
 				path: 'role',
 				name: 'Role',
-				label: '角色管理',
 				component: Role,
-				meta: { keepAlive: true }
+				meta: { label: '角色管理', keepAlive: true }
 			},
 		],
 	},
 	// 修改密碼
 	{
-		path: '/user/changepassword',
-		name: 'ChangePassword',
-		label: '修改密碼',
-		component: ChangePassword,
-		meta: { authRequired: true, keepAlive: true }
+		path: '/user',
+		name: 'UserSetting',
+		component: Layout,
+		meta: { label: '修改密碼', authRequired: true, keepAlive: true },
+		children: [
+			{
+				path: 'changepassword',
+				name: 'ChangePassword',
+				component: ChangePassword,
+				meta: { label: '修改密碼', keepAlive: true }
+			},]
 	},
 	// 登入
 	{

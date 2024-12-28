@@ -54,3 +54,42 @@
 .ant-message {
   z-index: 2000 !important;
 }
+
+.ant-dropdown-menu-title-content a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.popover-submenu {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.popover-submenu__title,
+.popover__title {
+  list-style-type: none;
+  padding: 8px;
+  color: #3b3b3b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.popover-submenu__title.active,
+.popover-submenu__title:hover,
+.popover__title.active,
+.popover__title:hover {
+  background-color: #f77b00;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #f77b00;
+  border-color: #f77b00;
+}

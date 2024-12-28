@@ -54,6 +54,7 @@
         <!-- table -->
         <div class="customer__table">
           <vxe-table
+            :fit="false"
             border="inner"
             ref="tableRef"
             :column-config="{ resizable: true }"

@@ -1,5 +1,4 @@
 <script>
-import Layout from "@/layouts/index.vue";
 import PageHeader from "@/components/page-header.vue";
 
 import { required, helpers } from "@vuelidate/validators";
@@ -18,7 +17,7 @@ export default {
     title: "修改密碼",
     meta: [{ name: "description", content: appConfig.description }],
   },
-  components: { Layout, PageHeader, Icon },
+  components: { PageHeader, Icon },
   data() {
     return {
       customersData: [],
@@ -162,7 +161,7 @@ export default {
 </script>
 
 <template>
-  <Layout>
+  <div>
     <PageHeader :title="title" :items="items" />
 
     <div class="row">
@@ -277,7 +276,7 @@ export default {
       </div>
     </div>
     <!-- end row -->
-  </Layout>
+  </div>
 </template>
 
 <style>

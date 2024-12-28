@@ -3,10 +3,11 @@
     <div class="wrapper">
       <div class="wrapper_login-form">
         <div class="header">
-          <img src="@/assets/images/logo.png" />
+          <img src="@/assets/icons/avatar-7.jpg" style="width: 150px" />
         </div>
 
         <div class="login-form">
+          <h1 style="text-align: center; font-size: 36px">登入</h1>
           <span class="version">v{{ version }}</span>
           <a-form
             :model="formState"
@@ -175,37 +176,68 @@ export default defineComponent({
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    top: -1%;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    top: 50%;
   }
 }
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .login__wrapper {
   height: 100vh;
-  // background: linear-gradient(132deg, #fffcfc, #9fb4f8);
+  // background: linear-gradient(132deg, #fffcfc, #ffcdad);
+  background: linear-gradient(
+    -45deg,
+    #f79f84,
+    #ffd078,
+    #8bdefc,
+    #7cf4d8,
+    #f5f5f5
+  );
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   position: relative;
   color: #606266;
-  background: #f5f5f5;
+  // background: #f5f5f5;
   .wrapper {
-    background: rgba(255, 255, 255, 0.9);
+    background: #fff;
     border-radius: 10px;
-    box-shadow: 0 8px 15px rgb(0 0 0 / 45%);
-    animation: fadeIn 0.5s ease-in-out;
-    min-width: 500px;
-    min-height: 500px;
-    margin-top: 8%;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
+      rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
+      rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+    animation: fadeIn 1s ease-in-out;
+    min-width: 450px;
+    min-height: 400px;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     &_login-form {
       width: 100%;
-      min-height: 500px;
+      min-height: 400px;
+      padding: 20px 0;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      align-items: center;
+      justify-content: space-evenly;
 
       h2 {
         text-align: center;
@@ -217,21 +249,21 @@ export default defineComponent({
 
       .header {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: #556ee6;
-        height: 120px;
-        border-radius: 10px 10px 0 0;
+        gap: 40px;
+        height: 100%;
+        width: 40%;
       }
 
       .login-form {
         padding: 1rem 2rem;
-
+        width: 100%;
         .version {
           text-align: end;
           width: 100%;
           display: block;
-          margin-bottom: 10px;
         }
 
         form {
@@ -253,7 +285,7 @@ export default defineComponent({
           }
 
           .input-group input:focus {
-            border-color: #4458b8;
+            border-color: #f7a100;
             outline: none;
           }
 
@@ -267,7 +299,7 @@ export default defineComponent({
             padding: 0.5rem;
             border: none;
             border-radius: 5px;
-            background: #556ee6;
+            background: #f7a100;
             color: white;
             font-size: 1.25rem;
             cursor: pointer;
@@ -275,7 +307,7 @@ export default defineComponent({
           }
 
           button:hover {
-            background: #4458b8;
+            background: #f7a100;
           }
         }
       }
@@ -285,8 +317,7 @@ export default defineComponent({
   .copyright {
     position: absolute;
     bottom: 20px;
-    animation: fadeIn 1s ease-in-out;
-    color: #606266;
+    color: #fff;
   }
 
   :deep(.ant-input) {
@@ -297,6 +328,15 @@ export default defineComponent({
 
   :deep(.ant-form-item-label label) {
     color: #606266;
+  }
+
+  :deep(.ant-input-affix-wrapper:focus),
+  :deep(.ant-input-affix-wrapper:hover) {
+    border-color: #f7a100;
+  }
+
+  :deep(.ant-input-affix-wrapper-focused) {
+    border-color: #f7a100;
   }
 }
 </style>

@@ -1,12 +1,24 @@
 <template>
-  <div class="side-bar">
+  <div class="side-bar" :class="openSidebar ? 'open' : ''">
     <div class="side-bar__logo">
-      <img src="@/assets/icons/logo.png" alt="logo" />
+      <img
+        v-if="openSidebar"
+        class="logo__open"
+        src="@/assets/icons/logo.png"
+        alt="logo"
+      />
+      <img
+        v-else
+        class="logo__close"
+        src="@/assets/icons/jslbear.png"
+        alt="logo"
+      />
     </div>
     <div class="side-bar__menu">
       <ul>
         <li v-for="menu in menuLists" :key="menu">
           <div
+            v-if="openSidebar"
             class="menu"
             @click="handleClickOpenSubmenu(menu)"
             :class="isActive(menu) ? 'active' : ''"
@@ -14,22 +26,82 @@
             <div class="menu__item">
               <div class="menu__title">
                 <i :class="`icon bx ${menu.icon}`"></i>
-                <span v-if="isOpen">{{ menu.text }}</span>
+                <span>{{ menu.text }}</span>
               </div>
+
               <i
                 :class="
                   activeKey.includes(menu.id)
                     ? `arrow-icon mdi mdi-chevron-down`
                     : `arrow-icon mdi mdi-chevron-up`
                 "
-                v-if="menu.children && isOpen"
+                v-if="menu.children && openSidebar"
               ></i>
             </div>
           </div>
 
+          <a-popover placement="right" v-else>
+            <template #content>
+              <ul class="popover-submenu" v-if="menu.children">
+                <li
+                  class="popover-submenu__title"
+                  v-for="subMenu in menu.children"
+                  :key="subMenu"
+                  :class="subMenu.isActive ? 'active' : ''"
+                  @click="handleClickMenuItem(subMenu)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 48 48"
+                  >
+                    <path
+                      fill="currentColor"
+                      stroke="currentColor"
+                      stroke-linejoin="round"
+                      stroke-width="4"
+                      d="m20 12l12 12l-12 12z"
+                    />
+                  </svg>
+                  <span>{{ subMenu.text }}</span>
+                </li>
+              </ul>
+              <div
+                v-else
+                class="popover__title"
+                :class="isActive(menu) ? 'active' : ''"
+                @click="handleClickOpenSubmenu(menu)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 48 48"
+                >
+                  <path
+                    fill="currentColor"
+                    stroke="currentColor"
+                    stroke-linejoin="round"
+                    stroke-width="4"
+                    d="m20 12l12 12l-12 12z"
+                  />
+                </svg>
+                <span> {{ menu.text }}</span>
+              </div>
+            </template>
+            <div class="menu">
+              <div class="menu__item">
+                <div class="menu__title">
+                  <i :class="`icon bx ${menu.icon}`"></i>
+                </div>
+              </div>
+            </div>
+          </a-popover>
+
           <ul
             class="submenu"
-            v-if="menu.children && activeKey.includes(menu.id) && isOpen"
+            v-if="menu.children && activeKey.includes(menu.id) && openSidebar"
           >
             <li
               class="submenu__title"
@@ -38,7 +110,7 @@
               :class="subMenu.isActive ? 'active' : ''"
               @click="handleClickMenuItem(subMenu)"
             >
-              <span v-if="isOpen">{{ subMenu.text }}</span>
+              <span v-if="openSidebar">{{ subMenu.text }}</span>
             </li>
           </ul>
         </li>
@@ -49,18 +121,21 @@
 <script>
 import { defineComponent, onMounted, ref, watch } from "vue";
 import { server } from "@/api";
+import { Popover } from "ant-design-vue";
+import { Icon } from "@iconify/vue";
 
 export default defineComponent({
   props: {
-    type: String,
+    isOpen: Boolean,
     activeTab: String,
+    APopover: Popover,
+    Icon,
   },
   setup(props) {
     const menuLists = ref();
     const activeKey = ref([]);
-    const isOpen = ref(props.type == "open");
     const isInitialized = ref(true);
-
+    const openSidebar = ref(false);
     // 菜單項目跳轉
     function handleClickMenuItem(menu) {
       window.location = menu.url;
@@ -79,13 +154,9 @@ export default defineComponent({
 
     // 點擊開啟submenu
     function handleClickOpenSubmenu(menu) {
-      if (props.type == "close") {
-        isOpen.value = true;
+      if (!props.isOpen) {
         document.body.classList.remove("vertical-collpsed");
       }
-      console.log("activeKey", activeKey.value);
-      console.log("menu", menu);
-      console.log("children", menu.children);
       if (menu.children == undefined) {
         handleClickMenuItem(menu);
       } else {
@@ -95,12 +166,6 @@ export default defineComponent({
           activeKey.value = activeKey.value.filter((id) => id !== menu.id);
         }
       }
-
-      // menu.haveActive = !menu.haveActive;
-      // menu.children.forEach((children) => {
-      //   console.log("children", children.isActive);
-      //   children.isActive = !children.isActive;
-      // });
     }
 
     // 初始化
@@ -129,6 +194,13 @@ export default defineComponent({
       }
     );
 
+    watch(
+      () => props.isOpen,
+      () => {
+        openSidebar.value = props.isOpen;
+      }
+    );
+
     onMounted(() => {
       let user = JSON.parse(localStorage.getItem("user"));
       if (user) {
@@ -142,7 +214,6 @@ export default defineComponent({
           .post(url, params)
           .then((res) => {
             menuLists.value = res.data;
-            console.log("menuLists", menuLists.value);
             setData();
           })
           .catch((error) => {
@@ -150,8 +221,7 @@ export default defineComponent({
             window.location = "/logout";
           });
       }
-      // console.log("import.meta.env.NODE_ENV", import.meta.env.NODE_ENV);
-      // import.meta.env.
+      openSidebar.value = localStorage.getItem("openSidebar");
     });
 
     return {
@@ -161,8 +231,8 @@ export default defineComponent({
       setData,
       handleClickOpenSubmenu,
       activeKey,
-      isOpen,
       isInitialized,
+      openSidebar,
     };
   },
 });
@@ -170,23 +240,40 @@ export default defineComponent({
 
 
 <style lang="scss" scoped>
-.side-bar {
-  width: 220px;
-  height: calc(100vh - 24px);
-  border-radius: 12px;
-  background-color: #212121;
-  padding: 15px 20px;
-
-  &__logo {
-    img {
-      width: 100%;
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.side-bar {
+  width: 80px;
+  min-height: calc(100vh - 24px);
+  height: calc(100% - 24px);
+  border-radius: 12px;
+  background-color: #3b3b3b;
+  padding: 15px 20px;
+  position: fixed;
+
+  .logo__open {
+    width: 100%;
+    padding: 0 4px;
+  }
+
+  .logo__close {
+    width: 43px;
+  }
+
   &__menu {
     margin-top: 15px;
-
+    border-radius: 4px;
     .menu.active {
-      background-color: #383838;
+      background-color: #f77b00;
       border-radius: 4px;
     }
 
@@ -212,10 +299,13 @@ export default defineComponent({
           height: 40px;
           margin: 5px 0;
           padding: 8px;
+          transition: transform 0.3s ease, background-color 0.3s ease;
+          border-radius: 4px;
 
           &:hover {
-            background-color: #383838;
+            background-color: #f77b00;
             border-radius: 4px;
+            transform: scale(1.05);
           }
 
           &__item {
@@ -257,9 +347,13 @@ export default defineComponent({
             width: 100%;
             padding: 0 0 0 45px;
             margin: 5px 0;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            border-radius: 4px;
+
             &:hover {
-              background-color: #383838;
+              background-color: #f77b00;
               border-radius: 4px;
+              transform: scale(1.05);
             }
 
             span {
@@ -275,11 +369,28 @@ export default defineComponent({
       }
 
       li.active {
-        background-color: #383838;
+        background-color: #f77b00;
         border-radius: 4px;
+        transform: scale(1.05);
       }
     }
   }
+}
+
+.open {
+  width: 220px;
+  // .side-bar__menu {
+  //   ul li {
+  //     .menu {
+  //       &__title span {
+  //       }
+  //     }
+  //   }
+  // }
+}
+
+.popover-menu {
+  border: 1px solid red;
 }
 </style>
 
