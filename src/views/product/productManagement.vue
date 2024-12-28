@@ -81,7 +81,7 @@
     </Filter>
 
     <!-- Product List -->
-    <div class="product-management__wrapper p-3">
+    <div class="product-management__wrapper main-wrapper">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->

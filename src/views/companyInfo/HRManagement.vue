@@ -68,7 +68,7 @@
     </Filter>
 
     <!--  人事列表 -->
-    <div class="HR-management__wrapper p-3">
+    <div class="HR-management__wrapper main-wrapper">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->

@@ -45,7 +45,7 @@
       </template>
     </Filter>
 
-    <div class="role py-4 px-5">
+    <div class="role-management__wrapper main-wrapper">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
@@ -456,7 +456,7 @@ export default defineComponent({
     color: #fff;
   }
 }
-.role {
+.role-management__wrapper {
   border-radius: 8px;
   background-color: #fff;
 

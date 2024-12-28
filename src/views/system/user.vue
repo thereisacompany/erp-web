@@ -41,7 +41,7 @@
         ></a-form> </template
     ></Filter>
     <!-- User Data List -->
-    <div class="user py-4 px-5">
+    <div class="user-management__wrapper main-wrapper">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
@@ -308,13 +308,10 @@ export default defineComponent({
   }
 }
 
-.user {
+.user-management__wrapper {
   border-radius: 8px;
   background-color: #fff;
   width: 100%;
-  .wrapper {
-    max-width: 1200px;
-  }
 
   :deep(.ant-spin) {
     width: 100%;

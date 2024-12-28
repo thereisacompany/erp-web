@@ -1,5 +1,11 @@
 <template>
-  <div class="navbar">
+  <div
+    class="navbar"
+    :style="{
+      left: `calc( ${openStatus ? '220' : '80'}px + 24px)`,
+      width: `calc( 100% - (${openStatus ? '220' : '80'}px + 36px))`,
+    }"
+  >
     <div class="navbar-content">
       <button
         class="navbar__toggle-menu-btn"
@@ -123,9 +129,11 @@ export default defineComponent({
 .navbar {
   background-color: #fff;
   height: 50px;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   padding: 0 12px;
+  position: fixed;
+  top: 12px;
 
   &-content {
     display: flex;

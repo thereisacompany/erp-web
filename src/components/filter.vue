@@ -5,16 +5,15 @@
       v-model:activeKey="activeKey"
       :bordered="false"
       expandIconPosition="end"
-      style="background: rgb(255, 255, 255)"
     >
       <template #expandIcon="{ isActive }">
         <UpOutlined :rotate="isActive ? 180 : 0" style="font-size: 18px" />
       </template>
-      <a-collapse-panel :key="0" style="overflow: hidden; margin-bottom: 24px">
+      <a-collapse-panel :key="0" style="overflow: hidden">
         <template #header>
           <div class="d-flex align-items-center gap-2">
             <SearchOutlined style="font-size: 18px" />
-            <span>篩選器</span>
+            <span style="font-size: 15px; font-weight: 500">篩選器</span>
           </div>
         </template>
         <slot name="form" />
@@ -77,6 +76,10 @@ export default defineComponent({
 <style scoped>
 :deep(.ant-collapse-content-box) {
   display: flex;
+}
+
+.filter {
+  margin: 8px 12px;
 }
 
 .filter-buttons {

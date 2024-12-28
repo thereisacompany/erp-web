@@ -18,7 +18,7 @@
     </PageHeader>
 
     <!-- Product Category List -->
-    <div class="category py-5 px-5">
+    <div class="product-category__wrapper main-wrapper">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
@@ -195,7 +195,7 @@ export default defineComponent({
   }
 }
 
-.category {
+.product-category__wrapper {
   border-radius: 8px;
   background-color: #fff;
 

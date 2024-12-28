@@ -113,17 +113,20 @@ export default {
         :activeTab="activeTab"
         @openNewTab="openNewTab"
       />
+      <Navbar
+        :tabs="tabs"
+        :activeTab="activeTab"
+        @handleSwitchTab="handleSwitchTab"
+        @handleCloseTab="handleCloseTab"
+        @handleToggleOpenSidebar="handleToggleOpenSidebar"
+      />
       <div
         class="wrapper__page-content"
-        :style="{ width: `calc(100vw - 36px - ${isOpen ? '220' : '80'}px)` }"
+        :style="{
+          width: `calc(100% - 36px - ${isOpen ? '220' : '80'}px)`,
+          left: `calc(${isOpen ? '220' : '80'}px + 24px)`,
+        }"
       >
-        <Navbar
-          :tabs="tabs"
-          :activeTab="activeTab"
-          @handleSwitchTab="handleSwitchTab"
-          @handleCloseTab="handleCloseTab"
-          @handleToggleOpenSidebar="handleToggleOpenSidebar"
-        />
         <router-view v-slot="{ Component }">
           <div v-if="Component" class="component-layout">
             <keep-alive :include="cachedComponents">
@@ -143,8 +146,9 @@ export default {
   gap: 12px;
   .wrapper {
     &__page-content {
-      position: fixed;
-      right: 12px;
+      overflow: auto;
+      position: absolute;
+      top: 74px;
     }
   }
 }
@@ -152,5 +156,9 @@ export default {
 .component-layout {
   width: 100%;
   min-width: 1200px;
+  height: calc(100vh - 86px);
+  overflow-y: scroll;
+  background: #fff;
+  border-radius: 8px;
 }
 </style>

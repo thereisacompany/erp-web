@@ -64,7 +64,7 @@
     </Filter>
 
     <!-- Car List -->
-    <div class="customer-management__wrapper p-3">
+    <div class="car-management__wrapper main-wrapper">
       <a-spin :indicator="indicator" tip="Loading..." v-if="loading" />
       <div class="wrapper" v-else>
         <!-- table -->
@@ -285,13 +285,9 @@ export default defineComponent({
   gap: 10px;
 }
 
-.customer-management__wrapper {
+.car-management__wrapper {
   border-radius: 8px;
   background-color: #fff;
-
-  .wrapper {
-    max-width: 1200px;
-  }
 
   :deep(.ant-spin) {
     width: 100%;

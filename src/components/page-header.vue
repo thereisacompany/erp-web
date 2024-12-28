@@ -17,22 +17,19 @@ export default {
 </script>
 
 <template>
-  <!-- start page title -->
-  <div class="row">
-    <div class="col-12">
-      <div
-        class="page-title-box d-flex align-items-center justify-content-between"
-      >
-        <h1 class="mb-0 font-size-24">{{ title }}</h1>
-
-        <div class="page-title-right" v-if="items.length > 0">
-          <b-breadcrumb :items="items" class="m-0"></b-breadcrumb>
-        </div>
-        <div v-else>
-          <slot name="actions"></slot>
-        </div>
-      </div>
-    </div>
+  <div class="page-header">
+    <h3 class="">{{ title }}</h3>
+    <slot name="actions"></slot>
   </div>
-  <!-- end page title -->
 </template>
+
+<style lang="scss" scoped>
+.page-header {
+  width: 100%;
+  display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+}
+</style>

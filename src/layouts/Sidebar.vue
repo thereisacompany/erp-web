@@ -252,13 +252,13 @@ export default defineComponent({
 }
 
 .side-bar {
+  position: fixed;
   width: 80px;
   min-height: calc(100vh - 24px);
   height: calc(100% - 24px);
-  border-radius: 12px;
+  border-radius: 8px;
   background-color: #3b3b3b;
   padding: 15px 20px;
-  position: fixed;
 
   .logo__open {
     width: 100%;
