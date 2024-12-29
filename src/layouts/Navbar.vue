@@ -106,7 +106,7 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      openStatus.value = localStorage.getItem("openSidebar") == "true";
+      localStorage.setItem("openSidebar", openStatus.value);
       emit("handleToggleOpenSidebar");
     });
 

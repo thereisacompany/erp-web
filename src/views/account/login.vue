@@ -159,6 +159,8 @@ export default defineComponent({
         );
         formState.loginName = rememberedUser.loginName;
         rememberMe.value = true;
+      } else {
+        handleClickRemember();
       }
     });
 

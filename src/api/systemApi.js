@@ -99,8 +99,6 @@ export function userLogin(data) {
 // 登出
 export function fetchLoginOut() {
   let url = `/user/logout`;
-
-
   return server
     .get(url)
     .then((res) => {
@@ -111,6 +109,7 @@ export function fetchLoginOut() {
         localStorage.removeItem("openSidebar");
         localStorage.removeItem("tabs");
         localStorage.removeItem("activeTab");
+        localStorage.removeItem("menu");
         window.location = '/login'
         return
       } else {
@@ -124,6 +123,7 @@ export function fetchLoginOut() {
       localStorage.removeItem("openSidebar");
       localStorage.removeItem("tabs");
       localStorage.removeItem("activeTab");
+      localStorage.removeItem("menu");
       window.location = '/login'
       return;
     });

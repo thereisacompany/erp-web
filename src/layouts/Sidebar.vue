@@ -202,24 +202,31 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      let user = JSON.parse(localStorage.getItem("user"));
-      if (user) {
-        const userId = user.UserID;
-        const url = `/function/findMenuByPNumber`;
-        const params = {
-          pNumber: 0,
-          userId: userId,
-        };
-        server
-          .post(url, params)
-          .then((res) => {
-            menuLists.value = res.data;
-            setData();
-          })
-          .catch((error) => {
-            console.log("error from findMenuByPNumber", error);
-            window.location = "/logout";
-          });
+      const userMenu = localStorage.getItem("menu");
+      if (userMenu) {
+        menuLists.value = JSON.parse(userMenu);
+        setData();
+      } else {
+        let user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          const userId = user.UserID;
+          const url = `/function/findMenuByPNumber`;
+          const params = {
+            pNumber: 0,
+            userId: userId,
+          };
+          server
+            .post(url, params)
+            .then((res) => {
+              menuLists.value = res.data;
+              localStorage.setItem("menu", JSON.stringify(menuLists.value));
+              setData();
+            })
+            .catch((error) => {
+              console.log("error from findMenuByPNumber", error);
+              window.location = "/logout";
+            });
+        }
       }
       openSidebar.value = localStorage.getItem("openSidebar");
     });
