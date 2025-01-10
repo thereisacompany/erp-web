@@ -1,674 +1,410 @@
-<script>
-import Layout from "@/layouts/index.vue";
-import PageHeader from "@/components/page-header.vue";
-import dayjs from "dayjs";
-import { required, helpers } from "@vuelidate/validators";
-import useVuelidate from "@vuelidate/core";
-
-import { server } from "@/api";
-import common from "@/api/common";
-
-import appConfig from "@/app.config";
-import { Tabs, TabPane } from "ant-design-vue";
-/**
- * Customers component
- */
-export default {
-  page: {
-    title: "進銷存統計",
-    meta: [{ name: "description", content: appConfig.description }],
-  },
-  components: { Layout, PageHeader, ATabs: Tabs, ATabPane: TabPane },
-  data() {
-    return {
-      SubView: 0,
-      materialParam: "",
-      organId: "",
-      depotId: "",
-      monthTime: "",
-
-      number: "",
-      beginDate: "",
-      endDate: "",
-      beginTime: "",
-      endTime: "",
-      MaxFileSize: 0,
-      userlist: [],
-      accountlist: [],
-      supplierlist: [],
-      depotList: [],
-      filelist: [],
-      customersData: [],
-      customersItem: [],
-      customersItem_selectindex: -1,
-      materialsList: [],
-      title: "進銷存統計",
-      items: [
-        {
-          text: "報表查詢",
-          href: "javascript:;",
-        },
-        {
-          text: "進銷存統計",
-          active: true,
-        },
-      ],
-
-      showModal: false,
-      submitted: false,
-      showImageModal: false,
-      customers: {
-        id: "",
-
-        organId: "", //57
-        operTime: "", //"2023-03-22 17:21:07"
-        number: "", //"CGRK00000000846"
-        discount: 0, //0
-        discountMoney: 0, //0
-        discountLastMoney: 0, //11
-        otherMoney: 0, //0
-        accountId: "", //17
-        changeAmount: 0, //-11
-        debt: 0, //0
-        type: "入庫", //"入库"
-        subType: "進貨單", //"采购"
-        defaultNumber: "", //"CGRK00000000846"
-        totalPrice: "", //-11
-        accountIdList: "", //""
-        accountMoneyList: "", //""
-        fileName: "", //""
-        status: 0, //"0"
-        remark: "",
-
-        date2: "",
-        time2: "",
-      },
-
-      name: "",
-      remark: "",
-      totalin: 0,
-      totalOut: 0,
-      totalthis: 0,
-
-      IsGetDataing: false,
-      pageSize: 30,
-      totalRows: 0,
-      currentPage: 1,
-      maxPage: 10,
-      activeKey: 0,
-    };
-  },
-  computed: {
-    customersItemAllPrice: function () {
-      if (this.customersItem.filter((x) => x.allPrice != 0).length == 0) {
-        return 0;
-      }
-      let itemallPrice = this.customersItem
-        .filter((x) => x.allPrice != 0)
-        .map((y) => y.allPrice)
-        .reduce((a, b) => a + b);
-
-      return itemallPrice;
-    },
-  },
-  setup() {
-    return { v$: useVuelidate() };
-  },
-  validations: {
-    customers: {
-      organId: {
-        required: helpers.withMessage("請選擇供應商", required),
-      },
-      accountId: {
-        required: helpers.withMessage("請選擇結算帳號", required),
-      },
-    },
-  },
-  mounted() {
-    server.GetSupplierList((rows) => {
-      this.supplierlist = rows;
-    });
-
-    this.beginDate = dayjs().format("YYYY-MM-DD"); //預設起始日期
-    this.endDate = dayjs().format("YYYY-MM-DD"); //預設起始日期
-
-    this.$nextTick(() => {
-      this.GetDepotList(); //倉庫別
-      this.GetData();
-    });
-  },
-  methods: {
-    /**
-     * Modal form submit
-     */
-    // eslint-disable-next-line no-unused-vars
-
-    // formatOrganName(SubItem) {
-    //   if (SubItem == null) return "";
-    //   return (
-    //     common.PadLeftZero(SubItem.organId || "", 3) +
-    //     " " +
-    //     (SubItem.organName || "")
-    //   );
-    // },
-    GetDepotList() {
-      ///jshERP-boot/depot/findDepotByCurrentUser
-      let APIUrl = `/depot/findDepotByCurrentUser`;
-      server
-        .get(APIUrl)
-        .then((res) => {
-          if (res != null && res.data != null && res.status == 200) {
-            let jshdata = res.data.data;
-            this.depotList = jshdata;
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-        });
-    },
-
-    GetSubStock(SubItem) {
-      if (SubItem.IsSubStock == 1) {
-        SubItem.IsSubStock = 0;
-        return;
-      }
-      let APIUrl = `/depotItem/getAllDepotStock`;
-
-      //organId=6&MNumber=0000013&beginDateTime&endDateTime=2024-04-04 23:59:59
-      let APIParameter = `?organId=${this.organId}&MNumber=${SubItem.materialNumber}&depotId=${this.depotId}`;
-
-      // let beginDateTime = "";
-      let endDateTime = "";
-
-      // if (common.IsDate(this.beginDate)) {
-      //   beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
-      //     "YYYY-MM-DD"
-      //   )}`;
-      //   if (common.IsTime(this.beginTime + ":00")) {
-      //     beginDateTime += ` ${this.beginTime + ":00"}`;
-      //   } else {
-      //     beginDateTime += ` 00:00:00`;
-      //   }
-      // }
-      if (common.IsDate(this.endDate)) {
-        endDateTime += `&endDateTime=${dayjs(this.endDate).format(
-          "YYYY-MM-DD"
-        )}`;
-        if (common.IsTime(this.endTime + ":59")) {
-          endDateTime += ` ${this.endTime + ":59"}`;
-        } else {
-          endDateTime += ` 23:59:59`;
-        }
-      }
-      APIParameter += endDateTime;
-      server
-        .get(APIUrl + APIParameter)
-        .then((res) => {
-          if (
-            res != null &&
-            res.data != null &&
-            res.data.code == 200 &&
-            res.data.data != null
-          ) {
-            let jshdata = res.data.data;
-
-            SubItem.IsSubStock = 1;
-            SubItem.SubStockList = jshdata.rows;
-          }
-        })
-        .catch(function (error) {
-          console.log("error", error);
-
-          return;
-        });
-
-      // GET /jshERP-boot/depotItem/getAllDepotStock?organId=6&MNumber=0000013&beginDateTime&endDateTime=2024-04-04 23:59:59
-
-      // {
-      //     "code": 200,
-      //     "data": {
-      //         "rows": [
-      //             {
-      //                 "depotName": "高雄倉",
-      //                 "counterName": "A01",
-      //                 "stock": 30.000000
-      //             },
-      //             {
-      //                 "depotName": "台北倉",
-      //                 "counterName": "A01",
-      //                 "stock": 1.000000
-      //             }
-      //         ]
-      //     }
-      // }
-    },
-
-    GetData() {
-      if (this.IsGetDataing == true) return;
-      this.IsGetDataing = true;
-      let APIUrl = `/depotItem/findByAll`;
-
-      ///depotItem/findByAll?depotId=&monthTime=2023-07&materialParam=&mpList=&column=createTime&order=desc&depotIds=4&field=id,,rowIndex,barCode,materialName,materialStandard,materialModel,materialOther,unitName,unitPrice,prevSum,inSum,outSum,thisSum,thisAllPrice&currentPage=1&pageSize=10
-
-      let APIParameter = `?currentPage=${this.currentPage}&pageSize=${this.pageSize}&mpList=&order=desc`;
-      APIParameter += `&findOrganId=${this.organId}&materialParam=${this.materialParam}&depotIds=${this.depotId}`;
-      let beginDateTime = "";
-      let endDateTime = "";
-
-      if (common.IsDate(this.beginDate)) {
-        beginDateTime += `&beginDateTime=${dayjs(this.beginDate).format(
-          "YYYY-MM-DD"
-        )}`;
-        if (common.IsTime(this.beginTime + ":00")) {
-          //格式: 2023-12-08 22:07:00
-          beginDateTime += ` ${this.beginTime + ":00"}`;
-        } else {
-          beginDateTime += ` 00:00:00`;
-        }
-      }
-      if (common.IsDate(this.endDate)) {
-        endDateTime += `&endDateTime=${dayjs(this.endDate).format(
-          "YYYY-MM-DD"
-        )}`;
-        if (common.IsTime(this.endTime + ":59")) {
-          //格式: 2023-12-08 22:07:00
-          endDateTime += ` ${this.endTime + ":59"}`;
-        } else {
-          endDateTime += ` 23:59:59`;
-        }
-      }
-
-      if (this.activeKey == 0) {
-        APIParameter += endDateTime;
-      } else {
-        APIParameter += beginDateTime + endDateTime;
-      }
-      console.log("activeKey", this.activeKey);
-      console.log("APIParameter", APIParameter);
-      server
-        .get(APIUrl + APIParameter)
-        .then((res) => {
-          if (
-            res != null &&
-            res.data != null &&
-            res.data.code == 200 &&
-            res.data.data != null
-          ) {
-            let jshdata = res.data.data;
-            this.customersData = jshdata.rows;
-            this.totalRows = jshdata.total;
-            this.totalIn = jshdata.totalIn;
-            this.totalThis = jshdata.totalThis;
-            this.totalOut = jshdata.totalOut;
-            this.maxPage =
-              Math.ceil(this.totalRows / this.pageSize) == 0
-                ? 1
-                : Math.ceil(this.totalRows / this.pageSize);
-          }
-          this.IsGetDataing = false;
-          //console.log("datalist:", this.customersData)
-        })
-        .catch(function (error) {
-          console.log("error", error);
-          this.IsGetDataing = false;
-          return;
-        });
-    },
-    // 切換tab後重新預設查詢日期
-    changeTab() {
-      console.log("activeKey", this.activeKey);
-      if (this.activeKey == 0) {
-        this.beginDate = dayjs().format("YYYY-MM-DD"); //預設起始日期為當日
-      } else {
-        this.beginDate = dayjs().format("YYYY-MM-01"); //預設起始日期為第一日
-      }
-      this.currentPage = 1;
-      this.GetData();
-    },
-  },
-};
-</script>
-
+<!-- 進銷存統計新版, 改寫中 -->
 <template>
-  <Layout>
-    <PageHeader :title="title" :items="items" />
-
+  <div class="in-out-stock">
     <a-tabs v-model:activeKey="activeKey" type="card" @change="changeTab">
-      <a-tab-pane :key="0" tab="當日統計"></a-tab-pane>
+      <a-tab-pane :key="0" tab="進銷存統計"></a-tab-pane>
       <a-tab-pane :key="1" tab="歷史統計查詢"></a-tab-pane>
     </a-tabs>
-    <b-modal
-      size="xl"
-      v-model="showImageModal"
-      title="顯示圖片"
-      title-class="text-black font-18"
-      body-class="p-3"
-      hide-footer
-    >
-      <form>
-        <div class="row text-center">
-          <div class="col-12">
-            <img :src="showImageURL" max-width="100%" max-height="100%" />
+
+    <div class="in-out-stock__wrapper">
+      <PageHeader :title="activeKey == 0 ? `進銷存統計` : `歷史統計查詢`" />
+      <!-- Filter -->
+      <Filter v-if="formState" @search="handleSearch" @reset="handleReset">
+        <template #form>
+          <a-form
+            ref="formRef"
+            name="filter"
+            class="filter-form"
+            :model="formState"
+            style="width: 100%"
+          >
+            <a-row style="gap: 20px">
+              <a-col
+                :span="item.key == 'dateTime' ? 12 : 6"
+                v-for="item in formState"
+                :key="item.key"
+              >
+                <a-form-item
+                  v-if="item.key != 'dateTime'"
+                  :label="item.label"
+                  :name="item.key"
+                >
+                  <a-select
+                    v-if="item.key == 'depotIds' || item.key == 'findOrganId'"
+                    ref="select"
+                    v-model:value="filterValue[item.key]"
+                    style="width: 100%"
+                    placeholder="請選擇"
+                    show-search
+                    option-filter-prop="type"
+                    :options="typeOptions(true)"
+                    :fieldNames="{
+                      label: 'type',
+                      value: 'value',
+                    }"
+                    @change="handleSearch"
+                  ></a-select>
+                  <a-range-picker
+                    v-else-if="item.key == 'dateTime' && activeKey == 1"
+                    v-model:value="filterValue.dateTime"
+                    :show-time="{ format: 'HH:mm' }"
+                    format="YYYY-MM-DD HH:mm"
+                    :placeholder="['起始時間', '結束時間']"
+                    @change="onRangeChange"
+                    @ok="onRangeOk"
+                  />
+                  <a-input
+                    v-else
+                    v-model:value="filterValue[item.key]"
+                    placeholder="請輸入"
+                    @keyup.enter="handleSearch"
+                  ></a-input>
+                </a-form-item>
+                <a-form-item
+                  v-else-if="item.key == 'dateTime' && activeKey == 1"
+                  :label="item.label"
+                  :name="item.key"
+                >
+                  <a-range-picker
+                    v-model:value="filterValue.dateTime"
+                    :show-time="{ format: 'HH:mm' }"
+                    :placeholder="['起始時間', '結束時間']"
+                    @change="onRangeChange"
+                    @ok="onRangeOk"
+                  />
+                </a-form-item>
+              </a-col> </a-row
+          ></a-form>
+        </template>
+      </Filter>
+      <!-- 進銷存統計 -->
+      <div v-if="activeKey == 0" class="main-wrapper">
+        <Loading v-if="loading" />
+        <div class="wrapper" v-else>
+          <!-- table -->
+          <div class="HR__table">
+            <vxe-table
+              border="inner"
+              ref="tableRef"
+              :column-config="{ resizable: true }"
+              :data="tableData"
+              align="left"
+              size="small"
+            >
+              <vxe-column type="seq" width="5%" title="#" tree-node>
+                <template #default="{ rowIndex }">
+                  {{ (currentPage - 1) * pageSize + rowIndex + 1 }}
+                </template>
+              </vxe-column>
+              <vxe-column
+                v-for="column in tableColumn"
+                :key="column"
+                :field="column.field"
+                :title="column.title"
+                :width="column.width"
+              >
+                <template #default="{ column, row }">
+                  <div
+                    v-if="column.field == 'enabled'"
+                    class="table__action d-flex flex-column align-items-start gap-2"
+                  >
+                    <a-tag v-if="row.enabled" color="green">啟用</a-tag>
+                    <a-tag v-else color="red">停用</a-tag>
+                  </div>
+                  <div
+                    v-else-if="column.field == 'action'"
+                    class="table__action d-flex flex-row align-items-center gap-2"
+                  >
+                    <a-button
+                      type="button"
+                      class="btn btn-success d-flex flex-row align-items-center"
+                      value="small"
+                      @click="openHRModal('edit', row)"
+                    >
+                      編輯
+                    </a-button>
+                  </div>
+                  <span v-else>{{ row[column.field] }}</span>
+                </template>
+              </vxe-column>
+            </vxe-table>
+            <vxe-pager
+              v-model:currentPage="currentPage"
+              v-model:pageSize="pageSize"
+              :total="total"
+              @page-change="handleSearch"
+            >
+            </vxe-pager>
           </div>
         </div>
-
-        <div class="text-end pt-5 mt-3">
-          <b-button variant="light" @click="showImageModal = false"
-            >關閉</b-button
-          >
-        </div>
-      </form>
-    </b-modal>
-    <div class="row" v-show="SubView == 0">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <div class="row mb-2">
-              <div class="col-sm-12">
-                <div class="search-box me-2 mb-2 d-inline-block">
-                  <label for="name">倉庫別</label>
-                  <select
-                    class="form-select"
-                    v-model="depotId"
-                    @change="
-                      this.currentPage = 1;
-                      GetData();
-                    "
+      </div>
+      <!-- 歷史統計列表 -->
+      <div v-else class="main-wrapper">
+        <Loading v-if="loading" />
+        <div class="wrapper" v-else>
+          <!-- table -->
+          <div class="HR__table">
+            <vxe-table
+              border="inner"
+              ref="tableRef"
+              :column-config="{ resizable: true }"
+              :data="tableData"
+              align="left"
+              size="small"
+            >
+              <vxe-column type="seq" width="5%" title="#" tree-node>
+                <template #default="{ rowIndex }">
+                  {{ (currentPage - 1) * pageSize + rowIndex + 1 }}
+                </template>
+              </vxe-column>
+              <vxe-column
+                v-for="column in tableColumn"
+                :key="column"
+                :field="column.field"
+                :title="column.title"
+                :width="column.width"
+              >
+                <template #default="{ column, row }">
+                  <div
+                    v-if="column.field == 'enabled'"
+                    class="table__action d-flex flex-column align-items-start gap-2"
                   >
-                    <option
-                      :value="u1.id"
-                      selected
-                      v-for="u1 in [
-                        { id: '', depotName: '全部' },
-                        ...depotList,
-                      ]"
-                      :key="'query_depot_id' + u1.id"
-                    >
-                      {{ u1.depotName }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="search-box me-2 mb-2 d-inline-block">
-                  <label for="name">客戶</label>
-                  <select
-                    class="form-select"
-                    v-model="organId"
-                    @change="
-                      this.currentPage = 1;
-                      GetData();
-                    "
-                  >
-                    <option
-                      :value="u1.id"
-                      selected
-                      v-for="u1 in [
-                        { id: '', idname: '全部客戶' },
-                        ...supplierlist,
-                      ]"
-                      :key="'organId' + u1.id"
-                    >
-                      {{ u1.idname }}
-                    </option>
-                  </select>
-                </div>
-                <div class="search-box me-2 mb-2 d-inline-block">
-                  <div class="position-relative">
-                    <label for="name">商品資料</label>
-                    <input
-                      autocomplete="off"
-                      type="text"
-                      class="form-control"
-                      placeholder="商品資料"
-                      @keyup.enter="
-                        this.currentPage = 1;
-                        GetData();
-                      "
-                      v-model="materialParam"
-                    />
+                    <a-tag v-if="row.enabled" color="green">啟用</a-tag>
+                    <a-tag v-else color="red">停用</a-tag>
                   </div>
-                </div>
-                <div
-                  class="search-box me-2 mb-2 d-inline-block"
-                  v-if="activeKey == 1"
-                >
-                  <label for="name">起始日期</label>
-                  <input
-                    autocomplete="off"
-                    type="date"
-                    class="form-control"
-                    @change="
-                      this.currentPage = 1;
-                      GetData();
-                    "
-                    v-model="beginDate"
-                  />
-                </div>
-                <div
-                  class="search-box me-2 mb-2 d-inline-block"
-                  v-if="activeKey == 1"
-                >
-                  <label for="name">起始時間</label>
-                  <input
-                    autocomplete="off"
-                    type="time"
-                    class="form-control"
-                    @change="
-                      this.currentPage = 1;
-                      GetData();
-                    "
-                    v-model="beginTime"
-                  />
-                </div>
-                <div
-                  class="search-box me-2 mb-2 d-inline-block"
-                  v-if="activeKey == 1"
-                >
-                  <label for="name">結束日期</label>
-                  <input
-                    autocomplete="off"
-                    type="date"
-                    class="form-control"
-                    @change="
-                      this.currentPage = 1;
-                      GetData();
-                    "
-                    v-model="endDate"
-                  />
-                </div>
-                <div
-                  class="search-box me-2 mb-2 d-inline-block"
-                  v-if="activeKey == 1"
-                >
-                  <label for="name">結束時間</label>
-                  <input
-                    autocomplete="off"
-                    type="time"
-                    class="form-control"
-                    @change="
-                      this.currentPage = 1;
-                      GetData();
-                    "
-                    v-model="endTime"
-                  />
-                </div>
-                <div class="search-box me-2 mb-2 d-inline-block">
-                  <div class="position-relative">
-                    <b-button
-                      variant="primary"
-                      @click="
-                        this.currentPage = 1;
-                        GetData();
-                      "
-                    >
-                      <i
-                        :class="
-                          IsGetDataing
-                            ? 'bx bx-loader bx-spin font-size-16 align-middle me-2'
-                            : ''
-                        "
-                      >
-                      </i>
-                      查詢
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- end col-->
-            </div>
-            <div class="table-responsive">
-              <table class="table table-centered table-nowrap align-middle">
-                <thead>
-                  <tr>
-                    <th width="5px">#</th>
-                    <th>客戶</th>
-                    <th>品號</th>
-                    <th>名稱</th>
-                    <th>規格</th>
-                    <th>型號</th>
-                    <th class="text-center" v-if="activeKey == 1">在途中</th>
-                    <th class="text-center" v-if="activeKey == 1">入庫數量</th>
-                    <th class="text-center" v-if="activeKey == 1">出庫數量</th>
-                    <th class="text-center">結存數量</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <template
-                    v-for="(SubItem, cidx) in customersData"
-                    :key="SubItem.id"
+                  <div
+                    v-else-if="column.field == 'action'"
+                    class="table__action d-flex flex-row align-items-center gap-2"
                   >
-                    <tr>
-                      <td>{{ (currentPage - 1) * pageSize + cidx + 1 }}</td>
-                      <td
-                        style="white-space: break-spaces; word-break: break-all"
-                      >
-                        {{ SubItem.organName }}
-                      </td>
-                      <td
-                        style="white-space: break-spaces; word-break: break-all"
-                      >
-                        {{ SubItem.materialNumber }}
-                      </td>
-                      <td
-                        style="white-space: break-spaces; word-break: break-all"
-                      >
-                        {{ SubItem.materialName }}
-                      </td>
-                      <td
-                        style="white-space: break-spaces; word-break: break-all"
-                      >
-                        {{ SubItem.materialStandard }}
-                      </td>
-                      <td
-                        style="white-space: break-spaces; word-break: break-all"
-                      >
-                        {{ SubItem.materialModel }}
-                      </td>
-
-                      <td class="text-center" v-if="activeKey == 1">
-                        {{ SubItem.defectiveSum }}
-                      </td>
-                      <td class="text-center" v-if="activeKey == 1">
-                        {{ SubItem.inSum }}
-                      </td>
-                      <td class="text-center" v-if="activeKey == 1">
-                        {{ SubItem.outSum }}
-                      </td>
-                      <td class="text-center">
-                        <a href="javascript:;" @click="GetSubStock(SubItem)">
-                          {{ SubItem.thisSum }}</a
-                        >
-                      </td>
-                    </tr>
-                    <tr class="subtr" v-if="SubItem.IsSubStock == 1">
-                      <td>&nbsp;</td>
-                      <td>&nbsp;</td>
-                      <td>&nbsp;</td>
-                      <td>&nbsp;</td>
-                      <td>&nbsp;</td>
-                      <td class="text-right">&nbsp;</td>
-                      <td class="text-center" colspan="4">
-                        <table
-                          class="table table-centered table-nowrap align-middle subtable"
-                        >
-                          <tbody>
-                            <tr>
-                              <th class="text-center" width="40%">倉庫</th>
-                              <th class="text-center" width="30%">儲位</th>
-                              <th class="text-center" width="30%">
-                                數量
-                                <i
-                                  class="bx bxs-hide"
-                                  @click="SubItem.IsSubStock = 0"
-                                ></i>
-                              </th>
-                            </tr>
-                            <tr
-                              v-for="(ss1, ssidx) in SubItem.SubStockList"
-                              :key="'SubStockList' + ssidx"
-                            >
-                              <td class="text-center">{{ ss1.depotName }}</td>
-                              <td class="text-center">{{ ss1.counterName }}</td>
-                              <td class="text-center">{{ ss1.stock }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </template>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td></td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
+                    <a-button
+                      type="button"
+                      class="btn btn-success d-flex flex-row align-items-center"
+                      value="small"
+                      @click="openHRModal('edit', row)"
                     >
-                      &nbsp;
-                    </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
-                      &nbsp;
-                    </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
-                      &nbsp;
-                    </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                    >
-                      &nbsp;
-                    </td>
-                    <td
-                      style="white-space: break-spaces; word-break: break-all"
-                      v-if="activeKey == 1"
-                    >
-                      &nbsp;
-                    </td>
-
-                    <td class="text-center">總計:</td>
-                    <td class="text-center" v-if="activeKey == 1">
-                      {{ totalIn }}
-                    </td>
-                    <td class="text-center" v-if="activeKey == 1">
-                      {{ totalOut }}
-                    </td>
-                    <td class="text-center">{{ totalThis }}</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-            <TablePager
+                      編輯
+                    </a-button>
+                  </div>
+                  <span v-else>{{ row[column.field] }}</span>
+                </template>
+              </vxe-column>
+            </vxe-table>
+            <vxe-pager
               v-model:currentPage="currentPage"
-              v-model:maxPage="maxPage"
-              :CallGetData="GetData"
-            />
+              v-model:pageSize="pageSize"
+              :total="total"
+              @page-change="handleSearch"
+            >
+            </vxe-pager>
           </div>
         </div>
       </div>
     </div>
-    <!-- end row -->
-  </Layout>
+  </div>
 </template>
+<script>
+import { defineComponent, reactive, ref, onMounted } from "vue";
+import PageHeader from "@/components/page-header.vue";
+import "vxe-table/lib/style.css";
+import { HRTableColumn, typeOptions } from "./component/data";
+import { filterNullValues, containsOnlySpecificItems } from "@/utils/common";
+import Filter from "@/components/Filter.vue";
+import Loading from "@/components/Loading.vue";
+// Modal
+import { Select, Tag, Tabs, TabPane, RangePicker } from "ant-design-vue";
+import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
+import dayjs from "dayjs";
+export default defineComponent({
+  components: {
+    PageHeader,
+    ATag: Tag,
+    ASelect: Select,
+    Filter,
+    Loading,
+    ATabs: Tabs,
+    ATabPane: TabPane,
+    ARangePicker: RangePicker,
+  },
+  setup() {
+    const activeKey = ref(1);
+    // filter
+    const filterValue = reactive({
+      depotIds: null,
+      findOrganId: null,
+      materialParam: null,
+      dateTime: [dayjs().startOf("month"), dayjs().endOf("day")],
+      beginDateTime: dayjs().startOf("month").format("YYYY-MM-DD 00:00:00"),
+      endDateTime: dayjs().format("YYYY-MM-DD 23:59:59"),
+      order: "desc",
+    });
+    const formState = reactive([
+      {
+        label: "倉庫別",
+        key: "depotIds",
+      },
+      {
+        label: "客戶",
+        key: "findOrganId",
+      },
+      {
+        label: "商品資料",
+        key: "materialParam",
+      },
+      {
+        label: "日期時間",
+        key: "dateTime",
+      },
+    ]);
+
+    // table
+    const tableRef = ref(null);
+    const tableColumn = reactive(HRTableColumn);
+    const tableData = ref([]);
+    const currentPage = ref(1);
+    const pageSize = ref(10);
+    const total = ref(0);
+    const loading = ref(false);
+    // Modal
+    const modalRef = ref(null);
+    // store
+    const companyInfoStore = useCompanyInfoStore();
+
+    // 切換tab
+    function changeTab() {
+      console.log("changeTab", activeKey.value);
+      if (activeKey.value == 1) {
+        filterValue.dateTime = [dayjs().startOf("month"), dayjs().endOf("day")];
+      }
+      fetchData();
+    }
+
+    // table data
+    async function fetchData() {
+      console.log("fetchData");
+      loading.value = true;
+      currentPage.value = 1;
+      pageSize.value = 10;
+      filterValue.order = "desc";
+      filterValue.endDateTime = filterValue.dateTime[1].format(
+        "YYYY-MM-DD 23:59:59"
+      );
+      if (activeKey.value == 0) {
+        filterValue.beginDateTime = null;
+      } else {
+        filterValue.beginDateTime = filterValue.dateTime[0].format(
+          "YYYY-MM-DD 00:00:00"
+        );
+      }
+
+      handleSearch();
+    }
+
+    // 呼叫api
+    function setData(params) {
+      console.log("setData", params);
+    }
+
+    // 搜尋
+    function handleSearch() {
+      console.log("handleSearch");
+      const data = {
+        ...filterValue,
+        page: currentPage.value,
+        size: pageSize.value,
+      };
+      delete data.dateTime;
+      const params = filterNullValues(data);
+      setData(params);
+    }
+
+    // 重置篩選欄位
+    function handleReset() {
+      Object.keys(filterValue).forEach((key) => {
+        filterValue[key] = null;
+      });
+      filterValue.dateTime = [dayjs().startOf("month"), dayjs().endOf("day")];
+      fetchData();
+    }
+
+    // 刷新table資料
+    function reload() {
+      loading.value = true;
+      handleReset();
+    }
+
+    // 開啟modal
+    function openHRModal(type, data) {
+      modalRef.value.openModal(type, data);
+    }
+
+    onMounted(() => {
+      loading.value = true;
+      setTimeout(() => {
+        fetchData();
+      }, 500);
+    });
+
+    return {
+      tableData,
+      currentPage,
+      pageSize,
+      total,
+      modalRef,
+      tableRef,
+      tableColumn,
+      openHRModal,
+      loading,
+      reload,
+      filterValue,
+      formState,
+      typeOptions,
+      fetchData,
+      handleReset,
+      activeKey,
+      changeTab,
+      handleSearch,
+    };
+  },
+});
+</script>
+<style lang="scss" scoped>
+.actions {
+  gap: 10px;
+}
+
+.in-out-stock {
+  background: #f5f5f5;
+}
+
+:deep(.ant-tabs-nav) {
+  margin-bottom: 0;
+}
+
+.in-out-stock__wrapper {
+  border-radius: 0 8px 8px 8px;
+  background-color: #fff;
+  padding: 15px 10px;
+
+  :deep(.ant-spin) {
+    width: 100%;
+  }
+}
+
+:deep(.vxe-table) {
+  display: flex;
+  justify-content: center;
+}
+
+:deep(.vxe-table--render-wrapper) {
+  width: 100%;
+}
+
+:deep(.vxe-pager .vxe-pager--wrapper) {
+  text-align: center;
+  margin-top: 18px;
+}
+
+:deep(.vxe-table--render-default .vxe-tree-cell) {
+  padding: 0;
+}
+</style>

@@ -10,7 +10,7 @@ import InStockList from '@/views/stock/inStockList.vue';
 import OutStockList from '@/views/stock/outStockList.vue';
 import MoveStockList from '@/views/stock/moveStockList.vue';
 import ReturnStockList from '@/views/stock/returnStockList.vue';
-import InOutStockReport from '@/views/report/inOutStockReport.vue';
+import InOutStockReport from '@/views/report/InOutStockReport.vue';
 import DriverStockReport from '@/views/report/driverStockReport.vue';
 import User from '@/views/system/User.vue';
 import Role from '@/views/system/Role.vue';

@@ -245,7 +245,6 @@ export default defineComponent({
 
     onMounted(() => {
       loading.value = true;
-      console.log("人事管理");
       setTimeout(() => {
         fetchData();
       }, 500);

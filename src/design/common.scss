@@ -119,8 +119,8 @@
   border-color: #f77b00 !important;
 }
 
-.filter-form {
-  height: 40px;
+.filter-form .ant-row .ant-col .ant-form-item {
+  margin-bottom: 0;
 }
 
 .main-wrapper {
