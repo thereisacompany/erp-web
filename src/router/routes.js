@@ -44,7 +44,7 @@ const routes = [
 	// 公司資料管理
 	{
 		path: '/system',
-		name: 'driverList',
+		name: 'system',
 		meta: { authRequired: true },
 		children: [
 			// 客戶管理
@@ -138,7 +138,7 @@ const routes = [
 	// 報表查詢
 	{
 		path: '/report',
-		name: 'inOutStockReport',
+		name: 'report',
 		meta: { authRequired: true },
 		children: [
 			// 進銷存統計
@@ -160,7 +160,7 @@ const routes = [
 	// 系統管理
 	{
 		path: '/system',
-		name: 'userList',
+		name: 'systemManagement',
 		meta: { authRequired: true },
 		children: [
 			// 用戶管理

@@ -2840,11 +2840,12 @@ export default {
                       class="col-sm-12 my-1"
                       v-if="SubView == 1 || SubView == 2"
                     >
-                      <b-button variant="light" class="w-sm">
-                        <i
-                          class="mdi mdi-upload d-block font-size-16"
-                          @click="$refs.file2.click()"
-                        ></i>
+                      <b-button
+                        variant="light"
+                        class="w-sm"
+                        @click="$refs.file2.click()"
+                      >
+                        <i class="mdi mdi-upload d-block font-size-16"></i>
                         上傳檔案
                       </b-button>
                       <span class="text-danger">
@@ -2861,7 +2862,14 @@ export default {
                       />
                     </div>
                     <div class="col-sm-12 mt-1 my-1">
-                      <label for="name" v-if="SubView == 3">上傳檔案</label>
+                      <label
+                        v-if="filelist.length == 0 && SubView != 1"
+                        for="name"
+                        >上傳檔案</label
+                      >
+                      <div v-if="filelist.length == 0 && SubView != 1">
+                        目前無檔案
+                      </div>
                       <div
                         v-for="(f1, fidx) in filelist"
                         :key="'filelist-' + fidx"
@@ -3439,7 +3447,7 @@ export default {
         class="swiper"
         :centeredSlides="true"
       >
-        <swiper-slide v-for="(file, index) in driver.filelist" :key="index"
+        <swiper-slide v-for="(file, index) in filelist" :key="index"
           ><img
             v-if="CheckIsImage(file)"
             :src="file"
