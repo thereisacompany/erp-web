@@ -151,14 +151,13 @@ export default {
         storePhone: "",
       },
       driver: {
-        driverId: "",
+        driverId: null,
         assignDate: "",
         carNumber: "",
         assignUser: "",
-
         filePath: "",
         filelist: [],
-        status: 0,
+        status: "0",
         deliveryStatusList: [],
         reportList: [],
       },
@@ -1350,13 +1349,23 @@ export default {
           ) {
             let jshdata = res.data.data;
             console.log("jshdata", jshdata);
+            console.log("jshdata driverId", jshdata.driverId);
+            console.log(
+              "jshdata status",
+              jshdata.status,
+              typeof jshdata.status
+            );
+            console.log(
+              "jshdata Number(status)",
+              Number(jshdata.status),
+              typeof Number(jshdata.status)
+            );
             this.driver.driverId = jshdata.driverId;
             this.driver.carNumber = jshdata.carNumber;
             this.driver.assignDate = dayjs(jshdata.takeDate).format(
               "YYYY-MM-DD"
             );
             this.driver.assignUser = jshdata.assignUser;
-
             this.driver.filePath = jshdata.filePath;
             this.driver.status = Number(jshdata.status);
             this.driver.deliveryStatusList = jshdata.deliveryStatusList;
@@ -3396,6 +3405,7 @@ export default {
           >匯出</a
         >
 
+        driver.status: {{ driver.status }}
         <!-- 司機派單及回報 -->
         <a
           href="#"
