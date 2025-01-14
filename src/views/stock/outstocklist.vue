@@ -213,6 +213,7 @@ export default {
       loading: true,
       loadingTip: "載入中...",
       editStatus: false,
+      swiperData: [],
     };
   },
   computed: {
@@ -1622,32 +1623,35 @@ export default {
       }
       return false;
     },
-    ShowImage(ImageUrl) {
-      let filename = ImageUrl;
+    ShowImage(fileList) {
+      this.showImageModal = true;
+      this.swiperData = fileList;
+      console.log("fileList", fileList);
+      // let filename = fileList;
 
-      const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
-      const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
-      if (imageExtensions.includes(extension)) {
-        this.showImageURL = filename;
-        this.showVideoURL = "";
-        this.showImageModal = true;
-      } else if ([".mp4", ".mov"].includes(extension)) {
-        this.showImageURL = "";
-        this.showVideoURL = filename;
-        this.showImageModal = true;
-        const video = this.$refs.videoPlayer;
-        if (video) {
-          this.$nextTick(() => {
-            video.style.width = "100%";
-            video.style.height = `auto`;
-            video.src = this.showVideoURL;
-            video.play();
-          });
-        }
-      } else {
-        console.log("else file");
-        window.open(filename, "file1");
-      }
+      // const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
+      // const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
+      // if (imageExtensions.includes(extension)) {
+      //   this.showImageURL = filename;
+      //   this.showVideoURL = "";
+      //   this.showImageModal = true;
+      // } else if ([".mp4", ".mov"].includes(extension)) {
+      //   this.showImageURL = "";
+      //   this.showVideoURL = filename;
+      //   this.showImageModal = true;
+      //   const video = this.$refs.videoPlayer;
+      //   if (video) {
+      //     this.$nextTick(() => {
+      //       video.style.width = "100%";
+      //       video.style.height = `auto`;
+      //       video.src = this.showVideoURL;
+      //       video.play();
+      //     });
+      //   }
+      // } else {
+      //   console.log("else file");
+      //   window.open(filename, "file1");
+      // }
     },
     GetAccessFile1(UrlPath1) {
       console.log("UrlPath1", UrlPath1);
@@ -2878,15 +2882,15 @@ export default {
                         <img
                           v-if="CheckIsImage(f1)"
                           :src="f1"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(filelist)"
                           style="max-width: 100px; max-height: 100px"
                         />
                         <img
                           class="logo-bank"
                           v-else-if="CheckIsVideo(f1)"
+                          @click="ShowImage(filelist)"
                           style="max-width: 100px; max-height: 100px"
                           src="/images/playvideo.jpg"
-                          @click="ShowImage(f1)"
                         />
                         <a
                           style="
@@ -2896,7 +2900,7 @@ export default {
                           "
                           v-else
                           href="#"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(filelist)"
                           >{{ f1.split("/").pop() }}</a
                         >
                         <a href="#" class="text-danger" @click="DeleteFile1(f1)"
@@ -3272,7 +3276,7 @@ export default {
                         <img
                           v-if="CheckIsImage(f1)"
                           :src="f1"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(driver.filelist)"
                           style="max-width: 100px; max-height: 100px"
                         />
                         <img
@@ -3280,7 +3284,7 @@ export default {
                           v-else-if="CheckIsVideo(f1)"
                           style="max-width: 100px; max-height: 100px"
                           src="/images/playvideo.jpg"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(driver.filelist)"
                         />
                         <a
                           style="
@@ -3290,7 +3294,7 @@ export default {
                           "
                           v-else
                           href="#"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(driver.filelist)"
                           >{{ f1.split("/").pop() }}</a
                         >
                         <!-- <a href="#" class="text-danger" @click="DeleteFile2(f1)"
@@ -3447,18 +3451,26 @@ export default {
         class="swiper"
         :centeredSlides="true"
       >
-        <swiper-slide v-for="(file, index) in filelist" :key="index"
+        <swiper-slide v-for="(file, index) in swiperData" :key="index"
           ><img
             v-if="CheckIsImage(file)"
             :src="file"
             style="max-width: 320px; max-height: 50%"
           />
-          <img
-            class="logo-bank"
+          <video
             v-else-if="CheckIsVideo(file)"
-            style="max-width: 320px; max-height: 50%"
-            src="/images/playvideo.jpg"
-          />
+            ref="videoPlayer"
+            playsinline
+            controls
+            preload="auto"
+            autoplay
+            loop
+            muted
+            style="max-width: 100%; max-height: calc(100vh - 100px)"
+          >
+            <source :src="file" type="video/mp4" />
+            您的瀏覽器不支援影片格式
+          </video>
           <a
             style="word-break: break-all; display: block; max-width: 50%"
             v-else
