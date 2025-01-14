@@ -3405,7 +3405,6 @@ export default {
           >匯出</a
         >
 
-        driver.status: {{ driver.status }}
         <!-- 司機派單及回報 -->
         <a
           href="#"
