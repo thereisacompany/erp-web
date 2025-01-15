@@ -151,14 +151,13 @@ export default {
         storePhone: "",
       },
       driver: {
-        driverId: "",
+        driverId: null,
         assignDate: "",
         carNumber: "",
         assignUser: "",
-
         filePath: "",
         filelist: [],
-        status: 0,
+        status: "0",
         deliveryStatusList: [],
         reportList: [],
       },
@@ -213,6 +212,7 @@ export default {
       loading: true,
       loadingTip: "載入中...",
       editStatus: false,
+      swiperData: [],
     };
   },
   computed: {
@@ -1349,13 +1349,23 @@ export default {
           ) {
             let jshdata = res.data.data;
             console.log("jshdata", jshdata);
+            console.log("jshdata driverId", jshdata.driverId);
+            console.log(
+              "jshdata status",
+              jshdata.status,
+              typeof jshdata.status
+            );
+            console.log(
+              "jshdata Number(status)",
+              Number(jshdata.status),
+              typeof Number(jshdata.status)
+            );
             this.driver.driverId = jshdata.driverId;
             this.driver.carNumber = jshdata.carNumber;
             this.driver.assignDate = dayjs(jshdata.takeDate).format(
               "YYYY-MM-DD"
             );
             this.driver.assignUser = jshdata.assignUser;
-
             this.driver.filePath = jshdata.filePath;
             this.driver.status = Number(jshdata.status);
             this.driver.deliveryStatusList = jshdata.deliveryStatusList;
@@ -1622,32 +1632,35 @@ export default {
       }
       return false;
     },
-    ShowImage(ImageUrl) {
-      let filename = ImageUrl;
+    ShowImage(fileList) {
+      this.showImageModal = true;
+      this.swiperData = fileList;
+      console.log("fileList", fileList);
+      // let filename = fileList;
 
-      const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
-      const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
-      if (imageExtensions.includes(extension)) {
-        this.showImageURL = filename;
-        this.showVideoURL = "";
-        this.showImageModal = true;
-      } else if ([".mp4", ".mov"].includes(extension)) {
-        this.showImageURL = "";
-        this.showVideoURL = filename;
-        this.showImageModal = true;
-        const video = this.$refs.videoPlayer;
-        if (video) {
-          this.$nextTick(() => {
-            video.style.width = "100%";
-            video.style.height = `auto`;
-            video.src = this.showVideoURL;
-            video.play();
-          });
-        }
-      } else {
-        console.log("else file");
-        window.open(filename, "file1");
-      }
+      // const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
+      // const extension = filename.slice(filename.lastIndexOf(".")).toLowerCase();
+      // if (imageExtensions.includes(extension)) {
+      //   this.showImageURL = filename;
+      //   this.showVideoURL = "";
+      //   this.showImageModal = true;
+      // } else if ([".mp4", ".mov"].includes(extension)) {
+      //   this.showImageURL = "";
+      //   this.showVideoURL = filename;
+      //   this.showImageModal = true;
+      //   const video = this.$refs.videoPlayer;
+      //   if (video) {
+      //     this.$nextTick(() => {
+      //       video.style.width = "100%";
+      //       video.style.height = `auto`;
+      //       video.src = this.showVideoURL;
+      //       video.play();
+      //     });
+      //   }
+      // } else {
+      //   console.log("else file");
+      //   window.open(filename, "file1");
+      // }
     },
     GetAccessFile1(UrlPath1) {
       console.log("UrlPath1", UrlPath1);
@@ -2840,11 +2853,12 @@ export default {
                       class="col-sm-12 my-1"
                       v-if="SubView == 1 || SubView == 2"
                     >
-                      <b-button variant="light" class="w-sm">
-                        <i
-                          class="mdi mdi-upload d-block font-size-16"
-                          @click="$refs.file2.click()"
-                        ></i>
+                      <b-button
+                        variant="light"
+                        class="w-sm"
+                        @click="$refs.file2.click()"
+                      >
+                        <i class="mdi mdi-upload d-block font-size-16"></i>
                         上傳檔案
                       </b-button>
                       <span class="text-danger">
@@ -2861,7 +2875,14 @@ export default {
                       />
                     </div>
                     <div class="col-sm-12 mt-1 my-1">
-                      <label for="name" v-if="SubView == 3">上傳檔案</label>
+                      <label
+                        v-if="filelist.length == 0 && SubView != 1"
+                        for="name"
+                        >上傳檔案</label
+                      >
+                      <div v-if="filelist.length == 0 && SubView != 1">
+                        目前無檔案
+                      </div>
                       <div
                         v-for="(f1, fidx) in filelist"
                         :key="'filelist-' + fidx"
@@ -2870,15 +2891,15 @@ export default {
                         <img
                           v-if="CheckIsImage(f1)"
                           :src="f1"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(filelist)"
                           style="max-width: 100px; max-height: 100px"
                         />
                         <img
                           class="logo-bank"
                           v-else-if="CheckIsVideo(f1)"
+                          @click="ShowImage(filelist)"
                           style="max-width: 100px; max-height: 100px"
                           src="/images/playvideo.jpg"
-                          @click="ShowImage(f1)"
                         />
                         <a
                           style="
@@ -2888,7 +2909,7 @@ export default {
                           "
                           v-else
                           href="#"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(filelist)"
                           >{{ f1.split("/").pop() }}</a
                         >
                         <a href="#" class="text-danger" @click="DeleteFile1(f1)"
@@ -3264,7 +3285,7 @@ export default {
                         <img
                           v-if="CheckIsImage(f1)"
                           :src="f1"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(driver.filelist)"
                           style="max-width: 100px; max-height: 100px"
                         />
                         <img
@@ -3272,7 +3293,7 @@ export default {
                           v-else-if="CheckIsVideo(f1)"
                           style="max-width: 100px; max-height: 100px"
                           src="/images/playvideo.jpg"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(driver.filelist)"
                         />
                         <a
                           style="
@@ -3282,7 +3303,7 @@ export default {
                           "
                           v-else
                           href="#"
-                          @click="ShowImage(f1)"
+                          @click="ShowImage(driver.filelist)"
                           >{{ f1.split("/").pop() }}</a
                         >
                         <!-- <a href="#" class="text-danger" @click="DeleteFile2(f1)"
@@ -3439,18 +3460,26 @@ export default {
         class="swiper"
         :centeredSlides="true"
       >
-        <swiper-slide v-for="(file, index) in driver.filelist" :key="index"
+        <swiper-slide v-for="(file, index) in swiperData" :key="index"
           ><img
             v-if="CheckIsImage(file)"
             :src="file"
             style="max-width: 320px; max-height: 50%"
           />
-          <img
-            class="logo-bank"
+          <video
             v-else-if="CheckIsVideo(file)"
-            style="max-width: 320px; max-height: 50%"
-            src="/images/playvideo.jpg"
-          />
+            ref="videoPlayer"
+            playsinline
+            controls
+            preload="auto"
+            autoplay
+            loop
+            muted
+            style="max-width: 100%; max-height: calc(100vh - 100px)"
+          >
+            <source :src="file" type="video/mp4" />
+            您的瀏覽器不支援影片格式
+          </video>
           <a
             style="word-break: break-all; display: block; max-width: 50%"
             v-else

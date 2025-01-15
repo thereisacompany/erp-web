@@ -835,13 +835,13 @@ export default {
           return;
         });
     },
-    handleFileUpload: function () {
+    handleFileUpload: async function () {
       for (let i = 0; i < this.$refs.file2.files.length; i++) {
         //this.filelist.push(this.$refs.file2.files[i]);
         //// console.log("file1", i, this.$refs.file2.files[i].name, this.$refs.file2.files[i])
         let file1 = this.$refs.file2.files[i];
         if (file1.size <= this.MaxFileSize) {
-          this.UploadFile1("bill", file1, (uploadPath) => {
+          await this.UploadFile1("bill", file1, (uploadPath) => {
             if (uploadPath != null) {
               this.filelist.push(uploadPath);
             }
@@ -1214,11 +1214,9 @@ export default {
                   <b-button
                     variant="light"
                     class="w-sm d-flex align-items-center"
+                    @click="$refs.file2.click()"
                   >
-                    <i
-                      class="mdi mdi-upload d-block font-size-16 mx-1"
-                      @click="$refs.file2.click()"
-                    ></i>
+                    <i class="mdi mdi-upload d-block font-size-16 mx-1"></i>
                     上傳檔案
                   </b-button>
                   <span class="text-danger mx-3">
@@ -1233,9 +1231,13 @@ export default {
                     v-on:change="handleFileUpload()"
                   />
                 </div>
-                <div class="col-sm-12 mt-1" v-if="SubView == 3">
-                  <label for="name">上傳檔案</label>
-                  <div v-if="filelist.length == 0">目前無檔案</div>
+                <div class="col-sm-12 mt-1">
+                  <label v-if="filelist.length == 0 && SubView != 1" for="name"
+                    >上傳檔案</label
+                  >
+                  <div v-if="filelist.length == 0 && SubView != 1">
+                    目前無檔案
+                  </div>
                   <div
                     v-for="(f1, fidx) in filelist"
                     :key="'file-' + fidx"
