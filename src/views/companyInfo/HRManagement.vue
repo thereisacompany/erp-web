@@ -24,7 +24,7 @@
     </PageHeader>
 
     <!-- Filter -->
-    <Filter v-if="formState" @search="fetchData" @reset="handleReset">
+    <Filter v-if="formState" @search="handleSearch" @reset="handleReset">
       <template #form>
         <a-form
           ref="formRef"
@@ -53,13 +53,13 @@
                     label: 'type',
                     value: 'value',
                   }"
-                  @change="fetchData"
+                  @change="handleSearch"
                 ></a-select>
                 <a-input
                   v-else
                   v-model:value="filterValue[item.key]"
                   placeholder="請輸入"
-                  @keyup.enter="fetchData"
+                  @keyup.enter="handleSearch"
                 ></a-input>
               </a-form-item>
             </a-col> </a-row
@@ -122,7 +122,7 @@
             v-model:currentPage="currentPage"
             v-model:pageSize="pageSize"
             :total="total"
-            @page-change="fetchData"
+            @page-change="handleChangePage"
           >
           </vxe-pager>
         </div>
@@ -139,7 +139,7 @@ import PageHeader from "@/components/page-header.vue";
 import "vxe-table/lib/style.css";
 import ImportFile from "@/components/ImportFile.vue";
 import { HRTableColumn, typeOptions } from "./component/data";
-import { filterNullValues, containsOnlySpecificItems } from "@/utils/common";
+import { filterNullValues } from "@/utils/common";
 import Filter from "@/components/Filter.vue";
 import Loading from "@/components/Loading.vue";
 // Modal
@@ -200,27 +200,31 @@ export default defineComponent({
 
     // table data
     async function fetchData() {
-      // 若有篩選值，將currentPage改為第一頁
-      const filterParams = filterNullValues(filterValue);
-      if (filterParams.type == "1") {
-        delete filterParams.type;
-        filterParams["filter"] = "1";
+      const filter = filterNullValues(filterValue);
+      if (filter.type == "1") {
+        delete filter.type;
+        filter["filter"] = "1";
       }
-      // 檢查是否還有其他的篩選條件
-      if (!containsOnlySpecificItems(filterParams, ["filter"])) {
-        currentPage.value = 1;
-      }
-
-      // 人事列表
+      console.log("currentPage", currentPage.value);
+      console.log("pageSize", pageSize.value);
       const params = {
         currentPage: currentPage.value,
         pageSize: pageSize.value,
-        filter: JSON.stringify(filterParams),
+        filter: JSON.stringify(filter),
       };
       await companyInfoStore.fetchAllMember(params);
       tableData.value = companyInfoStore.getAllMemberList;
       total.value = companyInfoStore.getListTotal;
       loading.value = false;
+    }
+
+    // 搜尋
+    function handleSearch() {
+      currentPage.value = 1;
+      pageSize.value = 10;
+
+      console.log("handleSearch", filterValue);
+      fetchData();
     }
 
     // 重置篩選欄位
@@ -229,12 +233,23 @@ export default defineComponent({
       filterValue.supplier = null;
       filterValue.telephone = null;
       filterValue.phonenum = null;
+      currentPage.value = 1;
+      pageSize.value = 10;
+      handleSearch();
+    }
+
+    // 切換分頁
+    function handleChangePage({ pageSize: size, currentPage: current }) {
+      currentPage.value = current;
+      pageSize.value = size;
       fetchData();
     }
 
     // 刷新table資料
     function reload() {
       loading.value = true;
+      currentPage.value = 1;
+      pageSize.value = 10;
       fetchData();
     }
 
@@ -245,9 +260,7 @@ export default defineComponent({
 
     onMounted(() => {
       loading.value = true;
-      setTimeout(() => {
-        fetchData();
-      }, 500);
+      handleSearch();
     });
 
     return {
@@ -266,6 +279,8 @@ export default defineComponent({
       typeOptions,
       fetchData,
       handleReset,
+      handleSearch,
+      handleChangePage,
     };
   },
 });
