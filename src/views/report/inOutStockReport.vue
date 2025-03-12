@@ -30,20 +30,35 @@
                   :name="item.key"
                 >
                   <a-select
-                    v-if="item.key == 'depotIds' || item.key == 'findOrganId'"
+                    v-if="item.key == 'depotIds'"
+                    ref="select"
+                    v-model:value="filterValue[item.key]"
+                    style="width: 100%"
+                    placeholder="請選擇"
+                    show-search
+                    option-filter-prop="depotName"
+                    :options="depotList"
+                    :fieldNames="{
+                      label: 'depotName',
+                      value: 'id',
+                    }"
+                    @change="handleSearch"
+                  ></a-select>
+                  <!-- <a-select
+                    v-else-if="item.key == 'findOrganId'"
                     ref="select"
                     v-model:value="filterValue[item.key]"
                     style="width: 100%"
                     placeholder="請選擇"
                     show-search
                     option-filter-prop="type"
-                    :options="typeOptions(true)"
+                    :options="[]"
                     :fieldNames="{
-                      label: 'type',
-                      value: 'value',
+                      label: 'depotName',
+                      value: 'id',
                     }"
                     @change="handleSearch"
-                  ></a-select>
+                  ></a-select> -->
                   <a-range-picker
                     v-else-if="item.key == 'dateTime' && activeKey == 1"
                     v-model:value="filterValue.dateTime"
@@ -212,7 +227,8 @@ import Filter from "@/components/Filter.vue";
 import Loading from "@/components/Loading.vue";
 // Modal
 import { Select, Tag, Tabs, TabPane, RangePicker } from "ant-design-vue";
-import { useCompanyInfoStore } from "@/stores/useCompanyInfoStore";
+import { getOutStockList } from "@/api/reportApi";
+import { getDepotList } from "@/api/depotApi";
 import dayjs from "dayjs";
 export default defineComponent({
   components: {
@@ -226,7 +242,7 @@ export default defineComponent({
     ARangePicker: RangePicker,
   },
   setup() {
-    const activeKey = ref(1);
+    const activeKey = ref(0);
     // filter
     const filterValue = reactive({
       depotIds: null,
@@ -255,7 +271,7 @@ export default defineComponent({
         key: "dateTime",
       },
     ]);
-
+    const depotList = ref(); // 倉庫列表
     // table
     const tableRef = ref(null);
     const tableColumn = reactive(HRTableColumn);
@@ -266,8 +282,6 @@ export default defineComponent({
     const loading = ref(false);
     // Modal
     const modalRef = ref(null);
-    // store
-    const companyInfoStore = useCompanyInfoStore();
 
     // 切換tab
     function changeTab() {
@@ -300,8 +314,13 @@ export default defineComponent({
     }
 
     // 呼叫api
-    function setData(params) {
+    async function setData(params) {
       console.log("setData", params);
+      const response = await getOutStockList(params);
+      console.log("response", response);
+      tableData.value = response.rows;
+      total.value = response.total;
+      loading.value = false;
     }
 
     // 搜尋
@@ -309,8 +328,8 @@ export default defineComponent({
       console.log("handleSearch");
       const data = {
         ...filterValue,
-        page: currentPage.value,
-        size: pageSize.value,
+        currentPage: currentPage.value,
+        pageSize: pageSize.value,
       };
       delete data.dateTime;
       const params = filterNullValues(data);
@@ -337,8 +356,11 @@ export default defineComponent({
       modalRef.value.openModal(type, data);
     }
 
-    onMounted(() => {
+    onMounted(async () => {
       loading.value = true;
+      const depotData = await getDepotList();
+      depotList.value = [{ id: "", depotName: "全部" }, ...depotData];
+      console.log("depotList", depotList.value);
       setTimeout(() => {
         fetchData();
       }, 500);
@@ -363,6 +385,7 @@ export default defineComponent({
       activeKey,
       changeTab,
       handleSearch,
+      depotList,
     };
   },
 });
