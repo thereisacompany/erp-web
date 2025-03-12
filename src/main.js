@@ -6,7 +6,7 @@ import BootstrapVue3 from 'bootstrap-vue-3';
 import VueApexCharts from "vue3-apexcharts";
 import vClickOutside from "click-outside-vue3";
 import { registerScrollSpy } from 'vue3-scroll-spy';
-import { Table, Column } from 'vxe-table';
+import { Table, Column, Toolbar } from 'vxe-table';
 import 'vxe-table/lib/style.css';
 import VxeUI from 'vxe-pc-ui';
 import 'vxe-pc-ui/lib/style.css';
@@ -29,6 +29,7 @@ VxeUI.setLanguage('zh-TW')
 // 获取当前使用的语言
 VxeUI.getLanguage()
 
+
 createApp(App)
   .component('TablePager', TablePager)
   .use(store)
@@ -41,6 +42,7 @@ createApp(App)
   .use(Maska)
   .use(VxeUI)
   .use(Table)
+  .use(Toolbar)
   .use(Column)
   .use(Antd)
   .use(pinia)

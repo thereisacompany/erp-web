@@ -65,10 +65,12 @@
 
     <!-- Car List -->
     <div class="car-management__wrapper main-wrapper">
-      <Loading v-if="loading" />
-      <div class="wrapper" v-else>
+      <Loading v-show="loading" />
+      <div class="wrapper" v-show="!loading">
         <!-- table -->
         <div class="customer__table">
+          <vxe-toolbar ref="toolbarRef" custom></vxe-toolbar>
+
           <vxe-table
             border="inner"
             ref="tableRef"
@@ -76,6 +78,11 @@
             :data="tableData"
             align="left"
             size="small"
+            :virtual-x-config="{
+              enabled: true,
+              immediate: true,
+              gt: 0,
+            }"
           >
             <vxe-column type="seq" width="5%" title="#" tree-node>
               <template #default="{ rowIndex }">
@@ -194,6 +201,7 @@ export default defineComponent({
     ]);
     const allDriverOptions = ref([]);
     // table
+    const toolbarRef = ref(null);
     const tableRef = ref(null);
     const tableColumn = reactive(carTableColumn);
     const tableData = ref([]);
@@ -257,6 +265,11 @@ export default defineComponent({
       result.unshift({ supplier: "全部司機", id: null });
       allDriverOptions.value = result;
 
+      const $table = tableRef.value;
+      const $toolbar = toolbarRef.value;
+      if ($table && $toolbar) {
+        $table.connect($toolbar);
+      }
       setTimeout(() => {
         fetchData();
       }, 500);
@@ -269,6 +282,7 @@ export default defineComponent({
       total,
       modalRef,
       tableRef,
+      toolbarRef,
       tableColumn,
       openCarModal,
       loading,

@@ -35,7 +35,6 @@ server.interceptors.response.use(function (response) {
     // 回傳的 status code 不在 2xx 區間會觸發這個函式
     // 可以在這裡拿到 response error 做處理
     console.error('API 呼叫錯誤:', error.response);
-
     console.error('完整的錯誤物件:', error); // Axios 錯誤物件
     //回傳錯誤時,清除己登入的資料,會自動回登入頁
     const errorMessage = error.response.data;
